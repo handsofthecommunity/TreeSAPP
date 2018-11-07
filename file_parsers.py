@@ -193,10 +193,10 @@ def parse_domain_tables(args, hmm_domtbl_files):
 
     if seqs_identified == 0 and dropped == 0:
         logging.warning("No alignments found! TreeSAPP is exiting now.\n")
-        sys.exit(5)
+        sys.exit(0)
     if seqs_identified == 0 and dropped > 0:
         logging.warning("No alignments met the quality cut-offs! TreeSAPP is exiting now.\n")
-        sys.exit(5)
+        sys.exit(0)
 
     alignment_stat_string = "\tNumber of markers identified:\n"
     for marker in sorted(hmm_matches):
@@ -318,6 +318,7 @@ def read_colours_file(args, annotation_file):
 
 def tax_ids_file_to_leaves(tax_ids_file):
     tree_leaves = list()
+    unknown = 0
     try:
         if sys.version_info > (2, 9):
             cog_tax_ids = open(tax_ids_file, 'r', encoding='utf-8')
@@ -348,7 +349,13 @@ def tax_ids_file_to_leaves(tax_ids_file):
         if lineage:
             leaf.lineage = lineage
             leaf.complete = True
+        else:
+            unknown += 1
         tree_leaves.append(leaf)
+
+    if len(tree_leaves) == unknown:
+        logging.error("Lineage information was not properly loaded for " + tax_ids_file + "\n")
+        sys.exit(5)
 
     cog_tax_ids.close()
     return tree_leaves
@@ -400,9 +407,10 @@ def xml_parser(xml_record, term):
     return value
 
 
-def read_phylip(phylip_input):
+def read_phylip_to_dict(phylip_input):
     header_dict = dict()
-    alignment_dict = dict()
+    tmp_seq_dict = dict()
+    seq_dict = dict()
     x = 0
 
     try:
@@ -428,10 +436,10 @@ def read_phylip(phylip_input):
             # This is the introduction set: header, sequence
             header, sequence = line.split()
             header_dict[x] = header
-            alignment_dict[x] = sequence
+            tmp_seq_dict[x] = sequence
             x += 1
         elif 60 >= len(line) >= 1:
-            alignment_dict[x] += line
+            tmp_seq_dict[x] += line
             x += 1
         elif line == "":
             # Reset accumulator on blank lines
@@ -446,12 +454,17 @@ def read_phylip(phylip_input):
             sys.exit(5)
 
     # Check that the alignment length matches that in the header line
+    if num_sequences != len(tmp_seq_dict):
+        logging.error("Number of lines declared in Phylip header (" + str(num_sequences) +
+                      ") does not match number of sequences parsed (" + str(len(tmp_seq_dict)) + ")!\n")
+        sys.exit(5)
+
     x = 0
     while x < num_sequences-1:
-        if len(alignment_dict[x]) != aln_length:
+        if len(tmp_seq_dict[x]) != aln_length:
             logging.error(header_dict[x] +
                           " sequence length exceeds the stated multiple alignment length (according to header)!\n" +
-                          "sequence length = " + str(len(alignment_dict[x])) +
+                          "sequence length = " + str(len(tmp_seq_dict[x])) +
                           ", alignment length = " + str(aln_length) + "\n")
             sys.exit(5)
         else:
@@ -459,7 +472,46 @@ def read_phylip(phylip_input):
         x += 1
 
     phylip.close()
-    return header_dict, alignment_dict
+    for x in header_dict:
+        seq_dict[header_dict[x]] = tmp_seq_dict[x]
+    return seq_dict
+
+
+def read_stockholm_to_dict(sto_file):
+    """
+
+    :param sto_file: A Stockholm-formatted multiple alignment file
+    :return: A dictionary with sequence headers as keys and sequences as values
+    """
+    seq_dict = dict()
+
+    try:
+        sto_handler = open(sto_file, 'r')
+    except IOError:
+        logging.error("Unable to open " + sto_file + " for reading!\n")
+        sys.exit(3)
+
+    line = sto_handler.readline()
+    while line:
+        line = line.strip()
+        if re.match("^[#|/].*", line):
+            # Skip the header (first line) as well as secondary structure lines
+            pass
+        elif not line:
+            pass
+        else:
+            try:
+                seq_name, sequence = line.split()
+            except ValueError:
+                logging.error("Unexpected line format in " + sto_file + ":\n" + line + "\n")
+                sys.exit(3)
+
+            if seq_name not in seq_dict:
+                seq_dict[seq_name] = ""
+            seq_dict[seq_name] += re.sub('\.', '-', sequence.upper())
+        line = sto_handler.readline()
+
+    return seq_dict
 
 
 def parse_blast_results(args, blast_tables, cog_list):
