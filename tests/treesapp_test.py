@@ -18,8 +18,24 @@ def create_parser(treesapp, targets, reftree):
     args.check_trees = False
     args.fasta_input = 'test_data/marker_test_suite.faa'
     args.output = '/home/travis/build/hallamlab/marker_test/'
+    args.output_dir_var = '/home/travis/build/hallamlab/marker_test/various_outputs'
     args.skip = 'n'
     args.molecule = 'prot'
+    args.executables = {'BMGE.jar': '/home/ace/github/TreeSAPP/sub_binaries/BMGE.jar', 'hmmalign': '/usr/bin/hmmalign', 'usearch': '/home/ace/github/TreeSAPP/sub_binaries/usearch', 'hmmsearch': '/usr/bin/hmmsearch', 'trimal': '/usr/bin/trimal', 'raxmlHPC': '/usr/bin/raxmlHPC', 'hmmbuild': '/usr/bin/hmmbuild', 'prodigal': '/usr/local/bin/prodigal', 'papara': '/usr/bin/papara'}
+    args.reference_data_prefix=''
+    args.num_threads = 3
+    args.output_dir_final = '/home/ace/marker_test/final_outputs/'
+    args.formatted_input_file = ''
+    args.composition = 'meta'
+    args.overwrite = True
+    args.delete = False
+    args.reclassify = False
+    args.min_e = 0.0001
+    args.min_acc = 0.7
+    args.min_likelihood = 0.2
+    args.min_seq_length = 30
+    args.perc_aligned = 15
+
     return args
 
 class TreeSAPPTest(unittest.TestCase):
@@ -46,18 +62,19 @@ class TreeSAPPTest(unittest.TestCase):
     def test_extract_hmm_matches(self):
         args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
         args.formatted_input_file = args.output_dir_var + args.fasta_input + "_formatted.fasta"
-        marker_build_dict = fasta.parse_ref_build_params(args)
-        marker_build_dict = fasta.parse_cog_list(args, marker_build_dict)
+        marker_build_dict = treesapp.parse_ref_build_params(args)
+        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
         formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
 
         fasta.write_new_fasta(formatted_fasta_dict, args.formatted_input_file)
 
         hmm_domtbl_files = treesapp.hmmsearch_orfs(args, marker_build_dict)
         hmm_matches = treesapp.parse_domain_tables(args, hmm_domtbl_files)
+        assert(len(hmm_matches['McrA']) == 12)
         homolog_seq_files, numeric_contig_index = treesapp.extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
 
 
-        assert(homolog_seq_files == '/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified_group0.faa')
+        assert(homolog_seq_files == ['/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified_group0.faa'])
         assert('McrA' in numeric_contig_index.keys())
         assert(len(numeric_contig_index['McrA']) == 12)
         assert(numeric_contig_index['McrA'].keys() == [-12, -2, -10, -9, -8, -7, -6, -5, -4, -3, -1, -11])
