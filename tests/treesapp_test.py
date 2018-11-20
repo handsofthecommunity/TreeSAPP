@@ -21,7 +21,7 @@ def create_parser(treesapp, targets, reftree):
     args.output_dir_var = '/home/travis/build/hallamlab/marker_test/various_outputs'
     args.skip = 'n'
     args.molecule = 'prot'
-    args.executables = {'BMGE.jar': '/home/ace/github/TreeSAPP/sub_binaries/BMGE.jar', 'hmmalign': '/usr/bin/hmmalign', 'usearch': '/home/ace/github/TreeSAPP/sub_binaries/usearch', 'hmmsearch': '/usr/bin/hmmsearch', 'trimal': '/usr/bin/trimal', 'raxmlHPC': '/usr/bin/raxmlHPC', 'hmmbuild': '/usr/bin/hmmbuild', 'prodigal': '/usr/local/bin/prodigal', 'papara': '/usr/bin/papara'}
+    args.executables = {'BMGE.jar': '/home/travis/build/hallamlab/TreeSAPP/sub_binaries/BMGE.jar', 'hmmalign': '/usr/bin/hmmalign', 'usearch': '/home/ace/github/TreeSAPP/sub_binaries/usearch', 'hmmsearch': '/usr/bin/hmmsearch', 'trimal': '/usr/bin/trimal', 'raxmlHPC': '/usr/bin/raxmlHPC', 'hmmbuild': '/usr/bin/hmmbuild', 'prodigal': '/usr/local/bin/prodigal', 'papara': '/usr/bin/papara'}
     args.reference_data_prefix=''
     args.num_threads = 3
     args.output_dir_final = '/home/ace/marker_test/final_outputs/'
@@ -72,10 +72,16 @@ class TreeSAPPTest(unittest.TestCase):
         hmm_matches = treesapp.parse_domain_tables(args, hmm_domtbl_files)
         assert(len(hmm_matches['McrA']) == 12)
         homolog_seq_files, numeric_contig_index = treesapp.extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
-
-
+        
         assert(homolog_seq_files == ['/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified_group0.faa'])
         assert('McrA' in numeric_contig_index.keys())
         assert(len(numeric_contig_index['McrA']) == 12)
         assert(numeric_contig_index['McrA'].keys() == [-12, -2, -10, -9, -8, -7, -6, -5, -4, -3, -1, -11])
 
+        #---------------------------------------------------------------------------------
+        args = create_parser('~', 'ALL', 'p')
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.hmmsearch_orfs(args, marker_build_dict)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
+        

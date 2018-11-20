@@ -77,3 +77,4 @@ class ParserTest(unittest.TestCase):
         assert(tree_numbers_translation['M0701'][0].number == '1')
         assert(tree_numbers_translation['M0701'][0].description == "NM4 | NM423249334157")
 
+
