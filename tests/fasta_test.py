@@ -63,6 +63,3 @@ class FastaTests(unittest.TestCase):
     def test_get_header_format(self):
         assert(True)
 
-    def test_deduplicate_fasta_sequences(self):
-        fasta_dict = fasta.read_fasta_to_dict('/home/build/travis/hallamlab/TreeSAPP/tests/dup_fasta.fa')
-        fasta_dict = fasta.deduplicate_fasta_sequences(fasta_dict)
