@@ -3,7 +3,7 @@ import unittest
 import os
 import argparse
 
-import treesapp_test
+import ./treesapp_test
 
 import sys, inspect
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
