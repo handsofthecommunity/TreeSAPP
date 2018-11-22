@@ -20,6 +20,7 @@ before_install:
 
 install:
     - pip install -r requirements.txt
+    - pip install pytest-cov
 
 before_script:
     - cd /home/travis/build/hallamlab/TreeSAPP/sub_binaries; cp usearch /usr/bin; cd ../; make; make install
