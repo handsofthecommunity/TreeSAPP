@@ -26,7 +26,9 @@ before_script:
     - cd /home/travis/build/hallamlab/TreeSAPP/sub_binaries; cp usearch /usr/bin; cd ../; make; make install
     
 script:
-    - py.test -vv --cov-report term --cov=./ tests/
+    - py.test -vv --cov-report term --cov=./ tests/ > cov_log.txt
+    - pytest -vv >> cov_log.txt
+    - cat cov_log.txt
 
 #whitelist
 branches:
