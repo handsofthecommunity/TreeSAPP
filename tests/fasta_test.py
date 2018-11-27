@@ -7,7 +7,7 @@ import sys, inspect
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
 import fasta
 
-TEST_DATA_PATH='/home/build/travis/hallamlab/TreeSAPP/tests/test_data'
+TEST_DATA_PATH='/home/travis/build/hallamlab/TreeSAPP/tests/test_data'
 
 
 def create_parser(treesapp, targets, reftree):
@@ -90,4 +90,20 @@ class FastaTests(unittest.TestCase):
 
     def test_get_header_format(self):
         assert(True)
+
+    def test_deduplicate(self):
+        fasta_dict = fasta.read_fasta_to_dict(TEST_DATA_PATH + "/dup_fasta.fa")
+        fasta_dict = fasta.deduplicate_fasta_sequences(fasta_dict)
+
+        for i in range(0, len(results)):
+            assert(results[i][0] in fasta_dict.keys())
+            assert(results[i][1] in fasta_dict.values())
+
+        
+        fasta_dict = fasta.read_fasta_to_dict(TEST_DATA_PATH + "/short_fasta.fa")
+        fasta_dict = fasta.deduplicate_fasta_sequences(fasta_dict)
+
+        for i in range(0, len(results)):
+            assert(results[i][0] in fasta_dict.keys())
+            assert(results[i][1] in fasta_dict.values())
 
