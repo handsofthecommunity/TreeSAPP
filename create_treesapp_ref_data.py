@@ -16,7 +16,7 @@ try:
 
     from time import gmtime, strftime, sleep
 
-    from utilities import os_type, is_exe, which, find_executables, reformat_string, return_sequence_info_groups,\
+    from utilities import os_type, which, find_executables, reformat_string, return_sequence_info_groups,\
         reformat_fasta_to_phy, write_phy_file, cluster_sequences
     from fasta import format_read_fasta, get_headers, get_header_format, write_new_fasta, summarize_fasta_sequences,\
         trim_multiple_alignment, read_fasta_to_dict
@@ -27,7 +27,7 @@ try:
     from entrez_utils import get_multiple_lineages, get_lineage_robust, verify_lineage_information,\
         read_accession_taxa_map, write_accession_lineage_map, build_entrez_queries
     from file_parsers import parse_domain_tables, read_phylip_to_dict, read_uc
-    from placement_trainer import train_placement_distances
+    from placement_trainer import regress_rank_distance
 
 except ImportError:
     sys.stderr.write("Could not load some user defined module functions:\n")
@@ -1084,10 +1084,10 @@ def update_build_parameters(args, code_name, sub_model, lowest_reliable_rank, po
     Function to update the data/tree_data/ref_build_parameters.tsv file with information on this new reference sequence
     Format of file is:
      "code_name    denominator    molecule    aa_model    cluster_identity    slope    intercept    last_updated"
-    
+
     :param args: command-line arguments objects
-    :param code_name: 
-    :param sub_model:
+    :param code_name: code_name from the command-line parameters
+    :param sub_model: substitution model used for building the tree
     :param polynomial_fit_array:
     :param lowest_reliable_rank:
     :return: 
@@ -1119,7 +1119,8 @@ def terminal_commands(final_output_folder, code_name):
                  "in data/tree_data/cog_list.tsv and data/tree_data/ref_build_parameters.tsv\n" +
                  "2. $ cp " + final_output_folder + os.sep + "tax_ids_%s.txt" % code_name + " data/tree_data/\n" +
                  "3. $ cp " + final_output_folder + os.sep + code_name + "_tree.txt data/tree_data/\n" +
-                 "4. $ cp " + final_output_folder + os.sep + code_name + ".hmm data/hmm_data/\n")
+                 "4. $ cp " + final_output_folder + os.sep + code_name + ".hmm data/hmm_data/\n" +
+                 "5. $ cp " + final_output_folder + os.sep + code_name + ".fa data/alignment_data/\n")
     return
 
 
@@ -1180,7 +1181,6 @@ def construct_tree(args, multiple_alignment_file, tree_output_dir):
         with open(tree_output_dir + os.sep + "FastTree_info." + args.code_name, 'w') as fast_info:
             fast_info.write(stdout + "\n")
     else:
-
         logging.info("Building phylogenetic tree with RAxML... ")
         stdout, returncode = launch_write_command(tree_build_cmd, False)
     logging.info("done.\n")
@@ -1464,19 +1464,15 @@ def main():
     # Optionally cluster the input sequences using USEARCH at the specified identity
     ##
     if args.cluster:
-        logging.info("Clustering sequences with UCLUST... ")
-        cluster_sequences(args, filtered_fasta_name, uclust_prefix, args.identity)
-        logging.info("done.\n")
-        args.fasta_input = clustered_fasta
+        cluster_sequences(args.executables["usearch"], filtered_fasta_name, uclust_prefix, args.identity)
         args.uc = clustered_uc
-        cluster_fasta_dict = format_read_fasta(clustered_fasta, args.molecule, args.output_dir)
-        logging.debug("\t" + str(len(cluster_fasta_dict.keys())) + " sequence clusters\n")
 
     ##
     # Read the uc file if present
     ##
     if args.uc:
         cluster_dict = read_uc(args.uc)
+        logging.debug("\t" + str(len(cluster_dict.keys())) + " sequence clusters\n")
         ##
         # Calculate LCA of each cluster to represent the taxonomy of the representative sequence
         ##
@@ -1687,13 +1683,10 @@ def main():
                                 fasta_replace_dict,
                                 tree_output_dir + os.sep + "RAxML_bipartitions." + code_name)
         model = find_model_used(tree_output_dir + os.sep + "RAxML_info." + code_name)
-    pfit_array, _, _ = train_placement_distances(unprocessed_fasta_dict,
-                                                 aligned_fasta_dict,
-                                                 args.final_output_dir + args.code_name + "_tree.txt",
-                                                 tree_taxa_list,
-                                                 accession_lineage_map,
-                                                 args.molecule,
-                                                 args.executables)
+    pfit_array, _, _ = regress_rank_distance(args,
+                                             args.final_output_dir + args.code_name + "_tree.txt", tree_taxa_list,
+                                             accession_lineage_map,
+                                             aligned_fasta_dict)
     update_build_parameters(args, code_name, model, lowest_reliable_rank, pfit_array)
 
     logging.info("Data for " + code_name + " has been generated successfully.\n")

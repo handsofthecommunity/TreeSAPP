@@ -39,23 +39,6 @@ class MarkerBuild:
         self.kind = ""
         self.pfit = []
 
-    def load_rank_distances(self, build_param_line):
-        build_param_fields = build_param_line.split("\t")
-        ranks = {1: "Phylum", 2: "Class", 3: "Order", 4: "Family", 5: "Genus", 6: "Species"}
-        field = 5
-        rank = 2
-        while field < 10:
-            dist_field = build_param_fields[field]
-            range = dist_field.split(',')
-            if len(range) != 2:
-                self.distances = {}
-                return 1
-            else:
-                self.distances[ranks[rank]] = tuple(float(x) for x in range)
-            field += 1
-            rank += 1
-        return 0
-
     def load_pfit_params(self, build_param_line):
         build_param_fields = build_param_line.split("\t")
         if build_param_fields[5]:
@@ -458,7 +441,7 @@ class ItolJplace:
         """
         nodes = list()
         for d_place in self.placements:
-            if type(d_place) == str:
+            if isinstance(d_place, str):
                 for k, v in loads(d_place).items():
                     if k == 'p':
                         for pquery in v:
@@ -478,7 +461,7 @@ class ItolJplace:
         new_placement_collection = []  # a list of dictionary-like strings
         placement_string = ""  # e.g. {"p":[[226, -31067.028237, 0.999987, 0.012003, 2e-06]], "n":["query"]}
         for d_place in self.placements:
-            if type(d_place) != str:
+            if not isinstance(d_place, str):
                 dict_strings = list()  # e.g. "n":["query"]
                 for k, v in d_place.items():
                     dict_strings.append(dumps(k) + ':' + dumps(v))
@@ -736,9 +719,9 @@ class ItolJplace:
         return
 
     def clear_object(self):
-        placements = list()
-        fields = list()
-        node_map = dict()
+        self.placements.clear()
+        self.fields.clear()
+        self.node_map.clear()
         self.contig_name = ""
         self.name = ""
         self.tree = ""
@@ -1166,3 +1149,38 @@ class TaxonTest:
         self.distances = dict()
         self.assignments = dict()
         self.taxonomic_tree = None
+
+    def summarise_taxon_test(self):
+        summary_string = "Test for taxonomic lineage '" + self.lineage + "':\n" + \
+                         "\tNumber of query sequences = " + str(len(self.queries)) + "\n" + \
+                         "\tNumber of classified queries = " + str(len(self.classifieds)) + "\n"
+        if self.assignments:
+            for marker in self.assignments:
+                summary_string += "Sequences classified as marker '" + marker + "':\n"
+                for lineage in self.assignments[marker]:
+                    summary_string += str(len(self.assignments[marker][lineage])) + "\t'" + lineage + "'\n"
+        return summary_string
+
+    def filter_assignments(self, target_marker):
+        """
+        Filters the assignments from TreeSAPP for the target marker.
+        Off-target classifications are accounted for and reported.
+        TaxonTest.classifieds only include the headers of the correctly annotated sequences
+        :param target_marker:
+        :return:
+        """
+        off_targets = dict()
+        for marker in self.assignments:
+            for lineage in self.assignments[marker]:
+                classifieds = self.assignments[marker][lineage]
+                if marker == target_marker:
+                    self.classifieds += classifieds
+                else:
+                    if marker not in off_targets:
+                        off_targets[marker] = list()
+                    off_targets[marker] += classifieds
+        if off_targets:
+            for marker in off_targets:
+                logging.warning(str(len(off_targets)) + " sequences were classified as " + marker + ":\n" +
+                                "\t\n".join(off_targets[marker]) + "\n")
+        return
