@@ -28,6 +28,7 @@ before_script:
 script:
     - py.test -vv --cov-report term --cov=./ tests/ 
     - pytest -vv
+    - py.test -vv --cov-report term-missing --cov=./ tests/treesapp_test.py
     
 #whitelist
 branches:
