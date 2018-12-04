@@ -26,7 +26,8 @@ install:
 
 before_script:
     - cd /home/travis/build/hallamlab/TreeSAPP/sub_binaries; cp usearch /usr/bin; cd ../; make; make install
-    
+    - rm -rf .cache/
+    - rm -rf .pytest_cache/
 script:
     - py.test -vv --cov-report term --cov=./ tests/ 
     - pytest -vv
