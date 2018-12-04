@@ -170,10 +170,7 @@ class TreeSAPPTest(unittest.TestCase):
             assert pytest_wrapped_e.value.code == 3
 
 
-
-            
-   def test_filter_multiple_alignments(self):
-
+    def test_filter_multiple_alignments(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
 
         marker_build_dict = treesapp.parse_ref_build_params(args)
@@ -223,10 +220,8 @@ class TreeSAPPTest(unittest.TestCase):
 
         empty_mfa_file = dict()
         empty_mfa_file.update({'M0701' : [HOME_DIR + 'tests/test_data/empty.fasta']})
-            
+        
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             treesapp.check_for_removed_sequences(args, empty_mfa_file, marker_build_dict)
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 3
-
-
