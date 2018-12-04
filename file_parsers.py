@@ -90,11 +90,11 @@ def parse_cog_list(args, marker_build_dict):
             if denominator == ref_code:
                 marker_build_dict[denominator].description = description
                 if description == "phylogenetic_cogs":
-                    marker_build_dict[denominator].kind = "phylogenetic_cogs"
+                    marker_build_dict[denominator].kind = "phylogenetic"
                 elif description == "rRNA_marker":
-                    marker_build_dict[denominator].kind = "phylogenetic_rRNA_cogs"
+                    marker_build_dict[denominator].kind = "phylogenetic_rRNA"
                 else:
-                    marker_build_dict[denominator].kind = "functional_cogs"
+                    marker_build_dict[denominator].kind = "functional"
 
     if args.reftree not in ['i', 'g', 'p'] and args.reftree not in marker_build_dict.keys():
         logging.error(args.reftree + " not found in " + cog_list_file + "! Please use a valid reference tree ID!\n")
@@ -788,7 +788,8 @@ def read_uc(uc_file):
     Function to read a USEARCH cluster (.uc) file
 
     :param uc_file: Path to a .uc file produced by USEARCH
-    :return: Dictionary where keys are representative cluster headers and the values are headers of identical sequences
+    :return: Dictionary where keys are numerical identifiers and values are Cluster objects
+        The Cluster object
     """
     cluster_dict = dict()
     rep_len_map = dict()

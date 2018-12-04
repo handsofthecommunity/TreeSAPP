@@ -20,7 +20,8 @@ try:
         reformat_fasta_to_phy, write_phy_file, cluster_sequences
     from fasta import format_read_fasta, get_headers, get_header_format, write_new_fasta, summarize_fasta_sequences,\
         trim_multiple_alignment, read_fasta_to_dict
-    from classy import ReferenceSequence, Header, Cluster, prep_logging, register_headers, get_header_info
+    from classy import ReferenceSequence, ReferencePackage, Header, Cluster,\
+        prep_logging, register_headers, get_header_info
     from external_command_interface import launch_write_command
     from entish import annotate_partition_tree
     from lca_calculations import megan_lca, lowest_common_taxonomy, clean_lineage_list
@@ -220,8 +221,7 @@ def generate_cm_data(args, unaligned_fasta):
     :param unaligned_fasta:
     :return:
     """
-    sys.stdout.write("Running cmalign to build Stockholm file with secondary structure annotations... ")
-    sys.stdout.flush()
+    logging.info("Running cmalign to build Stockholm file with secondary structure annotations... ")
 
     cmalign_base = [args.executables["cmalign"],
                     "--mxsize", str(3084),
@@ -237,9 +237,8 @@ def generate_cm_data(args, unaligned_fasta):
         logging.error("cmalign did not complete successfully for:\n" + ' '.join(cmalign_sto) + "\n")
         sys.exit(13)
 
-    sys.stdout.write("done.\n")
-    sys.stdout.write("Running cmbuild... ")
-    sys.stdout.flush()
+    logging.info("done.\n")
+    logging.info("Running cmbuild... ")
 
     # Build the CM
     cmbuild_command = [args.executables["cmbuild"]]
@@ -249,22 +248,20 @@ def generate_cm_data(args, unaligned_fasta):
     stdout, cmbuild_pro_returncode = launch_write_command(cmbuild_command)
 
     if cmbuild_pro_returncode != 0:
-        sys.stderr.write("ERROR: cmbuild did not complete successfully for:\n")
-        sys.stderr.write(' '.join(cmbuild_command) + "\n")
+        logging.error("cmbuild did not complete successfully for:\n" +
+                      ' '.join(cmbuild_command) + "\n")
         sys.exit(13)
     os.rename(args.code_name + ".cm", args.final_output_dir + os.sep + args.code_name + ".cm")
     if os.path.isfile(args.final_output_dir + os.sep + args.code_name + ".sto"):
-        sys.stderr.write("WARNING: overwriting " + args.final_output_dir + os.sep + args.code_name + ".sto")
-        sys.stderr.flush()
+        logging.warning("Overwriting " + args.final_output_dir + os.sep + args.code_name + ".sto\n")
         os.remove(args.final_output_dir + os.sep + args.code_name + ".sto")
     shutil.move(args.code_name + ".sto", args.final_output_dir)
 
-    sys.stdout.write("done.\n")
-    sys.stdout.write("Running cmalign to build MSA... ")
-    sys.stdout.flush()
+    logging.info("done.\n")
+    logging.info("Running cmalign to build MSA... ")
 
     # Generate the aligned FASTA file which will be used to build the BLAST database and tree with RAxML
-    aligned_fasta = args.code_name + ".fc.repl.aligned.fasta"
+    aligned_fasta = args.code_name + ".fa"
     cmalign_afa = cmalign_base + ["--outformat", "Phylip"]
     cmalign_afa += ["-o", args.code_name + ".phy"]
     cmalign_afa += [args.rfam_cm, unaligned_fasta]
@@ -272,24 +269,31 @@ def generate_cm_data(args, unaligned_fasta):
     stdout, cmalign_pro_returncode = launch_write_command(cmalign_afa)
 
     if cmalign_pro_returncode != 0:
-        sys.stderr.write("ERROR: cmalign did not complete successfully for:\n")
-        sys.stderr.write(' '.join(cmalign_afa) + "\n")
+        logging.error("cmalign did not complete successfully for:\n" + ' '.join(cmalign_afa) + "\n")
         sys.exit(13)
 
     # Convert the Phylip file to an aligned FASTA file for downstream use
     seq_dict = read_phylip_to_dict(args.code_name + ".phy")
     write_new_fasta(seq_dict, aligned_fasta)
 
-    sys.stdout.write("done.\n")
-    sys.stdout.flush()
+    logging.info("done.\n")
 
     return aligned_fasta
 
 
-def run_mafft(args, fasta_in, fasta_out):
-    mafft_align_command = [args.executables["mafft"]]
+def run_mafft(mafft_exe: str, fasta_in: str, fasta_out: str, num_threads):
+    """
+    Wrapper function for the MAFFT multiple sequence alignment tool.
+    Runs MAFFT using `--auto` and checks if the output is empty.
+    :param mafft_exe: Path to the executable for mafft
+    :param fasta_in: An unaligned FASTA file
+    :param fasta_out: The path to a file MAFFT will write aligned sequences to
+    :param num_threads: Integer (or string) for the number of threads MAFFT can use
+    :return:
+    """
+    mafft_align_command = [mafft_exe]
     mafft_align_command += ["--maxiterate", str(1000)]
-    mafft_align_command += ["--thread", str(args.num_threads)]
+    mafft_align_command += ["--thread", str(num_threads)]
     mafft_align_command.append("--auto")
     mafft_align_command += [fasta_in, '1>' + fasta_out]
     mafft_align_command += ["2>", "/dev/null"]
@@ -297,26 +301,34 @@ def run_mafft(args, fasta_in, fasta_out):
     stdout, mafft_proc_returncode = launch_write_command(mafft_align_command, False)
 
     if mafft_proc_returncode != 0:
-        logging.error("Multiple sequence alignment using " + args.executables["mafft"] +
+        logging.error("Multiple sequence alignment using " + mafft_exe +
                       " did not complete successfully! Command used:\n" + ' '.join(mafft_align_command) + "\n")
         sys.exit(7)
+    else:
+        mfa = read_fasta_to_dict(fasta_out)
+        if len(mfa.keys()) < 1:
+            logging.error("MAFFT did not generate a proper FASTA file. " +
+                          "Check the output by running:\n" + ' '.join(mafft_align_command) + "\n")
+            sys.exit(7)
+
     return
 
 
-def run_odseq(args, fasta_in, outliers_fa):
-    odseq_command = [args.executables["OD-seq"]]
+def run_odseq(odseq_exe, fasta_in, outliers_fa, num_threads):
+    odseq_command = [odseq_exe]
     odseq_command += ["-i", fasta_in]
     odseq_command += ["-f", "fasta"]
     odseq_command += ["-o", outliers_fa]
     odseq_command += ["-m", "linear"]
     odseq_command += ["--boot-rep", str(1000)]
-    odseq_command += ["-t", str(args.num_threads)]
+    odseq_command += ["--threads", str(num_threads)]
+    odseq_command += ["--score", str(5)]
     odseq_command.append("--full")
 
     stdout, odseq_proc_returncode = launch_write_command(odseq_command)
 
     if odseq_proc_returncode != 0:
-        logging.error("Outlier detection using " + args.executables["OD-seq"] +
+        logging.error("Outlier detection using " + odseq_exe +
                       " did not complete successfully! Command used:\n" + ' '.join(odseq_command) + "\n")
         sys.exit(7)
 
@@ -809,10 +821,10 @@ def remove_duplicate_records(fasta_record_objects):
         logging.warning("Redundant accessions have been detected in your input FASTA.\n" +
                         "The duplicates have been removed leaving a single copy for further analysis.\n" +
                         "Please view the log file for the list of redundant accessions and their copy numbers.\n")
-        msg = "Redundant accessions found and copies:"
+        msg = "Redundant accessions found and copies:\n"
         for acc in accessions:
             if accessions[acc] > 1:
-                msg += "\n" + acc + "\t" + str(accessions[acc]) + "\n"
+                msg += "\t" + acc + "\t" + str(accessions[acc]) + "\n"
         logging.debug(msg)
     return nr_record_dict
 
@@ -1312,7 +1324,6 @@ def main():
 
     # Names of files to be created
     tree_output_dir = args.output_dir + args.code_name + "_phy_files" + os.sep
-    tree_taxa_list = args.final_output_dir + "tax_ids_%s.txt" % code_name
     accession_map_file = args.output_dir + os.sep + "accession_id_lineage_map.tsv"
     hmm_purified_fasta = args.output_dir + args.code_name + "_hmm_purified.fasta"
     filtered_fasta_name = args.output_dir + '.'.join(os.path.basename(args.fasta_input).split('.')[:-1]) + "_filtered.fa"
@@ -1320,9 +1331,12 @@ def main():
     clustered_fasta = uclust_prefix + ".fa"
     clustered_uc = uclust_prefix + ".uc"
     od_input = args.output_dir + "od_input.fasta"
-    ref_fasta_file = args.output_dir + code_name + "_ref.fa"  # FASTA file of unaligned reference sequences
-    aligned_ref_fasta = args.output_dir + code_name + ".fa"  # The FASTA file used for TreeSAPP and hmmbuild
+    unaln_ref_fasta = args.output_dir + code_name + "_ref.fa"  # FASTA file of unaligned reference sequences
     phylip_file = args.output_dir + args.code_name + ".phy"  # Used for building the phylogenetic tree with RAxML
+
+    # Gather all the final TreeSAPP reference files
+    ref_pkg = ReferencePackage()
+    ref_pkg.gather_package_files(args.code_name, args.final_output_dir, "flat")
 
     # TODO: Restore this functionality
     # if args.add_lineage:
@@ -1472,15 +1486,28 @@ def main():
     ##
     if args.uc:
         cluster_dict = read_uc(args.uc)
+
+        # Ensure the headers in cluster_dict have been reformatted if UC file was not generated internally
+        if not args.cluster:
+            members = list()
+            for num_id in cluster_dict:
+                cluster = cluster_dict[num_id]
+                cluster.representative = reformat_string(cluster.representative)
+                for member in cluster.members:
+                    header, identity = member
+                    members.append([reformat_string(header), identity])
+                cluster.members = members
+                members.clear()
         logging.debug("\t" + str(len(cluster_dict.keys())) + " sequence clusters\n")
         ##
         # Calculate LCA of each cluster to represent the taxonomy of the representative sequence
         ##
+        lineages = list()
         for cluster_id in sorted(cluster_dict, key=int):
             members = [cluster_dict[cluster_id].representative]
             # format of member list is: [header, identity, member_seq_length/representative_seq_length]
             members += [member[0] for member in cluster_dict[cluster_id].members]
-            lineages = list()
+            # Create a lineage list for all sequences in the cluster
             for num_id in fasta_record_objects:
                 if header_registry[num_id].formatted in members:
                     lineages.append(fasta_record_objects[num_id].lineage)
@@ -1495,6 +1522,7 @@ def main():
             #     for l in cleaned_lineages:
             #         print(l)
             #     print("LCA:", cluster_dict[cluster_id].lca)
+            lineages.clear()
     else:
         cluster_dict = None
 
@@ -1557,9 +1585,9 @@ def main():
     od_input_m = '.'.join(od_input.split('.')[:-1]) + ".mfa"
     od_output = args.output_dir + "outliers.fasta"
     # Perform MSA with MAFFT
-    run_mafft(args, od_input, od_input_m)
+    run_mafft(args.executables["mafft"], od_input, od_input_m, args.num_threads)
     # Run OD-seq on MSA to identify outliers
-    run_odseq(args, od_input_m, od_output)
+    run_odseq(args.executables["OD-seq"], od_input_m, od_output, args.num_threads)
     # Remove outliers from fasta_record_objects collection
     outlier_seqs = read_fasta_to_dict(od_output)
     outlier_names = list()
@@ -1583,11 +1611,11 @@ def main():
     # for num_id in sorted(fasta_replace_dict, key=int):
     #     fasta_replace_dict[num_id].get_info()
 
-    warnings = write_tax_ids(args, fasta_replace_dict, tree_taxa_list)
+    warnings = write_tax_ids(args, fasta_replace_dict, ref_pkg.lineage_ids)
     if warnings:
         logging.warning(warnings + "\n")
 
-    logging.info("Generated the taxonomic lineage map " + tree_taxa_list + "\n")
+    logging.info("Generated the taxonomic lineage map " + ref_pkg.lineage_ids + "\n")
     taxonomic_summary = summarize_reference_taxa(args, fasta_replace_dict)
     logging.info(taxonomic_summary)
     lowest_reliable_rank = estimate_taxonomic_redundancy(args, fasta_replace_dict)
@@ -1597,22 +1625,20 @@ def main():
     ##
 
     if args.multiple_alignment:
-        create_new_ref_fasta(ref_fasta_file, fasta_replace_dict, True)
+        create_new_ref_fasta(unaln_ref_fasta, fasta_replace_dict, True)
     else:
-        create_new_ref_fasta(ref_fasta_file, fasta_replace_dict)
+        create_new_ref_fasta(unaln_ref_fasta, fasta_replace_dict)
 
     if args.molecule == 'rrna':
-        aligned_ref_fasta = generate_cm_data(args, ref_fasta_file)
+        generate_cm_data(args, unaln_ref_fasta)
         args.multiple_alignment = True
     elif args.multiple_alignment is False:
         logging.info("Aligning the sequences using MAFFT... ")
-        run_mafft(args, ref_fasta_file, aligned_ref_fasta)
+        run_mafft(args.executables["mafft"], unaln_ref_fasta, ref_pkg.msa, args.num_threads)
         logging.info("done.\n")
-    elif args.multiple_alignment and args.molecule != "rrna":
-        aligned_ref_fasta = ref_fasta_file
     else:
         pass
-    aligned_fasta_dict = read_fasta_to_dict(aligned_ref_fasta)
+    aligned_fasta_dict = read_fasta_to_dict(ref_pkg.msa)
 
     ##
     # Build the HMM profile from the aligned reference FASTA file
@@ -1624,7 +1650,7 @@ def main():
         logging.info("Building HMM profile... ")
         hmm_build_command = [args.executables["hmmbuild"],
                              args.final_output_dir + code_name + ".hmm",
-                             aligned_ref_fasta]
+                             ref_pkg.msa]
         stdout, hmmbuild_pro_returncode = launch_write_command(hmm_build_command)
         logging.info("done.\n")
         logging.debug("\n### HMMBUILD ###\n\n" + stdout)
@@ -1639,7 +1665,7 @@ def main():
     dict_for_phy = dict()
     if args.trim_align:
         logging.info("Running BMGE... ")
-        trimmed_msa_file = trim_multiple_alignment(args.executables["BMGE.jar"], aligned_ref_fasta, args.molecule)
+        trimmed_msa_file = trim_multiple_alignment(args.executables["BMGE.jar"], ref_pkg.msa, args.molecule)
         logging.info("done.\n")
         trimmed_aligned_fasta_dict = read_fasta_to_dict(trimmed_msa_file)
         if len(trimmed_aligned_fasta_dict) == 0:
@@ -1651,6 +1677,7 @@ def main():
         else:
             for seq_name in aligned_fasta_dict:
                 dict_for_phy[seq_name.split('_')[0]] = trimmed_aligned_fasta_dict[seq_name]
+        os.remove(trimmed_msa_file)
     else:
         for seq_name in aligned_fasta_dict:
             dict_for_phy[seq_name.split('_')[0]] = aligned_fasta_dict[seq_name]
@@ -1658,20 +1685,16 @@ def main():
     write_phy_file(phylip_file, phy_dict)
 
     ##
-    # Build the tree using RAxML
+    # Build the tree using either RAxML or FastTree
     ##
     construct_tree(args, phylip_file, tree_output_dir)
 
-    if os.path.exists(ref_fasta_file):
-        os.remove(ref_fasta_file)
+    if os.path.exists(unaln_ref_fasta):
+        os.remove(unaln_ref_fasta)
     if os.path.exists(phylip_file + ".reduced"):
         os.remove(phylip_file + ".reduced")
     if os.path.exists(args.final_output_dir + "fasta_reader_log.txt"):
         os.remove(args.final_output_dir + "fasta_reader_log.txt")
-
-    # Move the FASTA file to the final output directory
-    shutil.copy(args.output_dir + code_name + ".fa", args.final_output_dir)
-    os.remove(args.output_dir + code_name + ".fa")
 
     if args.fast:
         if args.molecule == "prot":
@@ -1683,10 +1706,10 @@ def main():
                                 fasta_replace_dict,
                                 tree_output_dir + os.sep + "RAxML_bipartitions." + code_name)
         model = find_model_used(tree_output_dir + os.sep + "RAxML_info." + code_name)
-    pfit_array, _, _ = regress_rank_distance(args,
-                                             args.final_output_dir + args.code_name + "_tree.txt", tree_taxa_list,
-                                             accession_lineage_map,
-                                             aligned_fasta_dict)
+
+    ref_pkg.validate()
+    pfit_array, _, _ = regress_rank_distance(args, ref_pkg, accession_lineage_map, aligned_fasta_dict)
+    # TODO: Include the number of reference sequences in the file for updating with ReferencePackage.validate()
     update_build_parameters(args, code_name, model, lowest_reliable_rank, pfit_array)
 
     logging.info("Data for " + code_name + " has been generated successfully.\n")
@@ -1695,4 +1718,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
