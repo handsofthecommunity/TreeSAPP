@@ -88,15 +88,12 @@ def get_options():
                            help="Indicating whether the reads are paired-end (pe) or single-end (se)")
 
     update_tree = parser.add_argument_group('Update-tree options')
-    # treesapp_output uses the output argument
     # output will by treesapp_output/update_tree
     update_tree.add_argument("--update_tree", action="store_true", default=False,
                              help="Flag indicating the reference tree specified by `--reftree` "
                                   "is to be updated using the sequences found in TreeSAPP output")
     update_tree.add_argument("--uclust", required=False, default=False, action="store_true",
                              help="Cluster sequences that mapped to the reference tree prior to updating")
-    # update_tree.add_argument("--gap_removal", required=False, default=False, action="store_true",
-    #                          help="Remove minor gaps using Gblocks?")
     # update_tree.add_argument("-u", "--uclust_identity", required=False, default=0.97, type=float,
     #                          help="Sequence identity value to be used in uclust [DEFAULT = 0.97]")
     update_tree.add_argument("-a", "--alignment_mode", required=False, default='d', type=str, choices=['d', 'p'],
@@ -168,9 +165,6 @@ def check_parser_arguments(args):
     args.output_dir_raxml = args.output + 'final_RAxML_outputs' + os.sep
     args.output_dir_final = args.output + 'final_outputs' + os.sep
 
-    treesapp_dir = args.treesapp + os.sep + 'data' + os.sep
-    genewise_support = treesapp_dir + os.sep + 'genewise_support_files' + os.sep
-
     if args.num_threads > available_cpu_count():
         logging.warning("Number of threads specified is greater than those available! "
                         "Using maximum threads available (" + str(available_cpu_count()) + ")\n")
@@ -218,15 +212,13 @@ def check_previous_output(args):
                 args.skip = 'y'
                 workflows.append("updating")
             else:
-                sys.stderr.write("WARNING: update-tree impossible as " + args.output + " is missing input files.\n")
-                sys.stderr.flush()
+                logging.warning("Update-tree impossible as " + args.output + " is missing input files.\n")
         elif args.rpkm:
             if os.path.isfile(args.reads) and os.path.isfile(args.output_dir_final + os.sep + "marker_contig_map.tsv"):
                 args.skip = 'y'
                 workflows.append("calculating RPKM")
             else:
-                sys.stderr.write("WARNING: RPKM impossible as " + args.output + " is missing input files.\n")
-                sys.stderr.flush()
+                logging.warning("RPKM impossible as " + args.output + " is missing input files.\n")
         elif args.reclassify:
             if os.path.isdir(args.output_dir_var):
                 jplace_files = glob.glob(args.output_dir_var + os.sep + "*jplace")
@@ -234,8 +226,7 @@ def check_previous_output(args):
                     args.skip = 'y'
                     workflows.append("reclassifying")
                 else:
-                    sys.stderr.write("WARNING: reclassify impossible as " + args.output + " is missing input files.\n")
-                    sys.stderr.flush()
+                    logging.warning("reclassify impossible as " + args.output + " is missing input files.\n")
         else:
             # Warn user then remove all main output directories, leaving log in output
             logging.warning("Removing previous outputs in '" + args.output + "'. " +
@@ -414,6 +405,7 @@ def predict_orfs(args):
     sample_prefix = '.'.join(os.path.basename(args.fasta_input).split('.')[:-1])
     if args.num_threads > 1 and args.composition == "meta":
         # Split the input FASTA into num_threads files to run Prodigal in parallel
+        # TODO: low-priority - split into multiple files based on total sequence length rather than number of sequences
         input_fasta_dict = format_read_fasta(args.fasta_input, args.molecule, args.output)
         n_seqs = len(input_fasta_dict.keys())
         chunk_size = int(n_seqs / args.num_threads) + (n_seqs % args.num_threads)
@@ -2763,19 +2755,18 @@ def write_classified_nuc_sequences(tree_saps, nuc_orfs_formatted_dict, orf_nuc_f
 
 def align_reads_to_nucs(args, reference_fasta):
     """
-    Align the BLAST-predicted ORFs to the reads using BWA MEM
+    Align the predicted ORFs to the reads using BWA MEM
     :param args: Command-line argument object from get_options and check_parser_arguments
     :param reference_fasta: A FASTA file containing the sequences to be aligned to
     :return: Path to the SAM file
     """
-    input_multi_fasta = re.match(r'\A.*\/(.*)', args.fasta_input).group(1)
     rpkm_output_dir = args.output + "RPKM_outputs" + os.sep
     if not os.path.exists(rpkm_output_dir):
         try:
             os.makedirs(rpkm_output_dir)
         except OSError:
             if os.path.exists(rpkm_output_dir):
-                sys.stderr.write("WARNING: Overwriting files in " + rpkm_output_dir + ".\n")
+                logging.warning("Overwriting files in " + rpkm_output_dir + ".\n")
             else:
                 raise OSError("Unable to make " + rpkm_output_dir + "!\n")
 
@@ -2792,8 +2783,7 @@ def align_reads_to_nucs(args, reference_fasta):
     bwa_command += ["-t", str(args.num_threads)]
     if args.pairing == "pe" and not args.reverse:
         bwa_command.append("-p")
-        sys.stderr.write("FASTQ file containing reverse mates was not provided - assuming the reads are interleaved!\n")
-        sys.stderr.flush()
+        logging.debug("FASTQ file containing reverse mates was not provided - assuming the reads are interleaved!\n")
     elif args.pairing == "se":
         bwa_command += ["-S", "-P"]
 
@@ -2806,9 +2796,8 @@ def align_reads_to_nucs(args, reference_fasta):
     p_bwa = subprocess.Popen(' '.join(bwa_command), shell=True, preexec_fn=os.setsid)
     p_bwa.wait()
     if p_bwa.returncode != 0:
-        sys.stderr.write("ERROR: bwa mem did not complete successfully for:\n")
-        sys.stderr.write(str(' '.join(bwa_command)) + "\n")
-        sys.stderr.flush()
+        logging.error("bwa mem did not complete successfully for:\n" +
+                      str(' '.join(bwa_command)) + "\n")
 
     logging.info("done.\n")
 
@@ -2837,10 +2826,9 @@ def run_rpkm(args, sam_file, orf_nuc_fasta):
     p_rpkm = subprocess.Popen(' '.join(rpkm_command), shell=True, preexec_fn=os.setsid)
     p_rpkm.wait()
     if p_rpkm.returncode != 0:
-        sys.stderr.write("ERROR: RPKM calculation did not complete successfully for:\n")
-        sys.stderr.write(str(' '.join(rpkm_command)) + "\n")
-        sys.stderr.flush()
-
+        logging.error("RPKM calculation did not complete successfully for:\n" +
+                      str(' '.join(rpkm_command)) + "\n")
+        sys.exit(3)
     logging.info("done.\n")
 
     return rpkm_output_file
@@ -2862,20 +2850,16 @@ def summarize_placements_rpkm(args, rpkm_output_file, marker_build_dict):
     placement_rpkm_map = dict()
     marker_rpkm_map = dict()
 
-    try:
-        rpkm_values = open(rpkm_output_file, 'r')
-    except IOError:
-        raise IOError("Unable to open " + rpkm_output_file + " for reading!")
-    for line in rpkm_values:
-        contig, rpkm = line.strip().split(',')
-        name, marker = contig.split('|')
-
-        contig_rpkm_map[name] = rpkm
+    # Pull the RPKM values for each marker predicted; seq_name format is contig|marker
+    rpkm_values = read_rpkm(rpkm_output_file)
+    for seq_name in rpkm_values:
+        contig, marker = seq_name.split('|')
+        contig_rpkm_map[contig] = rpkm_values[seq_name]
         if marker not in marker_contig_map:
             marker_contig_map[marker] = list()
-        marker_contig_map[marker].append(name)
-    rpkm_values.close()
+        marker_contig_map[marker].append(contig)
 
+    # Identify the internal node each sequence was placed, used for
     final_raxml_outputs = os.listdir(args.output_dir_raxml)
     for raxml_contig_file in final_raxml_outputs:
         contig_name = '_'.join(re.sub("_RAxML_parsed.txt", '', raxml_contig_file).split('_')[1:])
@@ -3113,54 +3097,26 @@ def create_itol_labels(args, marker):
     return
 
 
-def read_rpkm(rpkm_output_file):
-    """
-    Simply read a csv - returning non-zero floats mapped to contig names
-    :param rpkm_output_file:
-    :return:
-    """
-    rpkm_values = dict()
-
-    try:
-        rpkm_stats = open(rpkm_output_file)
-    except IOError:
-        sys.stderr.write("Unable to open " + rpkm_output_file + " for reading! Exiting now...\n")
-        sys.stderr.flush()
-        sys.exit(-9)
-
-    for line in rpkm_stats:
-        f_contig, rpkm = line.strip().split(',')
-        if float(rpkm) > 0:
-            contig, c_marker = f_contig.split('|')
-            if c_marker not in rpkm_values:
-                rpkm_values[c_marker] = dict()
-            rpkm_values[c_marker][contig] = float(rpkm)
-    rpkm_stats.close()
-    return rpkm_values
-
-
-def generate_simplebar(args, rpkm_output_file, marker, tree_protein_list):
+def generate_simplebar(target_marker, tree_protein_list, itol_bar_file, all_rpkm_values=None):
     """
     From the basic RPKM output csv file, generate an iTOL-compatible simple bar-graph file for each leaf
 
-    :param args: Command-line argument object from get_options and check_parser_arguments
-    :param rpkm_output_file:
-    :param marker:
+    :param all_rpkm_values: A dictionary mapping seq_names to RPKM floats
+    :param target_marker:
     :param tree_protein_list: A list of TreeProtein objects, for single sequences
+    :param itol_bar_file: The name of the file to write the simple-bar data for iTOL
     :return:
     """
+    rpkm_values = dict()
     leaf_rpkm_sums = dict()
-    itol_rpkm_file = args.output + "iTOL_output" + os.sep + marker + os.sep + marker + "_abundance_simplebar.txt"
 
-    if args.rpkm:
-        all_rpkm_values = read_rpkm(rpkm_output_file)
-        # Filter out RPKMs for contigs not associated with the marker of interest
-        if marker in all_rpkm_values:
-            rpkm_values = all_rpkm_values[marker]
-        else:
-            rpkm_values = dict()
+    if all_rpkm_values:
+        for seq_name in all_rpkm_values:
+            contig, marker = seq_name.split('|')
+            # Filter out RPKMs for contigs not associated with the target marker
+            if target_marker == marker:
+                rpkm_values[contig] = all_rpkm_values[seq_name]
     else:
-        rpkm_values = dict()
         for tree_sap in tree_protein_list:
             rpkm_values[tree_sap.contig_name] = 1.0
 
@@ -3175,9 +3131,9 @@ def generate_simplebar(args, rpkm_output_file, marker, tree_protein_list):
     # Only make the file if there is something to write
     if len(leaf_rpkm_sums.keys()) > 0:
         try:
-            itol_rpkm_out = open(itol_rpkm_file, 'w')
+            itol_rpkm_out = open(itol_bar_file, 'w')
         except IOError:
-            logging.error("Unable to open " + itol_rpkm_file + " for writing.\n")
+            logging.error("Unable to open " + itol_bar_file + " for writing.\n")
             sys.exit(3)
 
         # Write the header
@@ -3240,6 +3196,9 @@ def filter_placements(args, tree_saps, marker_build_dict, unclassified_counts):
     :param unclassified_counts: A dictionary tracking the number of putative markers that were not classified
     :return:
     """
+
+    logging.debug("Filtering low-quality placements.\n")
+
     for denominator in tree_saps:
         tree = Tree(os.sep.join([args.treesapp, "data", "tree_data", marker_build_dict[denominator].cog + "_tree.txt"]))
         distant_seqs = list()
@@ -3288,6 +3247,7 @@ def filter_placements(args, tree_saps, marker_build_dict, unclassified_counts):
                 continue
 
             # Estimate the branch lengths of the clade to factor heterogeneous substitution rates
+            # TODO: Improve the algorithms in find_cluster and compilation of clade_tip_distances
             ancestor = find_cluster(parent)
             clade_tip_distances = list()
             for leaf in ancestor.get_leaf_names():
@@ -3303,6 +3263,8 @@ def filter_placements(args, tree_saps, marker_build_dict, unclassified_counts):
                       " " + marker_build_dict[denominator].cog + " sequence(s) detected but not classified.\n" +
                       marker_build_dict[denominator].cog + " queries with extremely long placement distances:\n\t" +
                       "\n\t".join(distant_seqs) + "\n")
+
+    logging.debug("Completed filtering of low-quality placements.\n")
 
     return tree_saps
 
@@ -3489,10 +3451,15 @@ def produce_itol_inputs(args, tree_saps, marker_build_dict, itol_data, rpkm_outp
     :param rpkm_output_file:
     :return:
     """
+    logging.debug("Generating inputs for iTOL... ")
+    
     itol_base_dir = args.output + 'iTOL_output' + os.sep
     if not os.path.exists(itol_base_dir):
         os.mkdir(itol_base_dir)  # drwxr-xr-x
     # Now that all the JPlace files have been loaded, generate the abundance stats for each marker
+    
+    strip_missing = []
+    style_missing = []
     for denominator in tree_saps:
         if len(tree_saps[denominator]) == 0:
             # No sequences that were mapped met the minimum likelihood weight ration threshold. Skipping!
@@ -3518,17 +3485,26 @@ def produce_itol_inputs(args, tree_saps, marker_build_dict, itol_data, rpkm_outp
         colours_styles = os.sep.join([args.treesapp, "data", "iTOL_datasets", marker + "_colours_style.txt"])
         colour_strip = os.sep.join([args.treesapp, "data", "iTOL_datasets", marker + "_colour_strip.txt"])
         if colours_styles not in annotation_style_files:
-            logging.debug("A colours_style.txt file does not yet exist for marker " + marker + "\n")
+            style_missing.append(marker)
         if colour_strip not in annotation_style_files:
-            logging.debug("A colour_strip.txt file does not yet exist for marker " + marker + "\n")
+            strip_missing.append(marker)
 
         for annotation_file in annotation_style_files:
             shutil.copy(annotation_file, itol_base_dir + marker)
+        itol_bar_file = os.sep.join([args.output, "iTOL_output", marker, marker + "_abundance_simplebar.txt"])
+        if args.rpkm:
+            all_rpkm_values = read_rpkm(rpkm_output_file)
+            generate_simplebar(marker, tree_saps[denominator], itol_bar_file, all_rpkm_values)
+        else:
+            generate_simplebar(marker, tree_saps[denominator], itol_bar_file)
 
-        generate_simplebar(args,
-                           rpkm_output_file,
-                           marker,
-                           tree_saps[denominator])
+    logging.debug("done.\n")
+    if style_missing:
+        logging.debug("A colours_style.txt file does not yet exist for markers:\n\t" + 
+                      "\n\t".join(style_missing) + "\n")
+    if strip_missing:
+        logging.debug("A colours_strip.txt file does not yet exist for markers:\n\t" +
+                      "\n\t".join(strip_missing) + "\n")
 
     return
 
