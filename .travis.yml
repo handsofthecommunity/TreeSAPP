@@ -23,11 +23,11 @@ install:
 
 before_script:
     - cd /home/travis/build/hallamlab/TreeSAPP/sub_binaries; cp usearch /usr/bin; cd ../; make; make install
-    
-script:
-    - pytest
 
-#whitelist
+script:
+    - py.test -vv --cov-report term --cov=./ tests/
+    - pytest -vv
+
 branches:
   only:
     - travis

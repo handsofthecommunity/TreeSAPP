@@ -20,10 +20,89 @@ from entrez_utils import get_lineage
 import _tree_parser
 
 
+class ReferencePackage:
+    def __init__(self):
+        self.prefix = ""
+        self.msa = ""
+        self.profile = ""
+        self.tree = ""
+        self.boot_tree = ""
+        self.lineage_ids = ""
+        self.core_ref_files = list()
+        self.num_seqs = 0
+
+    def validate(self, num_ref_seqs=None):
+        """
+        Function that ensures the number of sequences is equal across all files and that in the ref_build_parameters.tsv
+        :return: Boolean
+        """
+        # Check to ensure all files exist
+        for ref_file in self.core_ref_files:
+            if not os.path.isfile(ref_file):
+                logging.error("File '" + ref_file + "' does not exist for reference package: " + self.prefix + "\n")
+                sys.exit(17)
+        # TODO: Compare the number of sequences in the multiple sequence alignment
+        # TODO: Compare the number of sequences in the Hidden-Markov model
+        # TODO: Compare the number of sequences in the Tree files
+        # TODO: Compare the number of sequences in the tax_ids file
+        return True
+
+    def gather_package_files(self, ref_name: str, pkg_path: str, pkg_format="hierarchical", molecule="prot"):
+        """
+        Populates a ReferencePackage instances fields with files based on 'pkg_format' where hierarchical indicates
+         files are sorted into 'alignment_data', 'hmm_data' and 'tree_data' directories and flat indicates they are all
+         in the same directory.
+        :param ref_name: Prefix name of all the files of a reference package
+        :param pkg_path: Path to the reference package
+        :param pkg_format: The format of the files within the pkg_path directory
+        :param molecule: A string indicating the molecule type of the reference package. If 'rRNA' profile is CM.
+        :return:
+        """
+        self.prefix = ref_name
+        if pkg_format == "flat":
+            self.msa = pkg_path + os.sep + ref_name + ".fa"
+            self.profile = pkg_path + os.sep + ref_name
+            self.tree = pkg_path + os.sep + ref_name + "_tree.txt"
+            self.boot_tree = pkg_path + os.sep + ref_name + "_bipartitions.txt"
+            self.lineage_ids = pkg_path + os.sep + "tax_ids_" + ref_name + ".txt"
+        elif pkg_format == "hierarchical":
+            self.msa = pkg_path + os.sep + "alignment_data" + os.sep + ref_name + ".fa"
+            self.profile = pkg_path + os.sep + "hmm_data" + os.sep + ref_name
+            self.tree = pkg_path + os.sep + "tree_data" + os.sep + ref_name + "_tree.txt"
+            self.boot_tree = pkg_path + os.sep + "tree_data" + os.sep + ref_name + "_bipartitions.txt"
+            self.lineage_ids = pkg_path + os.sep + "tree_data" + os.sep + "tax_ids_" + ref_name + ".txt"
+        else:
+            logging.error("Unrecognised reference package format '" + pkg_format + "'\n")
+            sys.exit(17)
+
+        if molecule == "rRNA":
+            self.profile += ".cm"
+        else:
+            self.profile += ".hmm"
+
+        self.core_ref_files += [self.msa, self.profile, self.tree, self.lineage_ids]
+
+        return
+
+
 class MarkerBuild:
-    def __init__(self, build_param_line):
+    def __init__(self):
+        self.cog = ""
+        self.denominator = ""
+        self.molecule = ""
+        self.model = ""
+        self.lowest_confident_rank = ""
+        self.update = ""
+        self.kind = ""
+        self.tree_tool = ""
+        self.description = ""
+        self.pid = 1.0
+        self.num_reps = 0
+        self.pfit = []
+
+    def load_build_params(self, build_param_line):
         build_param_fields = build_param_line.split('\t')
-        if len(build_param_fields) != 8:
+        if len(build_param_fields) != 11:
             logging.error("Incorrect number of values (" + str(len(build_param_fields)) +
                           ") in ref_build_parameters.tsv. Line:\n" + build_param_line)
             sys.exit(17)
@@ -32,34 +111,18 @@ class MarkerBuild:
         self.denominator = build_param_fields[1]
         self.molecule = build_param_fields[2]
         self.model = build_param_fields[3]
-        self.pid = build_param_fields[4]
-        self.lowest_confident_rank = build_param_fields[-2]
-        self.update = build_param_fields[-1]
-        self.description = ""
-        self.kind = ""
-        self.pfit = []
-
-    def load_rank_distances(self, build_param_line):
-        build_param_fields = build_param_line.split("\t")
-        ranks = {1: "Phylum", 2: "Class", 3: "Order", 4: "Family", 5: "Genus", 6: "Species"}
-        field = 5
-        rank = 2
-        while field < 10:
-            dist_field = build_param_fields[field]
-            range = dist_field.split(',')
-            if len(range) != 2:
-                self.distances = {}
-                return 1
-            else:
-                self.distances[ranks[rank]] = tuple(float(x) for x in range)
-            field += 1
-            rank += 1
-        return 0
+        self.kind = build_param_fields[4]
+        self.pid = build_param_fields[5]
+        self.num_reps = build_param_fields[6]
+        self.tree_tool = build_param_fields[7]
+        self.lowest_confident_rank = build_param_fields[9]
+        self.update = build_param_fields[10]
+        self.description = build_param_fields[-1]
 
     def load_pfit_params(self, build_param_line):
         build_param_fields = build_param_line.split("\t")
-        if build_param_fields[5]:
-            self.pfit = [float(x) for x in build_param_fields[5].split(',')]
+        if build_param_fields[8]:
+            self.pfit = [float(x) for x in build_param_fields[8].split(',')]
         return
 
     def check_rank(self):
@@ -458,7 +521,7 @@ class ItolJplace:
         """
         nodes = list()
         for d_place in self.placements:
-            if type(d_place) == str:
+            if isinstance(d_place, str):
                 for k, v in loads(d_place).items():
                     if k == 'p':
                         for pquery in v:
@@ -478,7 +541,7 @@ class ItolJplace:
         new_placement_collection = []  # a list of dictionary-like strings
         placement_string = ""  # e.g. {"p":[[226, -31067.028237, 0.999987, 0.012003, 2e-06]], "n":["query"]}
         for d_place in self.placements:
-            if type(d_place) != str:
+            if not isinstance(d_place, str):
                 dict_strings = list()  # e.g. "n":["query"]
                 for k, v in d_place.items():
                     dict_strings.append(dumps(k) + ':' + dumps(v))
@@ -736,9 +799,9 @@ class ItolJplace:
         return
 
     def clear_object(self):
-        placements = list()
-        fields = list()
-        node_map = dict()
+        self.placements.clear()
+        self.fields.clear()
+        self.node_map.clear()
         self.contig_name = ""
         self.name = ""
         self.tree = ""
@@ -1166,3 +1229,38 @@ class TaxonTest:
         self.distances = dict()
         self.assignments = dict()
         self.taxonomic_tree = None
+
+    def summarise_taxon_test(self):
+        summary_string = "Test for taxonomic lineage '" + self.lineage + "':\n" + \
+                         "\tNumber of query sequences = " + str(len(self.queries)) + "\n" + \
+                         "\tNumber of classified queries = " + str(len(self.classifieds)) + "\n"
+        if self.assignments:
+            for marker in self.assignments:
+                summary_string += "Sequences classified as marker '" + marker + "':\n"
+                for lineage in self.assignments[marker]:
+                    summary_string += str(len(self.assignments[marker][lineage])) + "\t'" + lineage + "'\n"
+        return summary_string
+
+    def filter_assignments(self, target_marker):
+        """
+        Filters the assignments from TreeSAPP for the target marker.
+        Off-target classifications are accounted for and reported.
+        TaxonTest.classifieds only include the headers of the correctly annotated sequences
+        :param target_marker:
+        :return:
+        """
+        off_targets = dict()
+        for marker in self.assignments:
+            for lineage in self.assignments[marker]:
+                classifieds = self.assignments[marker][lineage]
+                if marker == target_marker:
+                    self.classifieds += classifieds
+                else:
+                    if marker not in off_targets:
+                        off_targets[marker] = list()
+                    off_targets[marker] += classifieds
+        if off_targets:
+            for marker in off_targets:
+                logging.warning(str(len(off_targets)) + " sequences were classified as " + marker + ":\n" +
+                                "\t\n".join(off_targets[marker]) + "\n")
+        return

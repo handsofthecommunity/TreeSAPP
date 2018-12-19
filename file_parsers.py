@@ -23,13 +23,15 @@ def parse_ref_build_params(args):
         logging.error("\tUnable to open " + ref_build_parameters + " for reading.\n")
         sys.exit(5)
 
-    header_re = re.compile("^name\tcode\tmolecule\tsub_model\tcluster_identity\t"
-                           "polynomial_params\tlowest_confident_rank\tdate$")
+    header_re = re.compile("\t".join(["name", "code",
+                                      "molecule", "sub_model", "marker_info", "cluster_identity", "ref_sequences",
+                                      "tree_tool", "poly-params", "lowest_reliable_rank",
+                                      "last_updated", "description"]))
     if not header_re.match(param_handler.readline().strip()):
         logging.error("Header of '" + ref_build_parameters + "' is unexpected!")
         sys.exit(5)
 
-    logging.info("Reading build parameters of reference markers... ")
+    logging.debug("Reading build parameters of reference markers... ")
     skipped_lines = []
     missing_info = []
     marker_build_dict = dict()
@@ -40,7 +42,8 @@ def parse_ref_build_params(args):
         if line[0] == '#':
             skipped_lines.append(line)
             continue
-        marker_build = MarkerBuild(line)
+        marker_build = MarkerBuild()
+        marker_build.load_build_params(line)
         if args.targets != ["ALL"] and marker_build.denominator not in args.targets:
             skipped_lines.append(line)
         else:
@@ -50,12 +53,14 @@ def parse_ref_build_params(args):
             marker_build.check_rank()
     param_handler.close()
 
-    logging.info("done.\n")
+    logging.debug("done.\n")
 
-    logging.debug("Rank distance information missing for:\n\t" +
-                  "\n\t".join([mb.cog + '-' + mb.denominator for mb in missing_info]) + "\n")
-    logging.debug("Skipped the following lines:\n\t" +
-                  "\n\t".join(skipped_lines) + "\n")
+    if missing_info:
+        logging.debug("Rank distance information missing for:\n\t" +
+                      "\n\t".join([mb.cog + '-' + mb.denominator for mb in missing_info]) + "\n")
+    if skipped_lines:
+        logging.debug("Skipped the following lines:\n\t" +
+                      "\n\t".join(skipped_lines) + "\n")
     return marker_build_dict
 
 
@@ -90,11 +95,11 @@ def parse_cog_list(args, marker_build_dict):
             if denominator == ref_code:
                 marker_build_dict[denominator].description = description
                 if description == "phylogenetic_cogs":
-                    marker_build_dict[denominator].kind = "phylogenetic_cogs"
+                    marker_build_dict[denominator].kind = "phylogenetic"
                 elif description == "rRNA_marker":
-                    marker_build_dict[denominator].kind = "phylogenetic_rRNA_cogs"
+                    marker_build_dict[denominator].kind = "phylogenetic_rRNA"
                 else:
-                    marker_build_dict[denominator].kind = "functional_cogs"
+                    marker_build_dict[denominator].kind = "functional"
 
     if args.reftree not in ['i', 'g', 'p'] and args.reftree not in marker_build_dict.keys():
         logging.error(args.reftree + " not found in " + cog_list_file + "! Please use a valid reference tree ID!\n")
@@ -393,7 +398,7 @@ def xml_parser(xml_record, term):
     """
     # TODO: Finish this off - would be great for consistently extracting data from xml
     value = None
-    if type(xml_record) == str:
+    if isinstance(xml_record, str):
         return value
     if term not in xml_record.keys():
         for record in xml_record:
@@ -788,7 +793,8 @@ def read_uc(uc_file):
     Function to read a USEARCH cluster (.uc) file
 
     :param uc_file: Path to a .uc file produced by USEARCH
-    :return: Dictionary where keys are representative cluster headers and the values are headers of identical sequences
+    :return: Dictionary where keys are numerical identifiers and values are Cluster objects
+        The Cluster object
     """
     cluster_dict = dict()
     rep_len_map = dict()
@@ -814,3 +820,36 @@ def read_uc(uc_file):
             sys.exit(13)
         line = uc.readline()
     return cluster_dict
+
+
+def read_rpkm(rpkm_output_file):
+    """
+    Read the CSV file written by rpkm. A header and line with unmapped reads is expected and are skipped.
+    Each line is expected to have 4 elements: Sample ID, sequence name, number of reads recruited, RPKM
+    :param rpkm_output_file: A file path
+    :return: Dictionary mapping contig names to floats
+    """
+    rpkm_values = dict()
+
+    try:
+        rpkm_stats = open(rpkm_output_file)
+    except IOError:
+        logging.error("Unable to open " + rpkm_output_file + " for reading!\n")
+        sys.exit(13)
+
+    # Skip the header
+    next(rpkm_stats)
+    # Skip the line with unaligned reads
+    next(rpkm_stats)
+    for line in rpkm_stats:
+        # Line format is Sample ID (output file name), sequence name, number of reads recruited, RPKM
+        try:
+            _, seq_name, _, rpkm = line.strip().split(',')
+        except ValueError:
+            n_values = str(len(line.split(',')))
+            logging.error("Unexpected line format in RPKM file - should contain 4 elements, "
+                          "" + n_values + " encountered. Offending line:\n" + line + "\n")
+            sys.exit(13)
+        rpkm_values[seq_name] = float(rpkm)
+    rpkm_stats.close()
+    return rpkm_values
