@@ -18,16 +18,13 @@ before_install:
     - sudo dpkg -i mafft_7.407-1_amd64.deb
     - wget https://sco.h-its.org/exelixis/resource/download/software/papara_nt-2.5-static_x86_64.tar.gz
 
-cache: false
-
 install:
     - pip install -r requirements.txt
     - pip install pytest-cov
 
 before_script:
     - cd /home/travis/build/hallamlab/TreeSAPP/sub_binaries; cp usearch /usr/bin; cd ../; make; make install
-    - rm -rf .cache/
-    - rm -rf .pytest_cache/
+
 script:
     - py.test -vv --cov-report term --cov=./ tests/ 
     - pytest -vv
