@@ -326,7 +326,7 @@ def generate_blast_database(args, fasta, molecule, prefix, multiple=True):
 
 
 def clean_lineage_string(lineage):
-    non_standard_names_re = re.compile("group; | cluster; ")
+    non_standard_names_re = re.compile(" group| cluster", re.IGNORECASE)
     bad_strings = ["cellular organisms; ", "delta/epsilon subdivisions; ", "\(miscellaneous\)", "Root; ", "[a-p]__"]
     for bs in bad_strings:
         lineage = re.sub(bs, '', lineage)
@@ -335,21 +335,30 @@ def clean_lineage_string(lineage):
         reconstructed_lineage = ""
         ranks = lineage.split("; ")
         for rank in ranks:
-            if not (re.search("group$", rank) or re.search("cluster$", rank)):
+            if not (re.search("group", rank, re.IGNORECASE) or re.search("cluster", rank, re.IGNORECASE)):
                 reconstructed_lineage = reconstructed_lineage + str(rank) + '; '
         reconstructed_lineage = re.sub('; $', '', reconstructed_lineage)
         lineage = reconstructed_lineage
     return lineage
 
 
-def median(lst):
-    n = len(lst)
+def median(num_list: list):
+    n = len(num_list)
     if n < 1:
             return None
     if n % 2 == 1:
-            return sorted(lst)[n//2]
+            return sorted(num_list)[n//2]
     else:
-            return sum(sorted(lst)[n//2-1:n//2+1])/2.0
+            return sum(sorted(num_list)[n//2-1:n//2+1])/2.0
+
+
+def mean(num_list: list):
+    """
+    Simple function for a returning a floating-point integer for the mean of a list of numbers
+    :param num_list: List of numbers
+    :return: Float
+    """
+    return float(sum(num_list) / len(num_list))
 
 
 def convert_outer_to_inner_nodes(clusters, internal_node_map):
