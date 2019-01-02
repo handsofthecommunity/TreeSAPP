@@ -113,7 +113,7 @@ class TreeLeafReferenceTest(unittest.TestCase):
     def test_init(self):
         tlr = TreeLeafReference(1, 'NM4 | NM423249334157')
         assert(tlr.number == 1)
-        assert(tlr.description == description)
+        assert(tlr.description == 'NM4 | NM423249334157')
         assert(tlr.lineage == "")
         assert(tlr.complete == False)
         tlr2 = TreeLeafReference(2, 'M. Mx2 | 2617404690')
@@ -122,6 +122,13 @@ class TreeLeafReferenceTest(unittest.TestCase):
 class ReferenceSequenceTest(unittest.TestCase):
     def test_init(self):
         rs = ReferenceSequence()
-        attributes = [attr for attr in vars(rs) if isinstance(rs.attr, str)]
-        for attr in attributes:
-          assert(rs.attr == "")
+        assert(rs.accession == '')
+        assert(rs.description == '')
+        assert(rs.organism == '')
+        assert(rs.lineage == '')
+        assert(rs.short_id == '')
+        assert(rs.sequence == '')
+        assert(rs.locus == '')
+        assert(not rs.cluster_rep)
+        assert(rs.cluster_rep_similarity == 0)
+        assert(rs.cluster_lca == None)
