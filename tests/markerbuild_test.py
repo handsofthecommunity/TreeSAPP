@@ -7,58 +7,61 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfi
 import classy
 
 class MarkerBuildTest(unittest.TestCase):
-        
+
     def test_create_MarkerBuild(self):
-        line = 'hzs\tA0100\tprot\tPROTGAMMAJTTDCMUT\t0.99\t\tSpecies\t27_Apr_2018'
-        mb = classy.MarkerBuild(line)
-        assert(mb.cog == 'hzs')
-        assert(mb.denominator == 'A0100')
+        line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tClasses\t04_Dec_2018'
+        mb = classy.MarkerBuild()
+
+        assert(mb.cog == '')
+        assert(mb.denominator == '')
+        assert(mb.molecule == '')
+        assert(mb.model == '')
+        assert(mb.kind == '')
+        assert(mb.pid == 1.0)
+        assert(mb.num_reps == 0)
+        assert(mb.tree_tool == "")
+        assert(mb.lowest_confident_rank == '')
+        assert(mb.update == '')
+        assert(mb.description == '')
+    
+    def test_load_build_params(self):
+        line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tClasses\t04_Dec_2018'
+        mb = classy.MarkerBuild()
+        mb.load_build_params(line)
+        assert(mb.cog == 'McrA')
+        assert(mb.denominator == 'M0701')
         assert(mb.molecule == 'prot')
-        assert(mb.model == 'PROTGAMMAJTTDCMUT')
-        assert(mb.pid == '0.99')
-        assert(mb.lowest_confident_rank == 'Species')
-        assert(mb.update == '27_Apr_2018')
-        assert(len(mb.pfit) == 0)
+        assert(mb.model == 'PROTGAMMALG')
+        assert(mb.kind == 'functional')
+        assert(mb.pid == '0.97')
+        assert(mb.num_reps == '211')
+        assert(mb.tree_tool == "FastTree")
+        assert(mb.lowest_confident_rank == 'Classes')
+        assert(mb.update == '04_Dec_2018')
+        assert(mb.description == '04_Dec_2018')
 
-        line_bad = 'hzs\tA0100\tprot\tPROTGAMMAJTTDCMUT\t0.99\t\tSpecies'
+        incomplete_line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802'
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            classy.MarkerBuild(line_bad)
-        assert pytest_wrapped_e.type == SystemExit
-        assert pytest_wrapped_e.value.code == 17
-            
+            mb.load_build_params(incomplete_line)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 17
+
     def test_load_pfit_params(self):
-
-        line_true = 'nifD\tN0401\tprot\tPROTGAMMALG\t85\t-6.9676601767537747,3954157334089663\tSpecies\t17_Jan_2018'
-        mb_true = classy.MarkerBuild(line_true)
-        mb_true.load_pfit_params(line_true)
-        assert(mb_true.pfit == [-6.9676601767537747, 3954157334089663])
-
-        line_false = 'nifD\tN0401\tprot\tPROTGAMMALG\t85\t\tSpecies\t17_Jan_2018'
-        mb_false = classy.MarkerBuild(line_false)
-        mb_false.load_pfit_params(line_false)
-        assert(len(mb_false.pfit) == 0)
-
-    # #FUNCTION NOT USED
-    # def test_load_rank_distances(self):
-    #     line_break = 'hzs\tA0100\tprot\tPROTGAMMAJTTDCMUT\t0.99\t\tSpecies\t27_Apr_2018'
-    #     mb_break = classy.MarkerBuild(line_break)
-
-    #     assert(mb_break.load_rank_distances(line_break))
-    #     assert(len(mb_break.distances) == 0)
-
-    #     line = 'nifD\tN0401\tprot\tPROTGAMMALG\t85\t-6.9676601767537747,3954157334089663\t\tSpecies\t17_Jan_2018'
-    #     mb = classy.MarkerBuild(line)
-    #     assert(not mb.load_rank_distances(line))
-
+        line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tClasses\t04_Dec_2018'
+        mb = classy.MarkerBuild()
+        mb.load_build_params(line)
+        mb.load_pfit_params(line)
+        assert(-4.08046639871 in mb.pfit and 6.03601100802 in mb.pfit and len(mb.pfit) == 2)
+        
     def test_check_rank(self):
-        line = 'hzs\tA0100\tprot\tPROTGAMMAJTTDCMUT\t0.99\t\tNotSpecies\t27_Apr_2018'
-        mb = classy.MarkerBuild(line)
+        line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tClasses\t04_Dec_2018'
+        mb = classy.MarkerBuild()
+        assert(mb.load_build_params(line) == None)
+
+        
+        line_bad = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tBurgers\t04_Dec_2018'
+        mb.load_build_params(line_bad)
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             mb.check_rank()
-        assert pytest_wrapped_e.type == SystemExit
-        assert pytest_wrapped_e.value.code == 17
-
-        line = 'hzs\tA0100\tprot\tPROTGAMMAJTTDCMUT\t0.99\t\tSpecies\t27_Apr_2018'
-        mb = classy.MarkerBuild(line)
-        assert mb.check_rank() is None
-        
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 17

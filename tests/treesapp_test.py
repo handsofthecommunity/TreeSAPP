@@ -262,3 +262,34 @@ class TreeSAPPTest(unittest.TestCase):
                 assert(content[5 + y*4] == results[8][50*y:(y+1)*50])
                 assert(content[5 + y*4 + 1] == results[9][50*y:(y+1)*50])
                 assert(content[5 + y*4 + 2] == results[10][50*y:(y+1)*50])
+
+
+    def test_multiple_alignments(self):
+      single_query_sequence_files = ['/home/ace/github/TreeSAPP/tests/test_data/McrA_hmm_purified_group0.faa']
+
+      args = create_parser('/home/ace/github/TreeSAPP/', 'M0701', 'p')
+
+      marker_build_dict = treesapp.parse_ref_build_params(args)
+      marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+
+      assert(treesapp.multiple_alignments(args, single_query_sequence_files, marker_build_dict, "hmmalign") == '')
+    # def test_start_raxml(self):
+    #   args = create_parser('/home/ace/github/TreeSAPP/', 'M0701', 'p')
+    #   marker_build_dict = treesapp.parse_ref_build_params(args)
+    #   marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+
+    # def test_parse_raxml_output(self):
+    #   args = create_parser('/home/ace/github/TreeSAPP/', 'M0701', 'p')
+    #   marker_build_dict = treesapp.parse_ref_build_params(args)
+    #   marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+            
+    # def test_filter_placement(self):
+    #   args = argparse.Namespace()
+    #   tree_saps = 
+
+    def test_sub_indices_for_seq_names_jplace(self):
+        short_numeric_contig_index = {'McrA': {-12: 'PHP46140.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanosarcinales_archaeon_ex4572_44_8_595', -2: 'OYT62528.1_hypothetical_protein_B6U67_04395_Methanosarcinales_archaeon_ex4484_138_1_471', -10: 'AAU83782.1_methyl_coenzyme_M_reductase_subunit_alpha_uncultured_archaeon_GZfos33H6_1_570'}}
+
+        args = create_parser('/home/ace/github/TreeSAPP/', 'M0701', 'p')
+        marker_build_dict = treesapp.parse_ref_build_params(args)
+        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
