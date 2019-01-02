@@ -26,12 +26,11 @@ before_script:
     - cd /home/travis/build/hallamlab/TreeSAPP/sub_binaries; cp usearch /usr/bin; cd ../; make; make install
 
 script:
-    - py.test -vv --cov-report term-missing --cov=./ tests/treesapp_test.py
-    - py.test -vv --cov-report term-missing --cov=./ tests/utilities_test.py
-    - py.test -vv --cov-report term-missing --cov=./ tests/markerbuild_test.py
-    - py.test -vv --cov-report term-missing --cov=./ tests/itol_test.py
-    - py.test -vv --cov-report term-missing --cov=./ tests/fasta_test.py
-    - py.test -vv --cov-report term-missing --cov=./ tests/file_parsers_test.py
+    - py.test -vv tests/treesapp_test.py
+    - py.test -vv tests/markerbuild_test.py
+    - py.test -vv tests/itol_test.py
+    - py.test -vv tests/fasta_test.py
+    - py.test -vv tests/file_parsers_test.py
 
     
 #whitelist

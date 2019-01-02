@@ -10,7 +10,7 @@ from jplace_utils import jplace_parser
 HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
 
 def create_itol():
-    itol = jplace_parser('/home/travis/build/marker_test/various_outputs/RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace')
+    itol = jplace_parser(HOME_DIR + 'tests/test_data/RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace')
     return itol
 
 class ItolJplaceTest(unittest.TestCase):
