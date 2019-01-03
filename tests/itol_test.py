@@ -47,11 +47,11 @@ class ItolJplaceTest(unittest.TestCase):
         itol = create_itol()
         itol.correct_decoding()
         actual_entries = itol.list_placements()
-        entries = ['9', '201', '200', '50', '305', '304', '215', '309', '35', '77', '166', '50', '9'\
-, '263', '266', '267', '265', '264', '262', '268']
-	for entry in entries:
+        entries = ['9', '201', '200', '50', '305', '304', '215', '309', '35', '77', '166', '50', '9', '263', '266', '267', '265', '264', '262', '268']
+
+        for entry in entries:
             assert(entry in actual_entries)
-        
+
     def test_correct_decoding(self):
         itol = ItolJplace()
         assert(itol.correct_decoding() == None)
