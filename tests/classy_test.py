@@ -13,6 +13,12 @@ def create_itol():
     itol = jplace_parser(HOME_DIR + 'tests/test_data/RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace')
     return itol
 
+def init_itol():
+    itol = create_itol()
+    itol.correct_decoding()
+    itol.create_jplace_node_map()
+    return itol
+
 class ItolJplaceTest(unittest.TestCase):
 
     def test_init(self):
@@ -77,7 +83,19 @@ class ItolJplaceTest(unittest.TestCase):
         itol = create_itol()
         itol.correct_decoding()
         assert(itol.filter_min_weight_threshold() == None)
-        
+
+    def test_sum_rpkms_per_node(self):
+        itol = init_itol()
+        itol.placements = [itol.placements[0]]
+        itol.abundance = 1.0
+        leaf_rpkm_sums = dict()
+        result = itol.sum_rpkms_per_node(leaf_rpkm_sums)
+        assert(result['212'] == 1.75)
+        assert(result['188'] == 1.75)
+        assert(result['190'] == 1.75)
+        assert(result['180'] == 1.75)
+        assert(len(result) == 4)
+
     def test_get_jplace_element(self):
         itol = create_itol()
         itol.correct_decoding()
@@ -89,22 +107,53 @@ class ItolJplaceTest(unittest.TestCase):
     def test_filter_max_weight_placement(self):
         itol = ItolJplace()
         assert(itol.filter_max_weight_placement() == None)
-        
+        itol = create_itol()
+        itol.correct_decoding()
+        itol.filter_max_weight_placement()
+        placement = loads(itol.placements[0], encoding='wtf-8')
+        assert(placement['n'][0] == 'AFD09581.1_methyl-coenzyme_M_reductase_alpha_subunit__partial_uncultured_Methanomicrobiales_archaeon_1_254')
+
+        assert(263 in placement['p'][0] and 0.003777 in placement['p'][0] and 0.071205 in placement['p'][0] and 0.215867 in placement['p'][0])
+
     def test_create_jplace_node_map(self):
         itol = ItolJplace()
         assert(itol.create_jplace_node_map() == None)
-        filename = '/home/ace/github/TreeSAPP/tests/test_data/RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace'
-        jplace_data = jplace_parser(filename)
+        itol = create_itol()
+        itol.correct_decoding()
+        assert(itol.create_jplace_node_map() == None)
+        itol.create_jplace_node_map()
+        for i in range(425):
+            assert(i in itol.node_map.keys())
         
     def test_harmonize_placements(self):
         itol = ItolJplace()
-        treesapp_dir = '/home/ace/github/TreeSAPP/'
-
+        itol = create_itol()
+        itol.name = 'McrA'
+        itol.placements = [itol.placements[0]]
+        itol.correct_decoding()
+        itol.create_jplace_node_map()
+        itol.harmonize_placements(TREESAPP_PATH)
+        results = loads(itol.placements[0], encoding='utf-8')
+        assert(results['n'][0] == 'AFD09581.1_methyl-coenzyme_M_reductase_alpha_subunit__partial_uncultured_Methanomicrobiales_archaeon_1_254')
+        assert(results['p'][0] == [261, -41251.840196, 0.97, 0, 0])
+        
     def test_clear_object(self):
         itol = ItolJplace()
         assert(itol.clear_object() == None)
+        itol = init_itol()
+        itol.clear_object()
+        assert(len(itol.placements) == 0)
+        assert(len(itol.fields) == 0)
+        assert(len(itol.node_map) == 0)
+        assert(itol.contig_name == '')
+        assert(itol.name == '')
+        assert(itol.tree == "")
+        assert(itol.metadata == "")
+        assert(itol.version == "")
+        assert(itol.lct == "")
+        assert(len(itol.lineage_list) == 0)
+        assert(itol.abundance == None)
         
-
 class TreeProteinTest(unittest.TestCase):
     def test_transfer(self):
         itol = create_itol();
@@ -116,6 +165,12 @@ class TreeProteinTest(unittest.TestCase):
         assert(treeprotein.version == itol.version)
         assert(treeprotein.metadata == itol.metadata)
 
+    def test_megan_lca(self):
+        itol = init_itol()
+        treesapp = TreeProtein()
+        treesapp.transfer(itol)
+        ###########################
+        
 class TreeLeafReferenceTest(unittest.TestCase):
     def test_init(self):
         tlr = TreeLeafReference(1, 'NM4 | NM423249334157')
@@ -140,6 +195,10 @@ class ReferenceSequenceTest(unittest.TestCase):
         assert(rs.cluster_rep_similarity == 0)
         assert(rs.cluster_lca == None)
 
+    def test_get_info(self):
+        rs = ReferenceSequence()
+        assert(rs.get_info() == 'accession = , mltree_id = \ndescription = , locus = \norganism = \nlineage = \n')
+        
 class MarkerBuildTest(unittest.TestCase):
         
     def test_create_MarkerBuild(self):
@@ -200,6 +259,16 @@ class MarkerBuildTest(unittest.TestCase):
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 17
 
+            
+class MarkerInfoTest(unittest.TestCase):
+    def test_mi_init(self):
+            mi = TreeLeafReference.MarkerInfo('marker_ph', 'R0016', 'test')
+            assert(mi.marker == 'marker_ph')
+            assert(mi.denominator == 'R0016')
+            assert(mi.marker_class == '')
+            assert(mi.description == 'test')
+            assert(mi.analysis_type == "")
+                                       
 class ReferencePackageTest(unittest.TestCase):
 
     def test_rp_init(self):
@@ -254,3 +323,5 @@ class HeaderTest(unittest.TestCase):
             assert(val.original == '>' + str(i) + '_McrA')
             assert(val.formatted == '>' + str(i) + '_McrA')
             assert(val.first_split == '>' + str(i) + '_McrA')
+
+    #MarkerTest, MyFormatter, TaxonTest
