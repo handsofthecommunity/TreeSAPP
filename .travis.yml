@@ -31,6 +31,7 @@ script:
     - py.test -vv tests/itol_test.py
     - py.test -vv tests/fasta_test.py
     - py.test -vv tests/file_parsers_test.py
+    - py.test -vv tests/classy_test.py
 
     
 #whitelist
