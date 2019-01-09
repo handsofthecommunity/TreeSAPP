@@ -6,6 +6,8 @@ import sys, inspect
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
 from classy import ItolJplace, TreeProtein, TreeLeafReference, ReferenceSequence, MarkerBuild, ReferencePackage, TaxonTest, Cluster, Header, register_headers
 from jplace_utils import jplace_parser
+from json import loads
+import file_parsers
 
 HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
 
@@ -132,7 +134,7 @@ class ItolJplaceTest(unittest.TestCase):
         itol.placements = [itol.placements[0]]
         itol.correct_decoding()
         itol.create_jplace_node_map()
-        itol.harmonize_placements(TREESAPP_PATH)
+        itol.harmonize_placements(HOME_DIR)
         results = loads(itol.placements[0], encoding='utf-8')
         assert(results['n'][0] == 'AFD09581.1_methyl-coenzyme_M_reductase_alpha_subunit__partial_uncultured_Methanomicrobiales_archaeon_1_254')
         assert(results['p'][0] == [261, -41251.840196, 0.97, 0, 0])
