@@ -1,5 +1,14 @@
 sudo: true
 language: python
+
+os:
+    - linux
+    - osx
+
+matrix:
+    allow_failures:
+       - os: osx
+      
 python:
     - "3.6"
     - "3.5"
@@ -32,7 +41,8 @@ script:
     - py.test -vv tests/fasta_test.py
     - py.test -vv tests/file_parsers_test.py
     - py.test -vv tests/classy_test.py
-
+    - py.test -vv tests/fasta_tests.py
+    - py.test -vv tests/treesapp_tests.py
     
 #whitelist
 branches:
