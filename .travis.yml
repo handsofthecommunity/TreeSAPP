@@ -1,13 +1,5 @@
 sudo: true
 language: python
-
-os:
-    - linux
-    - osx
-
-matrix:
-    allow_failures:
-       - os: osx
       
 python:
     - "3.6"

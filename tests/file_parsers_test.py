@@ -10,8 +10,6 @@ import file_parsers
 import fasta
 import treesapp
 
-
-
 def create_parser(treesapp, targets, reftree):
     args = argparse.Namespace()
     args.alignment_mode = 'd'
@@ -127,6 +125,11 @@ class ParserTest(unittest.TestCase):
         assert(marker_subgroups['McrA']['Bathyarchaeota'][0] == ('204', '203'))
         assert(not internal_nodes['McrA'])
 
+    def test_get_alignment_data(self):
+        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
+        marker_build_dict = file_parsers.parse_ref_build_params(args)
+        alignment_dimensions_dict = treesapp.get_alignment_dims(args, marker_build_dict)
+        assert(alignment_dimensions_dict['M0701'] == (214, 837))
 
     def test_tax_ids_file_to_leaves(self):
         marker_tax_ids = TREESAPP_PATH + 'data/tree_data/tax_ids_McrA.txt'
@@ -152,7 +155,7 @@ class ParserTest(unittest.TestCase):
             ref_tree_leaves = file_parsers.tax_ids_file_to_leaves(marker_tax_ids)
             assert ecxinfo.value.code == 5
 
-
+ 
 def create_short_qc_ma_dict():
   qc_ma_dict = {'M0701': {'tests/test_data/expected_phy_file': {'186': '-------------------------------------------------------------------------------------------------------------------------------------------------------------------------KHAGVIQMADILPARRARGPNEPGGIKFGHFGDMIQADPVKATLEVVGAGAMLFDQIWLGSYMSGGYATAAYTDNILDDYCYYGLDYTQEVLNDIATEVTLYGMEQYEQYPTTLESHFGGSQRASVLAAASGISCSLATANSNAGLNGWYMSMLAHKEGWSRLGFFGYDLQDQCGSTNSMSIRPDEGCIGELRGPNYPNYAMNVGHQGEYAAIASAAHYGRQDAWVLSPLIKIAFADPSLKFDFSEPRREFARGAIREFMPAGERSLIIP', '70': 'DDLHFVNNAAIQQMVDDIKRTVIVGMDTAHAVLEKRLGVEVTPETINEYMEAINHALPGGAVVQEHMVEVHPGLVEDCYAKIFTGDDNLADELDKRILIDINKEFPEEQLKSYIGNRTYQVNRVPTIVVRTCDGGTVSRWSAMQIGMSFISAYKLCAGEAAIADFSYAAKHADVIEMGTIMPARRARGPNEPGGVAFGTFADIVQTDPANVSLEVIAGAAALYDQVWLGSYMSGGYATAAYTDDILDDFVYYGMEYTMDVVRDISTEVTLYSLEQYEEYPTLLEDHFGGSQRAAVAAAAAGCSTAFATGNSNAGINGWYLSQILHKEAHSRLGFYGYDLQDQCGASNSLSIRSDEGLIHELRGPNYPNYAMNVGHQPEYAGIAQAPHAARGDAFCTNPLIKVAFADKDLAFDFTSPRKSIAAGALREFMPEGERDLIIP', '59': 'DDLHYVNNAAIQQAWDDIRRTVIVGLNTAHNVLEKRLGIEVTPETITHYLETVNHAMPGAAVVQEHMVETDPLIVQDSYVKVFTGDDELADEIDSAFVLDINKEFPEEALKAEVGGAIWQAVRIPSIVGRVCDGGNTSRWSAMQIGMSMISAYNQCAGEGATGDFAYASKHAEVIHMGTYLPVRRARAENELGGVPFGFMADICQGDPVRVSLEVVALGAALYDQIWLGSYMSGGYATAAYTDNVLDDFTYYGKDYNMDTVLDVGTEVAFYALEQYEEYPALLETHFGGSQRASVVSAAAGCSTAFATGNAQTGLSAWYLAMYLHKEQHSRLGFYGFDLQDQCGAANVFSIRNDEGLPLEMRGPNYPNYAMNVGHQGEYAGIAQAPHAARGDAWAFNPLVKIAFADKNLCFDFSKVREEFAKGALREFEPAGERTAITP'}}}
   return qc_ma_dict
@@ -170,12 +173,6 @@ class TreeSAPPTest(unittest.TestCase):
         homolog_seq_files, numeric_contig_index = treesapp.extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
         return args, marker_build_dict, formatted_fasta_dict, homolog_seq_files, numeric_contig_index
 
-
-    def test_get_alignment_data(self):
-        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
-        marker_build_dict = file_parsers.parse_ref_build_params(args)
-        alignment_dimensions_dict = treesapp.get_alignment_dims(args, marker_build_dict)
-        assert(alignment_dimensions_dict['M0701'] == (214, 837))
 
     def test_hmmsearch_orfs_parse_domain_tables(self):
         args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
