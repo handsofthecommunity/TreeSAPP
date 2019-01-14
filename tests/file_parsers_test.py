@@ -7,7 +7,7 @@ import sys, inspect
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
 import file_parsers
 
-TEST_PATH = '/home/travis/build/halamlab/TreeSAPP/tests'
+TEST_PATH = '/home/travis/build/hallamlab/TreeSAPP/tests'
 TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/'
 
 def create_parser(treesapp,targets, reftree):
