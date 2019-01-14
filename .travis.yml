@@ -33,8 +33,6 @@ script:
     - py.test -vv tests/fasta_test.py
     - py.test -vv tests/file_parsers_test.py
     - py.test -vv tests/classy_test.py
-    - py.test -vv tests/fasta_tests.py
-    - py.test -vv tests/treesapp_tests.py
     
 #whitelist
 branches:
