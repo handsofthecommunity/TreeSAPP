@@ -10,6 +10,7 @@ import fasta
 import treesapp
 
 HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
+TREESAPP_TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/test_data/'
 
 def create_short_qc_ma_dict():
   qc_ma_dict = {'M0701': {'tests/test_data/expected_phy_file': {'186': '-------------------------------------------------------------------------------------------------------------------------------------------------------------------------KHAGVIQMADILPARRARGPNEPGGIKFGHFGDMIQADPVKATLEVVGAGAMLFDQIWLGSYMSGGYATAAYTDNILDDYCYYGLDYTQEVLNDIATEVTLYGMEQYEQYPTTLESHFGGSQRASVLAAASGISCSLATANSNAGLNGWYMSMLAHKEGWSRLGFFGYDLQDQCGSTNSMSIRPDEGCIGELRGPNYPNYAMNVGHQGEYAAIASAAHYGRQDAWVLSPLIKIAFADPSLKFDFSEPRREFARGAIREFMPAGERSLIIP', '70': 'DDLHFVNNAAIQQMVDDIKRTVIVGMDTAHAVLEKRLGVEVTPETINEYMEAINHALPGGAVVQEHMVEVHPGLVEDCYAKIFTGDDNLADELDKRILIDINKEFPEEQLKSYIGNRTYQVNRVPTIVVRTCDGGTVSRWSAMQIGMSFISAYKLCAGEAAIADFSYAAKHADVIEMGTIMPARRARGPNEPGGVAFGTFADIVQTDPANVSLEVIAGAAALYDQVWLGSYMSGGYATAAYTDDILDDFVYYGMEYTMDVVRDISTEVTLYSLEQYEEYPTLLEDHFGGSQRAAVAAAAAGCSTAFATGNSNAGINGWYLSQILHKEAHSRLGFYGYDLQDQCGASNSLSIRSDEGLIHELRGPNYPNYAMNVGHQPEYAGIAQAPHAARGDAFCTNPLIKVAFADKDLAFDFTSPRKSIAAGALREFMPEGERDLIIP', '59': 'DDLHYVNNAAIQQAWDDIRRTVIVGLNTAHNVLEKRLGIEVTPETITHYLETVNHAMPGAAVVQEHMVETDPLIVQDSYVKVFTGDDELADEIDSAFVLDINKEFPEEALKAEVGGAIWQAVRIPSIVGRVCDGGNTSRWSAMQIGMSMISAYNQCAGEGATGDFAYASKHAEVIHMGTYLPVRRARAENELGGVPFGFMADICQGDPVRVSLEVVALGAALYDQIWLGSYMSGGYATAAYTDNVLDDFTYYGKDYNMDTVLDVGTEVAFYALEQYEEYPALLETHFGGSQRASVVSAAAGCSTAFATGNAQTGLSAWYLAMYLHKEQHSRLGFYGFDLQDQCGAANVFSIRNDEGLPLEMRGPNYPNYAMNVGHQGEYAGIAQAPHAARGDAWAFNPLVKIAFADKNLCFDFSKVREEFAKGALREFEPAGERTAITP'}}}
@@ -240,7 +241,7 @@ class TreeSAPPTest(unittest.TestCase):
         phy_file = treesapp.produce_phy_files(args, qc_ma_dict)
 
         assert('M0701' in phy_file.keys())
-        assert(['tests/test_data/expected_phy_file'] in phy_file.values() and len(phy_file) == 1)
+        assert([ HOME_DIR + 'tests/test_data/expected_phy_file'] in phy_file.values() and len(phy_file) == 1)
         with open(phy_file['M0701'][0]) as f:
             content = f.readlines()
 
@@ -265,31 +266,37 @@ class TreeSAPPTest(unittest.TestCase):
 
 
     def test_multiple_alignments(self):
-      single_query_sequence_files = ['/home/ace/github/TreeSAPP/tests/test_data/McrA_hmm_purified_group0.faa']
+      single_query_sequence_files = ['tests/test_data/McrA_hmm_purified_group0.faa']
 
-      args = create_parser('/home/ace/github/TreeSAPP/', 'M0701', 'p')
+      args = create_parser(HOME_DIR, 'M0701', 'p')
 
       marker_build_dict = treesapp.parse_ref_build_params(args)
       marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
 
       assert(treesapp.multiple_alignments(args, single_query_sequence_files, marker_build_dict, "hmmalign") == '')
-    # def test_start_raxml(self):
-    #   args = create_parser('/home/ace/github/TreeSAPP/', 'M0701', 'p')
-    #   marker_build_dict = treesapp.parse_ref_build_params(args)
-    #   marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
-
-    # def test_parse_raxml_output(self):
-    #   args = create_parser('/home/ace/github/TreeSAPP/', 'M0701', 'p')
-    #   marker_build_dict = treesapp.parse_ref_build_params(args)
-    #   marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
-            
-    # def test_filter_placement(self):
-    #   args = argparse.Namespace()
-    #   tree_saps = 
-
+      
     def test_sub_indices_for_seq_names_jplace(self):
         short_numeric_contig_index = {'McrA': {-12: 'PHP46140.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanosarcinales_archaeon_ex4572_44_8_595', -2: 'OYT62528.1_hypothetical_protein_B6U67_04395_Methanosarcinales_archaeon_ex4484_138_1_471', -10: 'AAU83782.1_methyl_coenzyme_M_reductase_subunit_alpha_uncultured_archaeon_GZfos33H6_1_570'}}
 
-        args = create_parser('/home/ace/github/TreeSAPP/', 'M0701', 'p')
+        args = create_parser(HOME_DIR, 'M0701', 'p')
         marker_build_dict = treesapp.parse_ref_build_params(args)
         marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+
+    def test_validate_inputs(self):
+        args = create_parser(HOME_DIR, 'M0701', 'p')
+
+        marker_build_dict = treesapp.parse_ref_build_params(args)
+        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+
+        # Correctly formatted reference tree
+        # assert(validate_inputs(args, marker_build_dict))
+
+        # # Incorrectly formatted reference tree
+        # new_marker_build = MarkerBuild()
+        # marker_build_dict['TEST'] = new_marker_build
+        # copyfile(TEST_DIR + '/TEST_tree.txt', args.treesapp + "/data/tree_data/")
+        
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.validate_inputs(args, marker_build_dict)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3  

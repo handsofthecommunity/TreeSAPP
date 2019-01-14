@@ -82,6 +82,46 @@ class ParserTest(unittest.TestCase):
         assert tree_numbers_translation['M0701'][0].complete
         assert(tree_numbers_translation['M0701'][0].number == '1')
         assert(tree_numbers_translation['M0701'][0].description == "NM4 | NM423249334157")
-
-
     
+    def test_read_colours_file(self):
+        marker_subgroups = dict()
+        internal_nodes = dict()
+        annotation_file = TREESAPP_PATH + 'data/iTOL_datasets/McrA_colours_style.txt'
+        args = create_parser(TREESAPP_PATH, 'M0701', 'p')
+
+        marker_subgroups['McrA'] = dict()
+        internal_nodes['McrA'] = dict()
+        marker_subgroups['McrA'], internal_nodes['McrA'] = file_parsers.read_colours_file(args, annotation_file)
+
+        expected_keys = ['Bathyarchaeota', 'Methanosarcinales', 'Verstraetearchaeota', 'Methanomicrobiales', 'Methanococcales', 'Methanocellales', 'Methanomassiliicoccales', 'Methanococcales-MrtA', 'ANME-1', 'Syntrophoarchaeum', 'Methanopyrus', 'Methanobacteriales', 'Methanonatronarchaeia', 'Methanobacteriales-MrtA']
+
+        for key in expected_keys:
+            assert(key in marker_subgroups['McrA'].keys())
+
+        assert(marker_subgroups['McrA']['Bathyarchaeota'][0] == ('204', '203'))
+        assert(not internal_nodes['McrA'])
+
+
+    def test_tax_ids_file_to_leaves(self):
+        marker_tax_ids = TREESAPP_PATH + 'data/tree_data/tax_ids_McrA.txt'
+        ref_tree_leaves = file_parsers.tax_ids_file_to_leaves(marker_tax_ids)
+
+        assert(len(ref_tree_leaves) == 214)
+        assert(ref_tree_leaves[0].description == 'NM4 | NM423249334157')
+        assert(ref_tree_leaves[0].lineage == 'cellular organisms; Archaea')
+
+        for i in range(214):
+            assert(ref_tree_leaves[i].number == str(i + 1))
+            assert(ref_tree_leaves[i].complete)
+
+        marker_tax_ids = TEST_PATH + '/test_data/empty.fasta'
+
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            ref_tree_leaves = file_parsers.tax_ids_file_to_leaves(marker_tax_ids)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 5
+
+        marker_tax_ids = TEST_PATH + '/test_data/tax_ids_McrA.txt' 
+        with pytest.raises(ValueError) as excinfo:
+            ref_tree_leaves = file_parsers.tax_ids_file_to_leaves(marker_tax_ids)
+            assert ecxinfo.value.code == 5

@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfi
 import fasta
 
 TEST_DATA_PATH='/home/travis/build/hallamlab/TreeSAPP/tests/test_data'
-
+TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/'
 
 def create_parser(treesapp, targets, reftree):
     args = argparse.Namespace()
@@ -22,10 +22,10 @@ def create_parser(treesapp, targets, reftree):
     args.output_dir_var = '/home/travis/build/hallamlab/marker_test/various_outputs'
     args.skip = 'n'
     args.molecule = 'prot'
-    args.executables = {'BMGE.jar': '/home/travis/build/hallamlab/TreeSAPP/sub_binaries/BMGE.jar', 'hmmalign': '/usr/bin/hmmalign', 'usearch': '/home/ace/github/TreeSAPP/sub_binaries/usearch', 'hmmsearch': '/usr/bin/hmmsearch', 'trimal': '/usr/bin/trimal', 'raxmlHPC': '/usr/bin/raxmlHPC', 'hmmbuild': '/usr/bin/hmmbuild', 'prodigal': '/usr/local/bin/prodigal', 'papara': '/usr/bin/papara'}
+    args.executables = {'BMGE.jar': '/home/travis/build/hallamlab/TreeSAPP/sub_binaries/BMGE.jar', 'hmmalign': '/usr/bin/hmmalign', 'usearch': '/home/travos/build/hallamlab/TreeSAPP/sub_binaries/usearch', 'hmmsearch': '/usr/bin/hmmsearch', 'trimal': '/usr/bin/trimal', 'raxmlHPC': '/usr/bin/raxmlHPC', 'hmmbuild': '/usr/bin/hmmbuild', 'prodigal': '/usr/local/bin/prodigal', 'papara': '/usr/bin/papara'}
     args.reference_data_prefix=''
     args.num_threads = 3
-    args.output_dir_final = '/home/ace/marker_test/final_outputs/'
+    args.output_dir_final = '/home/travis/build/hallamlab/marker_test/final_outputs/'
     args.formatted_input_file = ''
     args.composition = 'meta'
     args.overwrite = True
@@ -65,13 +65,19 @@ class FastaTests(unittest.TestCase):
     
 
     def test_format_read_fasta(self):
-        args = create_parser('/home/ace/github/TreeSAPP/', 'M0701', 'p')
+        args = create_parser(TREESAPP_PATH, 'M0701', 'p')
         args.fasta_input = 'tests/test_data/short_fasta_valid.faa'
         formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
         assert('>k127_1003429_914638_1_#_2_#_1513_#_1_#_ID=914638_1_partial=10_start_type=Edge_rbs_motif=None_rbs_spacer=None' in formatted_fasta_dict.keys())
         assert('>k127_35937_flag_381292_3_#_288_#_416_#_-1_#_ID=381292_3_partial=01_start_type=Edge_rbs_motif=None_rbs_spacer' in formatted_fasta_dict.keys())
         assert( '>Prodigal_Seq_6_6_3_#_3683_#_4678_#_-1_#_ID=6_3_partial=00_start_type=ATG_rbs_motif=None_rbs_spacer=None_nosZ' in formatted_fasta_dict.keys())
-      
+
+        args.fasta_input = 'tests/test_data/fasta_invalid.faa'
+
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+             fasta.format_read_fasta(args.fasta_input, "prot", args.output)
+             assert pytest_wrapped_e.type == SystemExit
+             assert pytest_wrapped_e.value.code == 5
 
     def test_get_headers(self):
        ref_headers = fasta.get_headers(TEST_DATA_PATH + '/short_fasta.fa')
@@ -86,7 +92,16 @@ class FastaTests(unittest.TestCase):
         assert(True)
 
     def test_write_new_fasta(self):
-        assert(True)
+        args, formatted_fasta_dict = get_formatted_fasta_dict()
+        fasta_name = TEST_DATA_PATH + '/test_new_fasta.fasta'
+
+        fasta.write_new_fasta(formatted_fasta_dict, fasta_name)
+        args.fasta_input = 'tests/test_data/test_new_fasta.fasta'
+        
+        formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
+        assert('>k127_1003429_914638_1_#_2_#_1513_#_1_#_ID=914638_1_partial=10_start_type=Edge_rbs_motif=None_rbs_spacer=None' in formatted_fasta_dict.keys())
+        assert('>k127_35937_flag_381292_3_#_288_#_416_#_-1_#_ID=381292_3_partial=01_start_type=Edge_rbs_motif=None_rbs_spacer' in formatted_fasta_dict.keys())
+        assert( '>Prodigal_Seq_6_6_3_#_3683_#_4678_#_-1_#_ID=6_3_partial=00_start_type=ATG_rbs_motif=None_rbs_spacer=None_nosZ' in formatted_fasta_dict.keys())
 
     def test_get_header_format(self):
         assert(True)
