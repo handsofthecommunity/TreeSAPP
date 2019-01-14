@@ -1,4 +1,5 @@
 import pytest
+import argparse
 import unittest
 import os
 
@@ -9,6 +10,7 @@ from jplace_utils import jplace_parser
 from json import loads
 import file_parsers
 import treesapp
+import fasta
 
 HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
 TREESAPP_TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/test_data/'
