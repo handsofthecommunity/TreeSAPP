@@ -13,12 +13,13 @@ import treesapp
 
 TEST_DATA_PATH ='/home/travis/build/hallamlab/TreeSAPP/tests/test_data'
 TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/'
+TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests'
 
 class JplaceUtilsTests(unittest.TestCase):
 
     def test_organize_jplace_files(self):
         args = create_parser(TREESAPP_PATH, 'M0701', 'p')
-        jplace_files = glob.glob(TEST_DIR + 'test_data' + os.sep + '*.jplace')
+        jplace_files = glob.glob(TEST_DATA_PATH + os.sep + '*.jplace')
 
         jplace_collection = jplace_utils.organize_jplace_files(jplace_files)
 

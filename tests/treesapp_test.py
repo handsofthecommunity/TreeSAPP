@@ -212,6 +212,9 @@ class TempTest(unittest.TestCase):
         alignment_dimensions_dict = treesapp.get_alignment_dims(args, marker_build_dict)
         assert(alignment_dimensions_dict['M0701'] == (214, 837))
 
+            
+class TreeSAPPTest(unittest.TestCase):
+
     def test_hmmsearch_orfs_parse_domain_tables(self):
         args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
@@ -257,9 +260,6 @@ class TempTest(unittest.TestCase):
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 3
         
-
-            
-class TreeSAPPTest(unittest.TestCase):
 
     def test_create_ref_phy_files(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
