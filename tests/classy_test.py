@@ -11,6 +11,7 @@ from json import loads
 import file_parsers
 
 HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
+TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/'
 
 def create_itol():
     itol = jplace_parser(HOME_DIR + 'tests/test_data/RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace')
@@ -22,6 +23,101 @@ def init_itol():
     itol.create_jplace_node_map()
     return itol
 
+def init_dtp():
+    domtbl_file = TEST_DIR + 'domtbl.txt'
+    dtp = DomainTableParser(domtbl_file)
+    return dtp
+
+def create_dtp(domtbl_file):
+    dtp = DomainTableParser(domtbl_file)
+    dtp.read_domtbl_lines()   
+    distinct_alignments, num_fragmented, glued, multi_alignments, raw_alignments = HMMER_domainTblParser.format_split_alignments(dtp, 0, 0, 0, 0)
+    return dtp, distinct_alignments
+
+expected_domtbl_keys = ['PKL62129.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanomicrobiales_archaeon_HGW-Methanomicrobiales-2 -_1_1', 'AUD55425.1_methyl-coenzyme_M_reductase_alpha_subunit__partial_uncultured_euryarchaeote -_1_1', 'KUE73676.1_methyl-coenzyme_M_reductase_subunit_alpha_Candidatus_Methanomethylophilus_sp._1R26 -_1_1', 'AAM30936.1_Methyl-coenzyme_M_reductase__alpha_subunit_Methanosarcina_mazei_Go1 -_1_1', 'AFD09581.1_methyl-coenzyme_M_reductase_alpha_subunit__partial_uncultured_Methanomicrobiales_archaeon -_1_1', 'OYT62528.1_hypothetical_protein_B6U67_04395_Methanosarcinales_archaeon_ex4484_138 -_1_1', 'AAU83782.1_methyl_coenzyme_M_reductase_subunit_alpha_uncultured_archaeon_GZfos33H6 -_1_1', 'AAU82491.1_methyl_coenzyme_M_reductase_I_subunit_alpha_uncultured_archaeon_GZfos18B6 -_1_1', 'OFV67773.1_methyl_coenzyme_M_reductase_subunit_alpha_Candidatus_Syntrophoarchaeum_caldarius -_1_1', 'ADN36741.1_methyl-coenzyme_M_reductase__alpha_subunit_Methanolacinia_petrolearia_DSM_11571 -_1_1', 'PKL66143.1_coenzyme-B_sulfoethylthiotransferase_subunit_alpha_Methanobacteriales_archaeon_HGW-Methanobacteri -_1_1', 'PHP46140.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanosarcinales_archaeon_ex4572_44 -_1_1']
+
+class HmmMatchTest(unittest.TestCase):
+
+    def test_init(self):
+        hm = HmmMatch()
+        assert(hm.genome == "")
+        assert(hm.orf == "")
+        assert(hm.target_hmm == "")
+        assert(hm.desc == '')
+        assert(hm.hmm_len == 0)
+        assert(hm.start == 0)
+        assert(hm.end == 0)
+        assert(hm.pstart == 0)
+        assert(hm.pend == 0)
+        assert(hm.seq_len == 0)
+        assert(hm.num == 0)
+        assert(hm.of == 0)
+        assert(hm.full_score == 0)
+        assert(hm.acc == 0.0)
+        assert(hm.ceval == 0.0)
+
+    def test_get_info(self):
+        hm = HmmMatch()
+        assert(hm.get_info() == 'Info for  in :\n\tHMM = , length = 0\n\tSequence length = 0\n\tAligned length = 0\n\tAlignment start = 0, alignment stop = 0\n\tProfile start = 0, profile stop = 0\n\tNumber 0 of 0\n\tcE-value = 0.0\n\tacc = 0.0\n\tfull score = 0\n')
+
+class DomainTableParserTest(unittest.TestCase):
+
+    def test_init(self):
+        domtbl_file = TEST_DIR + 'domtbl.txt'
+        dtp = DomainTableParser(domtbl_file)
+        assert(len(dtp.alignments) == 0)
+        assert(dtp.i == 0)
+        assert(len(dtp.lines) == 0)
+        assert(dtp.size == 0)
+
+    def test_read_domtbl_lines(self):
+        dtp = init_dtp()
+        assert(len(dtp.lines) == 0)
+        assert(dtp.read_domtbl_lines() == None)
+        assert(dtp.lines[0] == 'PKL62129.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanomicrobiales_archaeon_HGW-Methanomicrobiales-2    -            580 McrA                 -            556  1.2e-294  970.3   1.5   1   2  3.8e-185  2.3e-184  606.3   0.0     4   340     7   345     1   346 0.98 -')
+        assert(dtp.lines[1] == 'PKL62129.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanomicrobiales_archaeon_HGW-Methanomicrobiales-2    -            580 McrA                 -            556  1.2e-294  970.3   1.5   2   2  5.5e-112  3.4e-111  364.7   0.4   329   556   346   580   344   580 0.98 -')
+        assert(dtp.size == 14)
+        
+    def test_next(self):
+        assert(True)
+
+    @pytest.mark.dependency()
+    def test_format_split_alignments(self):
+        dtp = init_dtp()
+        dtp.read_domtbl_lines()
+        distinct_alignments, num_fragmented, glued, multi_alignments, raw_alignments = HMMER_domainTblParser.format_split_alignments(dtp, 0, 0, 0, 0)
+        assert(len(distinct_alignments.keys()) == 12)
+        for i in range(len(expected_domtbl_keys)):
+            assert(expected_domtbl_keys[i] in distinct_alignments.keys())
+        assert(num_fragmented == 2)
+        assert(glued == 2)
+        assert(multi_alignments == 0)
+        assert(raw_alignments == 14)
+
+    @pytest.mark.dependency(depends=["test_format_split_alignments"])
+    def test_filter_poor_hits(self):
+        args = create_parser(HOME_DIR, 'M0701', 'p')
+        dtp, distinct_matches = create_dtp(TEST_DIR +'unfiltered_domtbl.txt')
+        
+        assert('TEST-2 -_1_1' in distinct_matches.keys())
+        assert('TEST-1 -_1_1' in distinct_matches.keys())
+        assert(len(distinct_matches.keys()) == 4)
+
+        purified_matches, dropped = HMMER_domainTblParser.filter_poor_hits(args, distinct_matches, 0)
+        assert(dropped == 2)
+        test1 = ('TEST-2', '-')
+        test2 = ('TEST-1', '-')
+        assert(len(purified_matches[test1]) == 0)
+        assert(len(purified_matches[test2]) == 0)
+        
+    @pytest.mark.dependency(depends=["test_filter_poor_hits"])        
+    def test_filter_incomplete_hits(self):
+        args = create_parser(HOME_DIR, 'M0701', 'p')
+        dropped = 0
+        dtp, distinct_matches = create_dtp(TEST_DIR + 'domtbl.txt')
+        purified_matches, dropped = HMMER_domainTblParser.filter_poor_hits(args, distinct_matches, dropped)
+        complete_gene_hits, dropped = HMMER_domainTblParser.filter_incomplete_hits(args, purified_matches, dropped)
+        
 
 class MarkerBuildTest(unittest.TestCase):
 
