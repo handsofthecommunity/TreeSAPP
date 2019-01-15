@@ -11,10 +11,6 @@ from .treesapp_test import create_parser
 TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/'
 TEST_DATA_PATH = '/home/travis/build/hallamlab/TreeSAPP/tests/test_data/'
 
-
-results = [('213_McrA', 'M---------------------------------------------------------------------------------------------------------------------------------------------------------------AKKIEKTQKLFLKALKEKFA-------------EDPQS--TSTIFAREGLKQS--PRKMEFVKAGNAAA-MSR--GLSMYDPVRCHI---GGIPLGQRQLMTYEVSGT-G---------------------VFVEGDDLHFVNNAAMQQMWDDIRRTILVNMDLAHQTLQKRLGKEVTPETINEFLHVVNHAMPGA-AVVQEHMVETHPSLVDDCYVKVFTGDDELADDLEPQFVINVEKLFPG------K-QA----AQLKAAVGKSLWQAIRIPTIVSRTCDGGTTSRWSAMQLGMSFIGAYHMCAGEAATADLAYAAKHAGVIQMAE-ILPARRARGPNEPGGIKFGHFADMVQT-DRKYPH-----------------DPAKASLEVV-AAGTMLFDQIWLGSYMSGG-VGFTQ-YATAAYTDNILDDYTYYGMDY-IKDKYKVDWKNPG-EKDKV-KP-TQEVVNDIASE-VTLYGMEQYEQFPTALETHFGGSQRASVLAAASGLSTAIATGNSNAGLNGW-YLSMLLHKEGWSRLGFYGYDLQDQCGSANTESYRADEGCVGELRGANYPNYAMNVGHQGEYAAIAGAAHITRGDAWALNPLIKIAFADP-SLKFDFSEPRREFAKGAIREF-MPAGERALIIP-AR-----------------------'), ('214_McrA','----------------------------------------------------------------------------------------------------------------------------------------------------------------MAKIERTQKLFLKSLKEKFA------------G-DPTG-TTASYFTFGDMKQS--PRKMEFLEQGRRVS-MDR--GISQYDPRRAHL---GGIPLGQRQLMTYEVSTT-G---------------------VFVEGDDLHFVNNSAMQQCWDDIRRTVIVGMDLAHQTLQKRLGKEVTPETINEYLHVLNHAMPGA-AVVQEHMVETAPALVDDCYVKVFSGDDELVDDLEPQFVLNVDKLFPA------K-QA----EGLKAAVGKSLWQAVHIPTTVSRTCDGGTTSRWSAMQLGMSYIAAYRMCAGEAAVADLSFAAKHAGVIQMAS-HLPARRARGPNEPGGIGFGLFSDIIQA-NRKYPN-----------------DPARASLEVV-AAGTMLFDQIWLGSYMSGG-VGFTQ-YATAAYTDNILDEYTYYGMDY-LKDKYKVDWKNPS-PADRV-KA-SQDIVNDLATE-VSLNAMEQYEQFPTLMEDHFGGSQRAGVIAAACGLTCSIGTGNSNAGLNGW-YLSMLLHKEGWSRLGFFGYDLQDQCGSTNSLSIRPDEGAMGEVRGPNYPNYAMNVGHQGEYAAIVGGAHYGRGDGWCFDPRVAITFADP-ALKFDFAEPRREFAKGAIREF-MPAGERSLIIP-AR-----------------------')]
-
-
 class FastaTest(unittest.TestCase):
 
     def short_fasta():
@@ -76,9 +72,6 @@ class FastaTest(unittest.TestCase):
         assert('>k127_1003429_914638_1_#_2_#_1513_#_1_#_ID=914638_1_partial=10_start_type=Edge_rbs_motif=None_rbs_spacer=None' in formatted_fasta_dict.keys())
         assert('>k127_35937_flag_381292_3_#_288_#_416_#_-1_#_ID=381292_3_partial=01_start_type=Edge_rbs_motif=None_rbs_spacer' in formatted_fasta_dict.keys())
         assert( '>Prodigal_Seq_6_6_3_#_3683_#_4678_#_-1_#_ID=6_3_partial=00_start_type=ATG_rbs_motif=None_rbs_spacer=None_nosZ' in formatted_fasta_dict.keys())
-
-    def test_get_header_format(self):
-        assert(True)
 
     def test_deduplicate(self):
         fasta_dict = fasta.read_fasta_to_dict(TEST_DATA_PATH + "/dup_fasta.fa")
