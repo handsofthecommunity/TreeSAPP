@@ -168,16 +168,24 @@ class TempTest(unittest.TestCase):
                 assert(content[5 + y*4 + 1] == results[9][50*y:(y+1)*50])
                 assert(content[5 + y*4 + 2] == results[10][50*y:(y+1)*50])
 
-
+     
     def test_multiple_alignments(self):
-      single_query_sequence_files = ['tests/test_data/McrA_hmm_purified_group0.faa']
+        args = create_parser(HOME_DIR, 'M0701', 'p')
+        args.formatted_input_file = args.output_dir_var + 'marker_test_suite.faa'  + "_formatted.fasta"
+        single_query_sequence_files = '../../marker_test/various_outputs/McrA_hmm_purified_group0.faa'
+        marker_build_dict = treesapp.parse_ref_build_params(args)
+        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+        tool = 'hmmalign'
 
-      args = create_parser(HOME_DIR, 'M0701', 'p')
-
-      marker_build_dict = treesapp.parse_ref_build_params(args)
-      marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
-
-      assert(treesapp.multiple_alignments(args, single_query_sequence_files, marker_build_dict, "hmmalign") == '')
+        assert(treesapp.multiple_alignments(single_query_sequence_files, marker_build_dict, tool).key == 'M0701')
+        
+        #invalid tool name
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.multiple_alignments(single_query_sequence_files, marker_build_dict, 'none')
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
+    
+        
 
     def test_sub_indices_for_seq_names_jplace(self):
         short_numeric_contig_index = {'McrA': {-12: 'PHP46140.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanosarcinales_archaeon_ex4572_44_8_595', -2: 'OYT62528.1_hypothetical_protein_B6U67_04395_Methanosarcinales_archaeon_ex4484_138_1_471', -10: 'AAU83782.1_methyl_coenzyme_M_reductase_subunit_alpha_uncultured_archaeon_GZfos33H6_1_570'}}
@@ -212,7 +220,26 @@ class TempTest(unittest.TestCase):
         alignment_dimensions_dict = treesapp.get_alignment_dims(args, marker_build_dict)
         assert(alignment_dimensions_dict['M0701'] == (214, 837))
 
-            
+
+    def test_create_ref_phy_files(self):
+        args = create_parser(HOME_DIR, 'M0701', 'p')
+        args.formatted_input_file = args.output_dir_var + 'marker_test_suite.faa'  + "_formatted.fasta"
+        marker_build_dict = treesapp.parse_ref_build_params(args)
+        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+        
+        formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
+        hmm_domtbl_files = treesapp.hmmsearch_orfs(args, marker_build_dict)
+        hmm_matches = treesapp.parse_domain_tables(args, hmm_domtbl_files) 
+        fasta.write_new_fasta(formatted_fasta_dict, args.formatted_input_file)
+        homolog_seq_files, numeric_contig_index = treesapp.extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
+        ref_alignment_dimensions = treesapp.get_alignment_dims(args, marker_build_dict)
+        treesapp.create_ref_phy_files(args, homolog_seq_files, marker_build_dict, ref_alignment_dimensions)
+        marker = re.match("(.*)_hmm_purified.*", os.path.basename('/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified_group0.faa')).group(1)
+        ref_alignment_phy = args.output_dir_var + marker + ".phy"
+
+        assert(filecmp.cmp(ref_alignment_phy, HOME_DIR + 'tests/test_data/expected_ref_alignment.phy'))
+             
+
 class TreeSAPPTest(unittest.TestCase):
 
     def test_hmmsearch_orfs_parse_domain_tables(self):
@@ -259,43 +286,6 @@ class TreeSAPPTest(unittest.TestCase):
             treesapp.hmmsearch_orfs(args, marker_build_dict)
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 3
-        
-
-    def test_create_ref_phy_files(self):
-        args = create_parser(HOME_DIR, 'M0701', 'p')
-        args.formatted_input_file = args.output_dir_var + 'marker_test_suite.faa'  + "_formatted.fasta"
-        marker_build_dict = treesapp.parse_ref_build_params(args)
-        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
-        
-        formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
-        hmm_domtbl_files = treesapp.hmmsearch_orfs(args, marker_build_dict)
-        hmm_matches = treesapp.parse_domain_tables(args, hmm_domtbl_files) 
-        fasta.write_new_fasta(formatted_fasta_dict, args.formatted_input_file)
-        homolog_seq_files, numeric_contig_index = treesapp.extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
-        ref_alignment_dimensions = treesapp.get_alignment_dims(args, marker_build_dict)
-        treesapp.create_ref_phy_files(args, homolog_seq_files, marker_build_dict, ref_alignment_dimensions)
-        marker = re.match("(.*)_hmm_purified.*", os.path.basename('/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified_group0.faa')).group(1)
-        ref_alignment_phy = args.output_dir_var + marker + ".phy"
-
-        assert(filecmp.cmp(ref_alignment_phy, HOME_DIR + 'tests/test_data/expected_ref_alignment.phy'))
-
-
-    def test_multiple_alignments(self):
-        args = create_parser(HOME_DIR, 'M0701', 'p')
-        args.formatted_input_file = args.output_dir_var + 'marker_test_suite.faa'  + "_formatted.fasta"
-        single_query_sequence_files = '../../marker_test/various_outputs/McrA_hmm_purified_group0.faa'
-        marker_build_dict = treesapp.parse_ref_build_params(args)
-        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
-        tool = 'hmmalign'
-
-        assert(treesapp.multiple_alignments(single_query_sequence_files, marker_build_dict, tool).key == 'M0701')
-        
-        #invalid tool name
-        with pytest.raises(SystemExit) as pytest_wrapped_e:
-            treesapp.multiple_alignments(single_query_sequence_files, marker_build_dict, 'none')
-            assert pytest_wrapped_e.type == SystemExit
-            assert pytest_wrapped_e.value.code == 3
-    
         
 
     def test_prepare_and_run_papara(self):
