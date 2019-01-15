@@ -43,20 +43,20 @@ class FastaTest(unittest.TestCase):
             i+=1
 
 
-    # def test_format_read_fasta(self):
-    #     args = create_parser(TREESAPP_PATH, 'M0701', 'p')
-    #     args.fasta_input = 'tests/test_data/short_fasta_valid.faa'
-    #     formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
-    #     assert('>k127_1003429_914638_1_#_2_#_1513_#_1_#_ID=914638_1_partial=10_start_type=Edge_rbs_motif=None_rbs_spacer=None' in formatted_fasta_dict.keys())
-    #     assert('>k127_35937_flag_381292_3_#_288_#_416_#_-1_#_ID=381292_3_partial=01_start_type=Edge_rbs_motif=None_rbs_spacer' in formatted_fasta_dict.keys())
-    #     assert( '>Prodigal_Seq_6_6_3_#_3683_#_4678_#_-1_#_ID=6_3_partial=00_start_type=ATG_rbs_motif=None_rbs_spacer=None_nosZ' in formatted_fasta_dict.keys())
+    def test_format_read_fasta(self):
+        args = create_parser(TREESAPP_PATH, 'M0701', 'p')
+        args.fasta_input = 'tests/test_data/short_fasta_valid.faa'
+        formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
+        assert('>k127_1003429_914638_1_#_2_#_1513_#_1_#_ID=914638_1_partial=10_start_type=Edge_rbs_motif=None_rbs_spacer=None' in formatted_fasta_dict.keys())
+        assert('>k127_35937_flag_381292_3_#_288_#_416_#_-1_#_ID=381292_3_partial=01_start_type=Edge_rbs_motif=None_rbs_spacer' in formatted_fasta_dict.keys())
+        assert( '>Prodigal_Seq_6_6_3_#_3683_#_4678_#_-1_#_ID=6_3_partial=00_start_type=ATG_rbs_motif=None_rbs_spacer=None_nosZ' in formatted_fasta_dict.keys())
 
-    #     args.fasta_input = 'tests/test_data/fasta_invalid.faa'
+        args.fasta_input = 'tests/test_data/fasta_invalid.faa'
 
-    #     with pytest.raises(SystemExit) as pytest_wrapped_e:
-    #          fasta.format_read_fasta(args.fasta_input, "prot", args.output)
-    #          assert pytest_wrapped_e.type == SystemExit
-    #          assert pytest_wrapped_e.value.code == 5
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+             fasta.format_read_fasta(args.fasta_input, "prot", args.output)
+             assert pytest_wrapped_e.type == SystemExit
+             assert pytest_wrapped_e.value.code == 5
 
     def test_get_headers(self):
        ref_headers = fasta.get_headers(TEST_DATA_PATH + '/short_fasta.fa')

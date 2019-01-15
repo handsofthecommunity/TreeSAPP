@@ -28,8 +28,7 @@ before_script:
 
 script:
     - py.test -vv tests/treesapp_test.py
-    - py.test -vv tests/markerbuild_test.py
-    - py.test -vv tests/itol_test.py
+    - py.test -vv tests/jplace_utils_test.py
     - py.test -vv tests/fasta_test.py
     - py.test -vv tests/file_parsers_test.py
     - py.test -vv tests/classy_test.py
