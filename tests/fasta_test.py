@@ -1,21 +1,31 @@
 import pytest
 import unittest
 import os
+import argparse
+
+from .treesapp_test import create_parser
 
 import sys, inspect
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
-
 import fasta
-from .treesapp_test import create_parser
 
 TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/'
 TEST_DATA_PATH = '/home/travis/build/hallamlab/TreeSAPP/tests/test_data/'
 
-class FastaTest(unittest.TestCase):
+def short_fasta():
+    fasta_file = TEST_DATA_PATH + '/short_fasta.fa'
+    return fasta_file, open(fasta_file, 'r')
 
-    def short_fasta():
-        fasta_file = TEST_DATA_PATH + '/short_fasta.fa'
-        return fasta_file, open(fasta_file, 'r')
+def get_formatted_fasta_dict():
+    args = create_parser(TREESAPP_PATH, 'M0701', 'p')
+    args.fasta_input = 'tests/test_data/short_fasta_valid.faa'
+    formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
+    return args, formatted_fasta_dict
+
+results = [('213_McrA', 'M---------------------------------------------------------------------------------------------------------------------------------------------------------------AKKIEKTQKLFLKALKEKFA-------------EDPQS--TSTIFAREGLKQS--PRKMEFVKAGNAAA-MSR--GLSMYDPVRCHI---GGIPLGQRQLMTYEVSGT-G---------------------VFVEGDDLHFVNNAAMQQMWDDIRRTILVNMDLAHQTLQKRLGKEVTPETINEFLHVVNHAMPGA-AVVQEHMVETHPSLVDDCYVKVFTGDDELADDLEPQFVINVEKLFPG------K-QA----AQLKAAVGKSLWQAIRIPTIVSRTCDGGTTSRWSAMQLGMSFIGAYHMCAGEAATADLAYAAKHAGVIQMAE-ILPARRARGPNEPGGIKFGHFADMVQT-DRKYPH-----------------DPAKASLEVV-AAGTMLFDQIWLGSYMSGG-VGFTQ-YATAAYTDNILDDYTYYGMDY-IKDKYKVDWKNPG-EKDKV-KP-TQEVVNDIASE-VTLYGMEQYEQFPTALETHFGGSQRASVLAAASGLSTAIATGNSNAGLNGW-YLSMLLHKEGWSRLGFYGYDLQDQCGSANTESYRADEGCVGELRGANYPNYAMNVGHQGEYAAIAGAAHITRGDAWALNPLIKIAFADP-SLKFDFSEPRREFAKGAIREF-MPAGERALIIP-AR-----------------------'), ('214_McrA','----------------------------------------------------------------------------------------------------------------------------------------------------------------MAKIERTQKLFLKSLKEKFA------------G-DPTG-TTASYFTFGDMKQS--PRKMEFLEQGRRVS-MDR--GISQYDPRRAHL---GGIPLGQRQLMTYEVSTT-G---------------------VFVEGDDLHFVNNSAMQQCWDDIRRTVIVGMDLAHQTLQKRLGKEVTPETINEYLHVLNHAMPGA-AVVQEHMVETAPALVDDCYVKVFSGDDELVDDLEPQFVLNVDKLFPA------K-QA----EGLKAAVGKSLWQAVHIPTTVSRTCDGGTTSRWSAMQLGMSYIAAYRMCAGEAAVADLSFAAKHAGVIQMAS-HLPARRARGPNEPGGIGFGLFSDIIQA-NRKYPN-----------------DPARASLEVV-AAGTMLFDQIWLGSYMSGG-VGFTQ-YATAAYTDNILDEYTYYGMDY-LKDKYKVDWKNPS-PADRV-KA-SQDIVNDLATE-VSLNAMEQYEQFPTLMEDHFGGSQRAGVIAAACGLTCSIGTGNSNAGLNGW-YLSMLLHKEGWSRLGFFGYDLQDQCGSTNSLSIRPDEGAMGEVRGPNYPNYAMNVGHQGEYAAIVGGAHYGRGDGWCFDPRVAITFADP-ALKFDFAEPRREFAKGAIREF-MPAGERSLIIP-AR-----------------------')]
+
+
+class FastaTest(unittest.TestCase):
 
     def test_read_fasta_to_dict(self):
         fasta_file, fasta_handler = short_fasta()
@@ -57,9 +67,6 @@ class FastaTest(unittest.TestCase):
              fasta.get_headers('')
              assert pytest_wrapped_e.type == SystemExit
              assert pytest_wrapped_e.value.code == 5
-
-    def test_generate_fasta(self):
-        assert(True)
 
     def test_write_new_fasta(self):
         args, formatted_fasta_dict = get_formatted_fasta_dict()
