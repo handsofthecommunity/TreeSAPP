@@ -11,7 +11,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfi
 import jplace_utils
 import treesapp
 
-TEST_DATA_PATH='/home/travis/build/hallamlab/TreeSAPP/tests/test_data'                              TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/'
+TEST_DATA_PATH ='/home/travis/build/hallamlab/TreeSAPP/tests/test_data'
+TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/'
 
 class JplaceUtilsTests(unittest.TestCase):
 

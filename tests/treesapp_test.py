@@ -206,9 +206,6 @@ class TempTest(unittest.TestCase):
             assert pytest_wrapped_e.value.code == 3
 
 
-class TreeSAPPTest(unittest.TestCase):
-
-
     def test_get_alignment_data(self):
         args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
@@ -227,6 +224,7 @@ class TreeSAPPTest(unittest.TestCase):
             treesapp.hmmsearch_orfs(args, marker_build_dict)
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 3
+
 
     def test_extract_hmm_matches(self):
         args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
@@ -260,6 +258,8 @@ class TreeSAPPTest(unittest.TestCase):
             assert pytest_wrapped_e.value.code == 3
         
 
+            
+class TreeSAPPTest(unittest.TestCase):
 
     def test_create_ref_phy_files(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
