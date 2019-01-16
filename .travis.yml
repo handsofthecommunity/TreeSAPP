@@ -10,11 +10,12 @@ before_install:
     - sudo apt-get install python-qt4 -y
     - sudo apt-get install python-lxml -y
     - sudo apt-get install python-six -y
-    - sudo add-apt-repository ppa:webupd8team/java -y
-    - sudo apt-get update
-    - sudo echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | sudo debconf-set-selections
+    - sudo apt-get install oracle-java8-installer oracle-java8-set-default -y
+    - cd /var/lib/dpkg/info && sed -i 's|JAVA_VERSION=8u202|' oracle-java8-installer.*
+    - sed -i 's|PARTNER_URL=https://download.oracle.com/otn-pub/java/jdk/8u202-b08/1961070e4c9b4e26a04e7f5a083f551e/|' oracle-java8-installer.*
+    - sed -i 's|SHA256SUM_TGZ=.*|SHA256SUM_TGZ="9a5c32411a6a06e22b69c495b7975034409fa1652d03aeb8eb5b6f59fd4594e0"|' oracle-java8-installer.*
+    - sed -i 's|J_DIR=jdk1.8.0_202|' oracle-java8-installer.*
     - sudo apt-get install oracle-java8-installer -y
-    - sudo apt-get install oracle-java8-set-default -y
     - wget https://mafft.cbrc.jp/alignment/software/mafft_7.407-1_amd64.deb
     - sudo dpkg -i mafft_7.407-1_amd64.deb
     - wget https://sco.h-its.org/exelixis/resource/download/software/papara_nt-2.5-static_x86_64.tar.gz
