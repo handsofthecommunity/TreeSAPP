@@ -21,9 +21,9 @@ before_install:
     - sudo apt-get update
     - sudo apt-get install oracle-java8-installer -y
     - sudo apt-get install oracle-java8-set-default -y
-    - wget https://mafft.cbrc.jp/alignment/software/mafft_7.407-1_amd64.deb
+    - sudo wget https://mafft.cbrc.jp/alignment/software/mafft_7.407-1_amd64.deb
     - sudo dpkg -i mafft_7.407-1_amd64.deb
-    - wget https://sco.h-its.org/exelixis/resource/download/software/papara_nt-2.5-static_x86_64.tar.gz
+    - sudo wget https://sco.h-its.org/exelixis/resource/download/software/papara_nt-2.5-static_x86_64.tar.gz
 
 install:
     - pip install -r requirements.txt
