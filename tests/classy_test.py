@@ -9,6 +9,9 @@ from classy import ItolJplace, TreeProtein, TreeLeafReference, ReferenceSequence
 from jplace_utils import jplace_parser
 from json import loads
 import file_parsers
+from HMMER_domainTblParser import HmmMatch, DomainTableParser
+import HMMER_domainTblParser
+from .treesapp_test import create_parser
 
 HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
 TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/'
@@ -295,7 +298,7 @@ class ItolJplaceTest(unittest.TestCase):
         itol.harmonize_placements(HOME_DIR)
         results = loads(itol.placements[0], encoding='utf-8')
         assert(results['n'][0] == 'AFD09581.1_methyl-coenzyme_M_reductase_alpha_subunit__partial_uncultured_Methanomicrobiales_archaeon_1_254')
-        assert(results['p'][0] == [261, -41251.840196, 0.97, 0, 0])
+        assert(results['p'][0] == [0, -41251.840196, 0.97, 0, 0])
         
     def test_clear_object(self):
         itol = ItolJplace()

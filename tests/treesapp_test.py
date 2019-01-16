@@ -149,25 +149,12 @@ class TempTest(unittest.TestCase):
         with open(phy_file['M0701'][0]) as f:
             content = f.readlines()
 
-        results = ['3', '439', '59', 'DDLHYVNNAAIQQAWDDIRRTVIVGLNTAHNVLEKRLGIEVTPETITHYL', '70',
-                   'DDLHFVNNAAIQQMVDDIKRTVIVGMDTAHAVLEKRLGVEVTPETINEYM', '186', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 'ETVNHAMPGAAVVQEHMVETDPLIVQDSYVKVFTGDDELADEIDSAFVLDINKEFPEEALKAEVGGAIWQAVRIPSIVGRVCDGGNTSRWSAMQIGMSMISAYNQCAGEGATGDFAYASKHAEVIHMGTYLPVRRARAENELGGVPFGFMADICQGDPVRVSLEVVALGAALYDQIWLGSYMSGGYATAAYTDNVLDDFTYYGKDYNMDTVLDVGTEVAFYALEQYEEYPALLETHFGGSQRASVVSAAAGCSTAFATGNAQTGLSAWYLAMYLHKEQHSRLGFYGFDLQDQCGAANVFSIRNDEGLPLEMRGPNYPNYAMNVGHQGEYAGIAQAPHAARGDAWAFNPLVKIAFADKNLCFDFSKVREEFAKGALREFEPAGERTAITP', 'EAINHALPGGAVVQEHMVEVHPGLVEDCYAKIFTGDDNLADELDKRILIDINKEFPEEQLKSYIGNRTYQVNRVPTIVVRTCDGGTVSRWSAMQIGMSFISAYKLCAGEAAIADFSYAAKHADVIEMGTIMPARRARGPNEPGGVAFGTFADIVQTDPANVSLEVIAGAAALYDQVWLGSYMSGGYATAAYTDDILDDFVYYGMEYTMDVVRDISTEVTLYSLEQYEEYPTLLEDHFGGSQRAAVAAAAAGCSTAFATGNSNAGINGWYLSQILHKEAHSRLGFYGYDLQDQCGASNSLSIRSDEGLIHELRGPNYPNYAMNVGHQPEYAGIAQAPHAARGDAFCTNPLIKVAFADKDLAFDFTSPRKSIAAGALREFMPEGERDLIIP', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXKHAGVIQMADILPARRARGPNEPGGIKFGHFGDMIQADPVKATLEVVGAGAMLFDQIWLGSYMSGGYATAAYTDNILDDYCYYGLDYTQEVLNDIATEVTLYGMEQYEQYPTTLESHFGGSQRASVLAAASGISCSLATANSNAGLNGWYMSMLAHKEGWSRLGFFGYDLQDQCGSTNSMSIRPDEGCIGELRGPNYPNYAMNVGHQGEYAAIASAAHYGRQDAWVLSPLIKIAFADPSLKFDFSEPRREFARGAIREFMPAGERSLIIP']
+        results = ['3  439', '186       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '59        DDLHYVNNAAIQQAWDDIRRTVIVGLNTAHNVLEKRLGIEVTPETITHYL','70        DDLHFVNNAAIQQMVDDIKRTVIVGMDTAHAVLEKRLGVEVTPETINEYM', '', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 'ETVNHAMPGAAVVQEHMVETDPLIVQDSYVKVFTGDDELADEIDSAFVLD', 'EAINHALPGGAVVQEHMVEVHPGLVEDCYAKIFTGDDNLADELDKRILID', '', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 'INKEFPEEALKAEVGGAIWQAVRIPSIVGRVCDGGNTSRWSAMQIGMSMI', 'INKEFPEEQLKSYIGNRTYQVNRVPTIVVRTCDGGTVSRWSAMQIGMSFI', '', 'XXXXXXXXXXXXXXXXXXXKHAGVIQMADILPARRARGPNEPGGIKFGHF', 'SAYNQCAGEGATGDFAYASKHAEVIHMGTYLPVRRARAENELGGVPFGFM', 'SAYKLCAGEAAIADFSYAAKHADVIEMGTIMPARRARGPNEPGGVAFGTF', '', 'GDMIQADPVKATLEVVGAGAMLFDQIWLGSYMSGGYATAAYTDNILDDYC', 'ADICQGDPVRVSLEVVALGAALYDQIWLGSYMSGGYATAAYTDNVLDDFT', 'ADIVQTDPANVSLEVIAGAAALYDQVWLGSYMSGGYATAAYTDDILDDFV', '', 'YYGLDYTQEVLNDIATEVTLYGMEQYEQYPTTLESHFGGSQRASVLAAAS', 'YYGKDYNMDTVLDVGTEVAFYALEQYEEYPALLETHFGGSQRASVVSAAA', 'YYGMEYTMDVVRDISTEVTLYSLEQYEEYPTLLEDHFGGSQRAAVAAAAA', '', 'GISCSLATANSNAGLNGWYMSMLAHKEGWSRLGFFGYDLQDQCGSTNSMS', 'GCSTAFATGNAQTGLSAWYLAMYLHKEQHSRLGFYGFDLQDQCGAANVFS', 'GCSTAFATGNSNAGINGWYLSQILHKEAHSRLGFYGYDLQDQCGASNSLS', '', 'IRPDEGCIGELRGPNYPNYAMNVGHQGEYAAIASAAHYGRQDAWVLSPLI', 'IRNDEGLPLEMRGPNYPNYAMNVGHQGEYAGIAQAPHAARGDAWAFNPLV']
 
         content = [x.strip() for x in content]
-        for l in range(4):
-            tmp = content[l].split()
-            assert(results[l*2] == tmp[0])
-            assert(results[l*2 + 1] == tmp[1])
 
-        for y in range(8):
-            if (y == 7):
-                assert(content[5 + y*4] == results[8][50*y:])
-                assert(content[5 + y*4 + 1] == results[9][50*y:])
-                assert(content[5 + y*4 + 2] == results[10][50*y:])
-            else :
-                assert(content[5 + y*4] == results[8][50*y:(y+1)*50])
-                assert(content[5 + y*4 + 1] == results[9][50*y:(y+1)*50])
-                assert(content[5 + y*4 + 2] == results[10][50*y:(y+1)*50])
-
+        for i in range(30):
+            assert(content[i] == results[i])
      
     def test_multiple_alignments(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
@@ -221,6 +208,23 @@ class TempTest(unittest.TestCase):
         assert(alignment_dimensions_dict['M0701'] == (214, 837))
 
 
+           
+
+class TreeSAPPTest(unittest.TestCase):
+
+    def test_hmmsearch_orfs_parse_domain_tables(self):
+        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
+        marker_build_dict = file_parsers.parse_ref_build_params(args)
+        marker_build_dict = file_parsers.parse_cog_list(args, marker_build_dict)
+        hmm_domtbl_files = treesapp.hmmsearch_orfs(args, marker_build_dict)
+        assert(hmm_domtbl_files[0] == '/home/travis/build/hallamlab/marker_test/various_outputs/McRA_to_ORFs_domtbl.txt')
+
+        args = create_parser('~', 'ALL', 'p')
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.hmmsearch_orfs(args, marker_build_dict)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
+
     def test_create_ref_phy_files(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
         args.formatted_input_file = args.output_dir_var + 'marker_test_suite.faa'  + "_formatted.fasta"
@@ -238,23 +242,6 @@ class TempTest(unittest.TestCase):
         ref_alignment_phy = args.output_dir_var + marker + ".phy"
 
         assert(filecmp.cmp(ref_alignment_phy, HOME_DIR + 'tests/test_data/expected_ref_alignment.phy'))
-             
-
-class TreeSAPPTest(unittest.TestCase):
-
-    def test_hmmsearch_orfs_parse_domain_tables(self):
-        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
-        marker_build_dict = file_parsers.parse_ref_build_params(args)
-        marker_build_dict = file_parsers.parse_cog_list(args, marker_build_dict)
-        hmm_domtbl_files = treesapp.hmmsearch_orfs(args, marker_build_dict)
-        assert(hmm_domtbl_files[0] == '/home/travis/build/hallamlab/marker_test/various_outputs/McRA_to_ORFs_domtbl.txt')
-
-        args = create_parser('~', 'ALL', 'p')
-        with pytest.raises(SystemExit) as pytest_wrapped_e:
-            treesapp.hmmsearch_orfs(args, marker_build_dict)
-            assert pytest_wrapped_e.type == SystemExit
-            assert pytest_wrapped_e.value.code == 3
-
 
     def test_extract_hmm_matches(self):
         args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')

@@ -81,11 +81,12 @@ class ParserTest(unittest.TestCase):
         marker_build_dict = file_parsers.parse_ref_build_params(args)
         marker_build_dict = file_parsers.parse_cog_list(args, marker_build_dict)
         tree_numbers_translation = file_parsers.read_species_translation_files(args, marker_build_dict)
+
         assert(tree_numbers_translation['M0701'][0].lineage == 'cellular organisms; Archaea')
         assert tree_numbers_translation['M0701'][0].complete
         assert(tree_numbers_translation['M0701'][0].number == '1')
-        assert(tree_numbers_translation['M0701'][0].description == "NM4 | NM423249334157")
-    
+        assert(tree_numbers_translation['M0701'][0].description == 'ANM41 | NM412872330390')
+
     def test_read_colours_file(self):
         marker_subgroups = dict()
         internal_nodes = dict()
@@ -108,11 +109,10 @@ class ParserTest(unittest.TestCase):
         marker_tax_ids = TREESAPP_PATH + 'data/tree_data/tax_ids_McrA.txt'
         ref_tree_leaves = file_parsers.tax_ids_file_to_leaves(marker_tax_ids)
 
-        assert(len(ref_tree_leaves) == 214)
-        assert(ref_tree_leaves[0].description == 'NM4 | NM423249334157')
+        assert(ref_tree_leaves[0].description == 'ANM41 | NM412872330390')
         assert(ref_tree_leaves[0].lineage == 'cellular organisms; Archaea')
 
-        for i in range(214):
+        for i in range(len(ref_tree_leaves)):
             assert(ref_tree_leaves[i].number == str(i + 1))
             assert(ref_tree_leaves[i].complete)
 

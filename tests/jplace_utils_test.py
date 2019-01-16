@@ -37,7 +37,3 @@ class JplaceUtilsTests(unittest.TestCase):
         marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
 
         
-    def test_jplace_parser(self):
-        jplace_files = glob.glob(TEST_DIR + 'test_data' + os.sep + '*.jplace')
-        itol = jplace_utils.jplace_parser(jplace_files[0])
-        
