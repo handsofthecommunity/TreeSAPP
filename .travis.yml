@@ -26,7 +26,7 @@ before_install:
     - sudo wget https://sco.h-its.org/exelixis/resource/download/software/papara_nt-2.5-static_x86_64.tar.gz
 
 install:
-    - pip install -r requirements.txt
+    - pip install -r /home/travis/build/hallamlab/TreeSAPP/requirements.txt
     - pip install pytest-cov
 
 before_script:
