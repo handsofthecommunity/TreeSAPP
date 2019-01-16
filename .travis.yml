@@ -12,10 +12,10 @@ before_install:
     - sudo apt-get install python-six -y
     - sudo apt-get update
     - sudo apt-get install oracle-java8-installer -y || true
-    - cd /var/lib/dpkg/info && sed -i 's|JAVA_VERSION=8u202|' oracle-java8-installer.*
-    - sed -i 's|PARTNER_URL=https://download.oracle.com/otn-pub/java/jdk/8u202-b08/1961070e4c9b4e26a04e7f5a083f551e/|' oracle-java8-installer.*
+    - cd /var/lib/dpkg/info && sed -i 's|JAVA_VERSION=8u191|JAVA_VERSION=8u202|' oracle-java8-installer.*
+    - sed -i 's|PARTNER_URL=http://download.oracle.com/otn-pub/java/jdk/8u191-b12/2787e4a523244c269598db4e85c51e0c/| PARTNER_URL=https://download.oracle.com/otn-pub/java/jdk/8u202-b08/1961070e4c9b4e26a04e7f5a083f551e/|' oracle-java8-installer.*
     - sed -i 's|SHA256SUM_TGZ=.*|SHA256SUM_TGZ="9a5c32411a6a06e22b69c495b7975034409fa1652d03aeb8eb5b6f59fd4594e0"|' oracle-java8-installer.*
-    - sed -i 's|J_DIR=jdk1.8.0_202|' oracle-java8-installer.*
+    - sed -i 's|JDIR=jdk1.8.0_191|J_DIR=jdk1.8.0_202|' oracle-java8-installer.*
     - sudo apt-get update
     - sudo apt-get install oracle-java8-installer -y
     - sudo apt-get install oracle-java8-set-default -y
