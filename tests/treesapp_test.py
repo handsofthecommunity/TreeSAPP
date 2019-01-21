@@ -11,13 +11,14 @@ import treesapp
 
 HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
 TREESAPP_TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/test_data/'
+TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/test_data/'
 
 def create_short_qc_ma_dict():
     qc_ma_dict = {'M0701': {'tests/test_data/expected_phy_file': {'186': '-------------------------------------------------------------------------------------------------------------------------------------------------------------------------KHAGVIQMADILPARRARGPNEPGGIKFGHFGDMIQADPVKATLEVVGAGAMLFDQIWLGSYMSGGYATAAYTDNILDDYCYYGLDYTQEVLNDIATEVTLYGMEQYEQYPTTLESHFGGSQRASVLAAASGISCSLATANSNAGLNGWYMSMLAHKEGWSRLGFFGYDLQDQCGSTNSMSIRPDEGCIGELRGPNYPNYAMNVGHQGEYAAIASAAHYGRQDAWVLSPLIKIAFADPSLKFDFSEPRREFARGAIREFMPAGERSLIIP', '70': 'DDLHFVNNAAIQQMVDDIKRTVIVGMDTAHAVLEKRLGVEVTPETINEYMEAINHALPGGAVVQEHMVEVHPGLVEDCYAKIFTGDDNLADELDKRILIDINKEFPEEQLKSYIGNRTYQVNRVPTIVVRTCDGGTVSRWSAMQIGMSFISAYKLCAGEAAIADFSYAAKHADVIEMGTIMPARRARGPNEPGGVAFGTFADIVQTDPANVSLEVIAGAAALYDQVWLGSYMSGGYATAAYTDDILDDFVYYGMEYTMDVVRDISTEVTLYSLEQYEEYPTLLEDHFGGSQRAAVAAAAAGCSTAFATGNSNAGINGWYLSQILHKEAHSRLGFYGYDLQDQCGASNSLSIRSDEGLIHELRGPNYPNYAMNVGHQPEYAGIAQAPHAARGDAFCTNPLIKVAFADKDLAFDFTSPRKSIAAGALREFMPEGERDLIIP', '59': 'DDLHYVNNAAIQQAWDDIRRTVIVGLNTAHNVLEKRLGIEVTPETITHYLETVNHAMPGAAVVQEHMVETDPLIVQDSYVKVFTGDDELADEIDSAFVLDINKEFPEEALKAEVGGAIWQAVRIPSIVGRVCDGGNTSRWSAMQIGMSMISAYNQCAGEGATGDFAYASKHAEVIHMGTYLPVRRARAENELGGVPFGFMADICQGDPVRVSLEVVALGAALYDQIWLGSYMSGGYATAAYTDNVLDDFTYYGKDYNMDTVLDVGTEVAFYALEQYEEYPALLETHFGGSQRASVVSAAAGCSTAFATGNAQTGLSAWYLAMYLHKEQHSRLGFYGFDLQDQCGAANVFSIRNDEGLPLEMRGPNYPNYAMNVGHQGEYAGIAQAPHAARGDAWAFNPLVKIAFADKNLCFDFSKVREEFAKGALREFEPAGERTAITP'}}}
     return qc_ma_dict
 
 def arguments():
-    args = create_parser('/home/ace/github/TreeSAPP/', 'M0701', 'p')
+    args = create_parser(HOME_DIR, 'M0701', 'p')
     args.formatted_input_file = args.output_dir_var + 'marker_test_suite.faa'  + "_formatted.fasta"
     fasta.write_new_fasta(formatted_fasta_dict, args.formatted_input_file)
     marker_build_dict = treesapp.parse_ref_build_params(args)
@@ -25,6 +26,7 @@ def arguments():
     formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
     homolog_seq_files, numeric_contig_index = treesapp.extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
     return args, marker_build_dict, formatted_fasta_dict, homolog_seq_files, numeric_contig_index
+    
 
 def create_parser(treesapp, targets, reftree):
     args = argparse.Namespace()
@@ -79,8 +81,8 @@ class TempTest(unittest.TestCase):
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 3
 
-
     def test_filter_multiple_alignments(self):
+
         args = create_parser(HOME_DIR, 'M0701', 'p')
 
         marker_build_dict = treesapp.parse_ref_build_params(args)
@@ -90,13 +92,13 @@ class TempTest(unittest.TestCase):
             input_multi_fasta = os.path.basename(args.fasta_input)
         else:
             input_multi_fasta = args.fasta_input
-
+            
         args.formatted_input_file = args.output_dir_var + input_multi_fasta  + "_formatted.fasta"
         formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
 
         ref_alignment_dimensions = treesapp.get_alignment_dims(args, marker_build_dict)
         hmm_domtbl_files = treesapp.hmmsearch_orfs(args, marker_build_dict)
-
+        
         hmm_matches = treesapp.parse_domain_tables(args, hmm_domtbl_files)
         homolog_seq_files, numeric_contig_index = treesapp.extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
 
@@ -106,7 +108,7 @@ class TempTest(unittest.TestCase):
 
 
         ## test get sequence counts
-        assert(treesapp.get_sequence_counts(concatenated_mfa_files, ref_alignment_dimensions, False, 'Fasta') == {'/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified_group0.mfa' : 844})
+        assert(treesapp.get_sequence_counts(concatenated_mfa_files, ref_alignment_dimensions, False, 'Fasta') == {'/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified_group0.mfa' : 866})
 
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             treesapp.get_sequence_counts(concatenated_mfa_files, ref_alignment_dimensions, False, 'NotFasta')
@@ -121,7 +123,7 @@ class TempTest(unittest.TestCase):
 
         invalid_mfa_file = dict()
         invalid_mfa_file.update({'M0701' : ['/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified.txt']})
-
+        
         #check for removed sequences
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             treesapp.check_for_removed_sequences(args, invalid_mfa_file, marker_build_dict)
@@ -129,13 +131,17 @@ class TempTest(unittest.TestCase):
             assert pytest_wrapped_e.value.code == 3
 
         empty_mfa_file = dict()
-        empty_mfa_file.update({'M0701' : [HOME_DIR + 'tests/test_data/empty.fasta']})
-
+        empty_mfa_file.update({'M0701' : [TEST_DIR + 'empty.fasta']})
+            
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             treesapp.check_for_removed_sequences(args, empty_mfa_file, marker_build_dict)
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 3
 
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.check_for_removed_sequences(args, empty_mfa_file, marker_build_dict)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
 
     def test_produce_phy_files(self):
         qc_ma_dict = create_short_qc_ma_dict()
@@ -200,20 +206,18 @@ class TempTest(unittest.TestCase):
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 3
 
-
     def test_get_alignment_data(self):
-        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
+        args = create_parser(HOME_DIR, 'M0701', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
         alignment_dimensions_dict = treesapp.get_alignment_dims(args, marker_build_dict)
-        assert(alignment_dimensions_dict['M0701'] == (214, 837))
-
+        assert(alignment_dimensions_dict['M0701'] == (211, 851))
 
            
 
 class TreeSAPPTest(unittest.TestCase):
 
     def test_hmmsearch_orfs_parse_domain_tables(self):
-        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
+        args = create_parser(HOME_DIR, 'M0701', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
         marker_build_dict = file_parsers.parse_cog_list(args, marker_build_dict)
         hmm_domtbl_files = treesapp.hmmsearch_orfs(args, marker_build_dict)
@@ -225,26 +229,8 @@ class TreeSAPPTest(unittest.TestCase):
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 3
 
-    def test_create_ref_phy_files(self):
-        args = create_parser(HOME_DIR, 'M0701', 'p')
-        args.formatted_input_file = args.output_dir_var + 'marker_test_suite.faa'  + "_formatted.fasta"
-        marker_build_dict = treesapp.parse_ref_build_params(args)
-        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
-        
-        formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
-        hmm_domtbl_files = treesapp.hmmsearch_orfs(args, marker_build_dict)
-        hmm_matches = treesapp.parse_domain_tables(args, hmm_domtbl_files) 
-        fasta.write_new_fasta(formatted_fasta_dict, args.formatted_input_file)
-        homolog_seq_files, numeric_contig_index = treesapp.extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
-        ref_alignment_dimensions = treesapp.get_alignment_dims(args, marker_build_dict)
-        treesapp.create_ref_phy_files(args, homolog_seq_files, marker_build_dict, ref_alignment_dimensions)
-        marker = re.match("(.*)_hmm_purified.*", os.path.basename('/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified_group0.faa')).group(1)
-        ref_alignment_phy = args.output_dir_var + marker + ".phy"
-
-        assert(filecmp.cmp(ref_alignment_phy, HOME_DIR + 'tests/test_data/expected_ref_alignment.phy'))
-
     def test_extract_hmm_matches(self):
-        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
+        args = create_parser(HOME_DIR, 'M0701', 'p')
         args.formatted_input_file = args.output_dir_var + args.fasta_input + "_formatted.fasta"
         marker_build_dict = treesapp.parse_ref_build_params(args)
         marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
@@ -274,7 +260,3 @@ class TreeSAPPTest(unittest.TestCase):
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 3
         
-
-    def test_prepare_and_run_papara(self):
-        assert(True)
-

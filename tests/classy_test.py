@@ -27,7 +27,7 @@ def init_itol():
     return itol
 
 def init_dtp():
-    domtbl_file = TEST_DIR + 'domtbl.txt'
+    domtbl_file = TEST_DIR + 'test_data/domtbl.txt'
     dtp = DomainTableParser(domtbl_file)
     return dtp
 
@@ -66,7 +66,7 @@ class HmmMatchTest(unittest.TestCase):
 class DomainTableParserTest(unittest.TestCase):
 
     def test_init(self):
-        domtbl_file = TEST_DIR + 'domtbl.txt'
+        domtbl_file = TEST_DIR + 'test_data/domtbl.txt'
         dtp = DomainTableParser(domtbl_file)
         assert(len(dtp.alignments) == 0)
         assert(dtp.i == 0)
@@ -100,7 +100,7 @@ class DomainTableParserTest(unittest.TestCase):
     @pytest.mark.dependency(depends=["test_format_split_alignments"])
     def test_filter_poor_hits(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
-        dtp, distinct_matches = create_dtp(TEST_DIR +'unfiltered_domtbl.txt')
+        dtp, distinct_matches = create_dtp(TEST_DIR +'test_data/unfiltered_domtbl.txt')
         
         assert('TEST-2 -_1_1' in distinct_matches.keys())
         assert('TEST-1 -_1_1' in distinct_matches.keys())
@@ -117,7 +117,7 @@ class DomainTableParserTest(unittest.TestCase):
     def test_filter_incomplete_hits(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
         dropped = 0
-        dtp, distinct_matches = create_dtp(TEST_DIR + 'domtbl.txt')
+        dtp, distinct_matches = create_dtp(TEST_DIR + 'test_data/domtbl.txt')
         purified_matches, dropped = HMMER_domainTblParser.filter_poor_hits(args, distinct_matches, dropped)
         complete_gene_hits, dropped = HMMER_domainTblParser.filter_incomplete_hits(args, purified_matches, dropped)
         
