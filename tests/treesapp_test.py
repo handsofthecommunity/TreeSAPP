@@ -151,7 +151,7 @@ class TempTest(unittest.TestCase):
         phy_file = treesapp.produce_phy_files(args, qc_ma_dict)
 
         assert('M0701' in phy_file.keys())
-        assert([ HOME_DIR + 'tests/test_data/expected_phy_file'] in phy_file.values() and len(phy_file) == 1)
+        assert(['tests/test_data/expected_phy_file'] in phy_file.values() and len(phy_file) == 1)
         with open(phy_file['M0701'][0]) as f:
             content = f.readlines()
 
@@ -161,23 +161,18 @@ class TempTest(unittest.TestCase):
 
         for i in range(30):
             assert(content[i] == results[i])
+            
      
     def test_multiple_alignments(self):
-        args = create_parser(HOME_DIR, 'M0701', 'p')
-        args.formatted_input_file = args.output_dir_var + 'marker_test_suite.faa'  + "_formatted.fasta"
-        single_query_sequence_files = '../../marker_test/various_outputs/McrA_hmm_purified_group0.faa'
-        marker_build_dict = treesapp.parse_ref_build_params(args)
-        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
-        tool = 'hmmalign'
+      single_query_sequence_files = [TREESAPP_TEST_DIR + '/McrA_hmm_purified_group0.faa']
 
-        assert(treesapp.multiple_alignments(single_query_sequence_files, marker_build_dict, tool).key == 'M0701')
-        
-        #invalid tool name
-        with pytest.raises(SystemExit) as pytest_wrapped_e:
-            treesapp.multiple_alignments(single_query_sequence_files, marker_build_dict, 'none')
-            assert pytest_wrapped_e.type == SystemExit
-            assert pytest_wrapped_e.value.code == 3
-    
+      args = create_parser(HOME_DIR, 'M0701', 'p')
+
+      marker_build_dict = treesapp.parse_ref_build_params(args)
+      marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+
+      assert(treesapp.multiple_alignments(args, single_query_sequence_files, marker_build_dict, "hmmalign")['M0701'] == [TREESAPP_TEST_DIR + '/McrA_hmm_purified_group0.mfa'])
+      
         
 
     def test_sub_indices_for_seq_names_jplace(self):

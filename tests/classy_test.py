@@ -16,6 +16,9 @@ from .treesapp_test import create_parser
 HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
 TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/'
 
+TREESAPP_TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/test_data/'
+
+
 def create_itol():
     itol = jplace_parser(HOME_DIR + 'tests/test_data/RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace')
     return itol
@@ -38,6 +41,157 @@ def create_dtp(domtbl_file):
     return dtp, distinct_alignments
 
 expected_domtbl_keys = ['PKL62129.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanomicrobiales_archaeon_HGW-Methanomicrobiales-2 -_1_1', 'AUD55425.1_methyl-coenzyme_M_reductase_alpha_subunit__partial_uncultured_euryarchaeote -_1_1', 'KUE73676.1_methyl-coenzyme_M_reductase_subunit_alpha_Candidatus_Methanomethylophilus_sp._1R26 -_1_1', 'AAM30936.1_Methyl-coenzyme_M_reductase__alpha_subunit_Methanosarcina_mazei_Go1 -_1_1', 'AFD09581.1_methyl-coenzyme_M_reductase_alpha_subunit__partial_uncultured_Methanomicrobiales_archaeon -_1_1', 'OYT62528.1_hypothetical_protein_B6U67_04395_Methanosarcinales_archaeon_ex4484_138 -_1_1', 'AAU83782.1_methyl_coenzyme_M_reductase_subunit_alpha_uncultured_archaeon_GZfos33H6 -_1_1', 'AAU82491.1_methyl_coenzyme_M_reductase_I_subunit_alpha_uncultured_archaeon_GZfos18B6 -_1_1', 'OFV67773.1_methyl_coenzyme_M_reductase_subunit_alpha_Candidatus_Syntrophoarchaeum_caldarius -_1_1', 'ADN36741.1_methyl-coenzyme_M_reductase__alpha_subunit_Methanolacinia_petrolearia_DSM_11571 -_1_1', 'PKL66143.1_coenzyme-B_sulfoethylthiotransferase_subunit_alpha_Methanobacteriales_archaeon_HGW-Methanobacteri -_1_1', 'PHP46140.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanosarcinales_archaeon_ex4572_44 -_1_1']
+
+class TempTest(unittest.TestCase):
+
+    def test_prepare_and_run_hmmalign(self):
+        args = create_parser(HOME_DIR, 'M0701', 'p')
+        single_query_fasta_files = ['/marker_test/various_outputs/McrA_hmm_purified_group0.faa']
+        marker_build_dict = treesapp.parse_ref_build_params(args)
+        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+
+        # result = dict()
+        # result = treesapp.prepare_and_run_hmmalign(args, single_query_fasta_files, marker_build_dict)
+        # assert('M0701' in result.keys and len(result.keys) == 1)
+
+        #wrong file name
+        single_query_fasta_files = ['']
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.prepare_and_run_hmmalign(args, single_query_fasta_files, marker_build_dict)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
+
+        single_query_fasta_files = ['./McrB_hmm_purified_group0.faa']
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.prepare_and_run_hmmalign(args, single_query_fasta_files, marker_build_dict)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
+
+    def test_filter_multiple_alignments(self):
+
+        args = create_parser(HOME_DIR, 'M0701', 'p')
+
+        marker_build_dict = treesapp.parse_ref_build_params(args)
+        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+
+        if re.match(r'\A.*\/(.*)', args.fasta_input):
+            input_multi_fasta = os.path.basename(args.fasta_input)
+        else:
+            input_multi_fasta = args.fasta_input
+            
+        args.formatted_input_file = args.output_dir_var + input_multi_fasta  + "_formatted.fasta"
+        formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
+
+        ref_alignment_dimensions = treesapp.get_alignment_dims(args, marker_build_dict)
+        hmm_domtbl_files = treesapp.hmmsearch_orfs(args, marker_build_dict)
+        
+        hmm_matches = treesapp.parse_domain_tables(args, hmm_domtbl_files)
+        homolog_seq_files, numeric_contig_index = treesapp.extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
+
+        concatenated_mfa_files = treesapp.multiple_alignments(args, homolog_seq_files, marker_build_dict, "hmmalign")
+
+        mfa_files = treesapp.filter_multiple_alignments(args, concatenated_mfa_files, marker_build_dict, 'BMGE')
+
+
+        ## test get sequence counts
+        assert(treesapp.get_sequence_counts(concatenated_mfa_files, ref_alignment_dimensions, False, 'Fasta') == {'/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified_group0.mfa' : 866})
+
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.get_sequence_counts(concatenated_mfa_files, ref_alignment_dimensions, False, 'NotFasta')
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
+
+
+        #test filter multiple alignments
+        assert( 'M0701' in treesapp.filter_multiple_alignments(args, concatenated_mfa_files, marker_build_dict, 'BMGE').keys())
+        assert(['/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified_group0-BMGE.fasta'] in treesapp.filter_multiple_alignments(args, concatenated_mfa_files, marker_build_dict, 'BMGE').values())
+
+
+        invalid_mfa_file = dict()
+        invalid_mfa_file.update({'M0701' : ['/home/travis/build/hallamlab/marker_test/various_outputs/McrA_hmm_purified.txt']})
+        
+        #check for removed sequences
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.check_for_removed_sequences(args, invalid_mfa_file, marker_build_dict)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
+
+        empty_mfa_file = dict()
+        empty_mfa_file.update({'M0701' : [TEST_DIR + 'empty.fasta']})
+            
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.check_for_removed_sequences(args, empty_mfa_file, marker_build_dict)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
+
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.check_for_removed_sequences(args, empty_mfa_file, marker_build_dict)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
+
+    def test_produce_phy_files(self):
+        qc_ma_dict = create_short_qc_ma_dict()
+
+        args = argparse.Namespace()
+        args.molecule = 'prot'
+        phy_file = treesapp.produce_phy_files(args, qc_ma_dict)
+
+        assert('M0701' in phy_file.keys())
+        assert(['tests/test_data/expected_phy_file'] in phy_file.values() and len(phy_file) == 1)
+        with open(phy_file['M0701'][0]) as f:
+            content = f.readlines()
+
+        results = ['3  439', '186       XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '59        DDLHYVNNAAIQQAWDDIRRTVIVGLNTAHNVLEKRLGIEVTPETITHYL','70        DDLHFVNNAAIQQMVDDIKRTVIVGMDTAHAVLEKRLGVEVTPETINEYM', '', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 'ETVNHAMPGAAVVQEHMVETDPLIVQDSYVKVFTGDDELADEIDSAFVLD', 'EAINHALPGGAVVQEHMVEVHPGLVEDCYAKIFTGDDNLADELDKRILID', '', 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', 'INKEFPEEALKAEVGGAIWQAVRIPSIVGRVCDGGNTSRWSAMQIGMSMI', 'INKEFPEEQLKSYIGNRTYQVNRVPTIVVRTCDGGTVSRWSAMQIGMSFI', '', 'XXXXXXXXXXXXXXXXXXXKHAGVIQMADILPARRARGPNEPGGIKFGHF', 'SAYNQCAGEGATGDFAYASKHAEVIHMGTYLPVRRARAENELGGVPFGFM', 'SAYKLCAGEAAIADFSYAAKHADVIEMGTIMPARRARGPNEPGGVAFGTF', '', 'GDMIQADPVKATLEVVGAGAMLFDQIWLGSYMSGGYATAAYTDNILDDYC', 'ADICQGDPVRVSLEVVALGAALYDQIWLGSYMSGGYATAAYTDNVLDDFT', 'ADIVQTDPANVSLEVIAGAAALYDQVWLGSYMSGGYATAAYTDDILDDFV', '', 'YYGLDYTQEVLNDIATEVTLYGMEQYEQYPTTLESHFGGSQRASVLAAAS', 'YYGKDYNMDTVLDVGTEVAFYALEQYEEYPALLETHFGGSQRASVVSAAA', 'YYGMEYTMDVVRDISTEVTLYSLEQYEEYPTLLEDHFGGSQRAAVAAAAA', '', 'GISCSLATANSNAGLNGWYMSMLAHKEGWSRLGFFGYDLQDQCGSTNSMS', 'GCSTAFATGNAQTGLSAWYLAMYLHKEQHSRLGFYGFDLQDQCGAANVFS', 'GCSTAFATGNSNAGINGWYLSQILHKEAHSRLGFYGYDLQDQCGASNSLS', '', 'IRPDEGCIGELRGPNYPNYAMNVGHQGEYAAIASAAHYGRQDAWVLSPLI', 'IRNDEGLPLEMRGPNYPNYAMNVGHQGEYAGIAQAPHAARGDAWAFNPLV']
+
+        content = [x.strip() for x in content]
+
+        for i in range(30):
+            assert(content[i] == results[i])
+            
+     
+    def test_multiple_alignments(self):
+      single_query_sequence_files = [TREESAPP_TEST_DIR + '/McrA_hmm_purified_group0.faa']
+
+      args = create_parser(HOME_DIR, 'M0701', 'p')
+
+      marker_build_dict = treesapp.parse_ref_build_params(args)
+      marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+
+      assert(treesapp.multiple_alignments(args, single_query_sequence_files, marker_build_dict, "hmmalign")['M0701'] == [TREESAPP_TEST_DIR + '/McrA_hmm_purified_group0.mfa'])
+      
+        
+
+    def test_sub_indices_for_seq_names_jplace(self):
+        short_numeric_contig_index = {'McrA': {-12: 'PHP46140.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanosarcinales_archaeon_ex4572_44_8_595', -2: 'OYT62528.1_hypothetical_protein_B6U67_04395_Methanosarcinales_archaeon_ex4484_138_1_471', -10: 'AAU83782.1_methyl_coenzyme_M_reductase_subunit_alpha_uncultured_archaeon_GZfos33H6_1_570'}}
+
+        args = create_parser(HOME_DIR, 'M0701', 'p')
+        marker_build_dict = treesapp.parse_ref_build_params(args)
+        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+
+    def test_validate_inputs(self):
+        args = create_parser(HOME_DIR, 'M0701', 'p')
+
+        marker_build_dict = treesapp.parse_ref_build_params(args)
+        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
+
+        # Correctly formatted reference tree
+        # assert(validate_inputs(args, marker_build_dict))
+
+        # # Incorrectly formatted reference tree
+        # new_marker_build = MarkerBuild()
+        # marker_build_dict['TEST'] = new_marker_build
+        # copyfile(TEST_DIR + '/TEST_tree.txt', args.treesapp + "/data/tree_data/")
+
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            treesapp.validate_inputs(args, marker_build_dict)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 3
+
+    def test_get_alignment_data(self):
+        args = create_parser(HOME_DIR, 'M0701', 'p')
+        marker_build_dict = file_parsers.parse_ref_build_params(args)
+        alignment_dimensions_dict = treesapp.get_alignment_dims(args, marker_build_dict)
+        assert(alignment_dimensions_dict['M0701'] == (211, 851))
 
 class HmmMatchTest(unittest.TestCase):
 
