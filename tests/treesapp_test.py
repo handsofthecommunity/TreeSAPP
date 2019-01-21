@@ -2,6 +2,7 @@ import pytest
 import unittest
 import os
 import argparse
+import re
 
 import sys, inspect
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
@@ -164,14 +165,14 @@ class TempTest(unittest.TestCase):
             
      
     def test_multiple_alignments(self):
-      single_query_sequence_files = [TREESAPP_TEST_DIR + '/McrA_hmm_purified_group0.faa']
+      single_query_sequence_files = [TREESAPP_TEST_DIR + 'McrA_hmm_purified_group0.faa']
 
       args = create_parser(HOME_DIR, 'M0701', 'p')
 
       marker_build_dict = treesapp.parse_ref_build_params(args)
       marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
 
-      assert(treesapp.multiple_alignments(args, single_query_sequence_files, marker_build_dict, "hmmalign")['M0701'] == [TREESAPP_TEST_DIR + '/McrA_hmm_purified_group0.mfa'])
+      assert(treesapp.multiple_alignments(args, single_query_sequence_files, marker_build_dict, "hmmalign")['M0701'] == [TREESAPP_TEST_DIR + 'McrA_hmm_purified_group0.mfa'])
       
         
 
