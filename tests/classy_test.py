@@ -12,6 +12,7 @@ import file_parsers
 from HMMER_domainTblParser import HmmMatch, DomainTableParser
 import HMMER_domainTblParser
 from .treesapp_test import create_parser
+import treesapp
 
 HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
 TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/'
