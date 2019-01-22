@@ -15,7 +15,7 @@ from fasta import format_read_fasta, get_headers, write_new_fasta, get_header_fo
 from utilities import reformat_string, return_sequence_info_groups, median
 from entish import get_node, create_tree_info_hash, subtrees_to_dictionary
 from external_command_interface import launch_write_command
-from entrez_utils import get_lineage
+from entrez_utils import get_multiple_lineages
 
 import _tree_parser
 
@@ -295,7 +295,10 @@ class CreateFuncTreeUtility:
                     if lineage:
                         pass
                     elif accession:
-                        lineage = get_lineage(accession, header_molecule)
+                        accession_lineage_map, all_accessions = get_multiple_lineages([accession], header_molecule)
+                        # Should only be one...
+                        for tuple_key in accession_lineage_map:
+                            lineage = accession_lineage_map[tuple_key]["lineage"]
                         try:
                             taxonomic_lineage = lineage.split('; ')
                             # Try to get the species name
@@ -1039,8 +1042,13 @@ def register_headers(header_list):
 
 
 def get_header_info(header_registry, code_name=''):
-    sys.stdout.write("Extracting information from headers... ")
-    sys.stdout.flush()
+    """
+
+    :param header_registry: A dictionary of Header instances, indexed by numerical treesapp_id
+    :param code_name: [OPTIONAL] The code_name of the reference package (marker gene/domain/family/protein)
+    :return: Dictionary where keys are numerical treesapp_ids and values are ReferenceSequence instances
+    """
+    logging.info("Extracting information from headers... ")
     fasta_record_objects = dict()
     for treesapp_id in sorted(header_registry.keys(), key=int):
         original_header = header_registry[treesapp_id].original
@@ -1059,7 +1067,7 @@ def get_header_info(header_registry, code_name=''):
         ref_seq.short_id = '>' + treesapp_id + '_' + code_name
         fasta_record_objects[treesapp_id] = ref_seq
 
-    sys.stdout.write("done.\n")
+    logging.info("done.\n")
 
     return fasta_record_objects
 

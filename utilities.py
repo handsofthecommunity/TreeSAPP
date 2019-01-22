@@ -191,7 +191,7 @@ def find_executables(args):
         elif which(dep):
             exec_paths[dep] = which(dep)
         else:
-            logging.error("Could not find a valid executable for " + dep + ". ")
+            logging.error("Could not find a valid executable for " + dep + ".\n")
             sys.exit(13)
 
     args.executables = exec_paths
@@ -326,7 +326,7 @@ def generate_blast_database(args, fasta, molecule, prefix, multiple=True):
 
 
 def clean_lineage_string(lineage):
-    non_standard_names_re = re.compile(" group| cluster", re.IGNORECASE)
+    non_standard_names_re = re.compile(" group| cluster| complex", re.IGNORECASE)
     bad_strings = ["cellular organisms; ", "delta/epsilon subdivisions; ", "\(miscellaneous\)", "Root; ", "[a-p]__"]
     for bs in bad_strings:
         lineage = re.sub(bs, '', lineage)
@@ -335,7 +335,7 @@ def clean_lineage_string(lineage):
         reconstructed_lineage = ""
         ranks = lineage.split("; ")
         for rank in ranks:
-            if not (re.search("group", rank, re.IGNORECASE) or re.search("cluster", rank, re.IGNORECASE)):
+            if not non_standard_names_re.search(rank):
                 reconstructed_lineage = reconstructed_lineage + str(rank) + '; '
         reconstructed_lineage = re.sub('; $', '', reconstructed_lineage)
         lineage = reconstructed_lineage
