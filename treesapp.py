@@ -37,6 +37,7 @@ try:
     from jplace_utils import *
     from file_parsers import *
     from phylo_dist import *
+    from long_read import *
 
     import _tree_parser
     import _fasta_reader
@@ -77,6 +78,8 @@ def get_options():
     parser.add_argument("-P", "--placement_parser", default="best", type=str, choices=["best", "lca"],
                         help="Algorithm used for parsing each sequence's potential RAxML placements. "
                              "[DEFAULT = 'best']")
+    parser.add_argument("--lr", default=False, required=False, action="store_true",
+                        help="Flag indicating input query sequences are long reads, activating the long-read workflow")
 
     rpkm_opts = parser.add_argument_group('RPKM options')
     rpkm_opts.add_argument("--rpkm", action="store_true", default=False,
@@ -3117,9 +3120,16 @@ def main(argv):
         ref_alignment_dimensions = get_alignment_dims(args, marker_build_dict)
 
         # STAGE 3: Run hmmsearch on the query sequences to search for marker homologs
-        hmm_domtbl_files = hmmsearch_orfs(args, marker_build_dict)
-        hmm_matches = parse_domain_tables(args, hmm_domtbl_files)
-        homolog_seq_files, numeric_contig_index = extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
+        if args.lr:
+            mmi = prepare_minimizer_index(marker_build_dict, args.various_outputs)
+            sam_file = run_minimap(args.executables["minimap"], mmi,
+                                    args.fasta_input, args.various_outputs + "mm")
+            minimap_match_dict = parse_sam(sam_file)
+            homolog_seq_files, numeric_contig_index = extract_minimap_alignments(minimap_match_dict)
+        else:
+            hmm_domtbl_files = hmmsearch_orfs(args, marker_build_dict)
+            hmm_matches = parse_domain_tables(args, hmm_domtbl_files)
+            homolog_seq_files, numeric_contig_index = extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
 
         # STAGE 4: Run hmmalign or PaPaRa, and optionally BMGE, to produce the MSAs required to for the ML estimations
         create_ref_phy_files(args, homolog_seq_files, marker_build_dict, ref_alignment_dimensions)

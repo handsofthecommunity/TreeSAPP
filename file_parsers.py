@@ -15,6 +15,7 @@ def parse_ref_build_params(args):
     """
     Returns a dictionary of MarkerBuild objects storing information pertaining to the build parameters of each marker.
     :param args: Command-line argument object returned by get_options and check_parser_arguments
+    :return: Dictionary of denominator: MarkerBuild object pairs
     """
     ref_build_parameters = args.treesapp + 'data' + os.sep + 'tree_data' + os.sep + 'ref_build_parameters.tsv'
     try:
@@ -858,3 +859,13 @@ def read_rpkm(rpkm_output_file):
         rpkm_values[seq_name] = float(rpkm)
     rpkm_stats.close()
     return rpkm_values
+
+
+def parse_sam(sam_file):
+    """
+    Parse a Sequence-Alignment Map format file, storing alignment information (e.g. read name, positions, CIGAR)
+    for reads that were mapped.
+    :param sam_file: Path to a SAM file
+    :return: A dictionary mapping refpkg names to SAM objects... ?
+    """
+    return
