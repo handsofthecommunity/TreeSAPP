@@ -51,3 +51,6 @@ manuscript/
 .Rproj.user
 applications_note/
 dev_utils/TreeSAPP_reference_packages/
+
+# macOS
+.DS_Store
