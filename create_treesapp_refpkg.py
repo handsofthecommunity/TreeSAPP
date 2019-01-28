@@ -17,7 +17,7 @@ try:
     from time import gmtime, strftime, sleep
 
     from utilities import os_type, which, find_executables, reformat_string, return_sequence_info_groups,\
-        reformat_fasta_to_phy, write_phy_file, cluster_sequences
+        reformat_fasta_to_phy, write_phy_file, cluster_sequences, clean_lineage_string
     from fasta import format_read_fasta, get_headers, get_header_format, write_new_fasta, summarize_fasta_sequences,\
         trim_multiple_alignment, read_fasta_to_dict
     from classy import ReferenceSequence, ReferencePackage, Header, Cluster, MarkerBuild,\
@@ -25,8 +25,8 @@ try:
     from external_command_interface import launch_write_command
     from entish import annotate_partition_tree
     from lca_calculations import megan_lca, lowest_common_taxonomy, clean_lineage_list
-    from entrez_utils import get_multiple_lineages, get_lineage_robust, verify_lineage_information,\
-        read_accession_taxa_map, write_accession_lineage_map, build_entrez_queries
+    from entrez_utils import get_multiple_lineages, verify_lineage_information, read_accession_taxa_map, \
+        write_accession_lineage_map, build_entrez_queries
     from file_parsers import parse_domain_tables, read_phylip_to_dict, read_uc
     from placement_trainer import regress_rank_distance
 
@@ -82,28 +82,40 @@ def get_arguments():
                                  'prot = Protein [DEFAULT]; dna = Nucleotide; rrna = rRNA',
                             default='prot',
                             choices=['prot', 'dna', 'rrna'])
-    seqop_args.add_argument('-r', "--rfam_cm",
-                            help="The covariance model of the RNA family being packaged.\n"
-                                 "REQUIRED if molecule is rRNA!",
-                            default=None)
-    seqop_args.add_argument("-s", "--screen",
-                            help="Keywords (taxonomic regular expressions) for including specific taxa in the tree.\n"
-                                 "Example: to only include Bacteria and Archaea do `--screen Bacteria,Archaea`\n"
-                                 "[ DEFAULT is no screen ]",
-                            default="",
-                            required=False)
-    seqop_args.add_argument("-f", "--filter",
-                            help="Keywords for removing specific taxa; the opposite of `--screen`.\n"
-                                 "[ DEFAULT is no filter ]",
-                            default="",
-                            required=False)
     seqop_args.add_argument("-g", "--guarantee",
                             help="A FASTA file containing sequences that need to be included \n"
                                  "in the tree after all clustering and filtering",
                             default=None,
                             required=False)
+    seqop_args.add_argument('-r', "--rfam_cm",
+                            help="The covariance model of the RNA family being packaged.\n"
+                                 "REQUIRED if molecule is rRNA!",
+                            default=None,
+                            required=False)
 
-    optopt = parser.add_argument_group("Optional options")
+    taxa_args = parser.add_argument_group("Taxonomic-lineage arguments")
+    taxa_args.add_argument("-s", "--screen",
+                           help="Keywords (taxonomic regular expressions) for including specific taxa in the tree.\n"
+                                "Example: to only include Bacteria and Archaea do `--screen Bacteria,Archaea`\n"
+                                "[ DEFAULT is no screen ]",
+                           default="", required=False)
+    taxa_args.add_argument("-f", "--filter",
+                           help="Keywords for removing specific taxa; the opposite of `--screen`.\n"
+                                "[ DEFAULT is no filter ]",
+                           default="", required=False)
+    taxa_args.add_argument("-t", "--min_taxonomic_rank",
+                           required=False, default='k', choices=['k', 'p', 'c', 'o', 'f', 'g', 's'],
+                           help="The minimum taxonomic lineage resolution for reference sequences [ DEFAULT = k ].\n")
+    taxa_args.add_argument("--taxa_lca",
+                           help="Set taxonomy of representative sequences to LCA of cluster member's taxa.\n"
+                                "[ --cluster or --uc REQUIRED ]",
+                           default=False, required=False, action="store_true")
+    taxa_args.add_argument("--taxa_norm",
+                           help="[ IN PROGRESS ] Perform taxonomic normalization on the provided sequences.\n"
+                                "A comma-separated argument with the Rank (e.g. Phylum) and\n"
+                                "number of representatives is required.\n")
+
+    optopt = parser.add_argument_group("Optional arguments")
     optopt.add_argument("-b", "--bootstraps",
                         help="The number of bootstrap replicates RAxML should perform\n"
                              "[ DEFAULT = autoMR ]",
@@ -119,15 +131,6 @@ def get_arguments():
                         help="The USEARCH cluster format file produced from clustering reference sequences.\n"
                              "This can be used for selecting representative headers from identical sequences.",
                         required=False, default=None)
-    optopt.add_argument("--taxa_lca",
-                        help="Set taxonomy of representative sequences to LCA of cluster member's taxa.\n"
-                             "[ --cluster or --uc REQUIRED ]",
-                        default=False, required=False,
-                        action="store_true")
-    optopt.add_argument("--taxa_norm",
-                        help="BETA: Perform taxonomic normalization on the provided sequences.\n"
-                             "A comma-separated argument with the Rank (e.g. Phylum) and\n"
-                             "number of representatives is required.\n")
     optopt.add_argument("--fast",
                         help="A flag indicating the tree should be built rapidly, using FastTree.",
                         default=False, required=False,
@@ -137,7 +140,7 @@ def get_arguments():
                              "functional, phylogenetic, or phylogenetic_rRNA. [ DEFAULT = functional ]",
                         default="functional", required=False)
 
-    miscellaneous_opts = parser.add_argument_group("Miscellaneous options")
+    miscellaneous_opts = parser.add_argument_group("Miscellaneous arguments")
     miscellaneous_opts.add_argument("-h", "--help",
                                     action="help",
                                     help="Show this help message and exit")
@@ -409,42 +412,48 @@ def extract_hmm_matches(hmm_matches, fasta_dict, header_registry):
     :param header_registry: A list of Header() objects, each used to map various header formats to each other
     :return:
     """
-    sys.stdout.write("Extracting the quality-controlled protein sequences... ")
-    sys.stdout.flush()
+
+    if len(hmm_matches.keys()) > 1:
+        logging.error("Number of markers found from HMM alignments is >1\n" +
+                      "Does your HMM file contain more than 1 profile? TreeSAPP is unprepared for this.\n")
+        sys.exit(13)
+
     marker_gene_dict = dict()
+    header_matching_dict = dict()
+
+    logging.debug("Creating a temporary dictionary for rapid sequence name look-ups... ")
+    for num in header_registry:
+        header_matching_dict[header_registry[num].first_split[1:]] = header_registry[num]
+    logging.debug("done.\n")
+
+    logging.info("Extracting the quality-controlled protein sequences... ")
+
     for marker in hmm_matches:
-        if len(hmm_matches.keys()) > 1:
-            logging.error("Number of markers found from HMM alignments is >1\n" +
-                          "Does your HMM file contain more than 1 profile? TreeSAPP is unprepared for this.\n")
-            sys.exit(13)
         if marker not in marker_gene_dict:
             marker_gene_dict[marker] = dict()
 
         for hmm_match in hmm_matches[marker]:
             # Now for the header format to be used in the bulk FASTA:
             # >contig_name|marker_gene|start_end
-            sequence = ""
-            bulk_header = ""
-            for num in header_registry:
-                if hmm_match.orf == header_registry[num].first_split[1:]:
-                    query_names = header_registry[num]
-                    sequence = fasta_dict[query_names.formatted]
-                    if hmm_match.of > 1:
-                        query_names.post_align = \
-                            ' '.join([query_names.first_split, str(hmm_match.num) + '.' + str(hmm_match.of), re.sub(re.escape(query_names.first_split), '', query_names.original)])
-                    else:
-                        query_names.post_align = query_names.original
-                    bulk_header = query_names.post_align
-                    break
-            if sequence:
-                if bulk_header in marker_gene_dict[marker]:
-                    logging.warning(bulk_header + " being overwritten by an alternative alignment!\n" +
-                                    hmm_match.get_info())
-                marker_gene_dict[marker][bulk_header] = sequence[hmm_match.start-1:hmm_match.end]
+            query_names = header_matching_dict[hmm_match.orf]
+            try:
+                sequence = fasta_dict[query_names.formatted]
+            except KeyError:
+                logging.debug("Unable to map " + hmm_match.orf + " to a sequence in the input FASTA.\n")
+                continue
+            if hmm_match.of > 1:
+                query_names.post_align = ' '.join([query_names.first_split,
+                                                   str(hmm_match.num) + '.' + str(hmm_match.of),
+                                                   re.sub(re.escape(query_names.first_split), '', query_names.original)])
             else:
-                logging.error("Unable to map " + hmm_match.orf + " to a sequence in the input FASTA.\n")
-                sys.exit(13)
-    sys.stdout.write("done.\n")
+                query_names.post_align = query_names.original
+            bulk_header = query_names.post_align
+
+            if bulk_header in marker_gene_dict[marker]:
+                logging.warning(bulk_header + " being overwritten by an alternative alignment!\n" + hmm_match.get_info())
+            marker_gene_dict[marker][bulk_header] = sequence[hmm_match.start-1:hmm_match.end]
+
+    logging.info("done.\n")
     return marker_gene_dict[marker]
 
 
@@ -478,7 +487,7 @@ def hmm_pile(hmm_matches):
         low_coverage_start = 0
         low_coverage_stop = 0
         maximum_coverage = 0
-        sys.stdout.write("Low coverage HMM windows (start-stop):\n")
+        low_cov_summary = ""
         for window in sorted(hmm_bins.keys()):
             height = hmm_bins[window]
             if height > maximum_coverage:
@@ -491,14 +500,17 @@ def hmm_pile(hmm_matches):
                 else:
                     low_coverage_stop = end
             elif height > len(hmm_matches[marker])/2 and low_coverage_stop != 0:
-                sys.stdout.write("\t" + str(low_coverage_start) + '-' + str(low_coverage_stop) + "\n")
+                low_cov_summary += "\t" + str(low_coverage_start) + '-' + str(low_coverage_stop) + "\n"
                 low_coverage_start = 0
                 low_coverage_stop = 0
             else:
                 pass
         if low_coverage_stop != low_coverage_start:
-            sys.stdout.write("\t" + str(low_coverage_start) + "-end\n")
-        sys.stdout.write("Maximum coverage = " + str(maximum_coverage) + " sequences\n")
+            low_cov_summary += "\t" + str(low_coverage_start) + "-end\n"
+
+        if low_cov_summary:
+            logging.info("Low coverage HMM windows (start-stop):\n" + low_cov_summary)
+        logging.info("Maximum coverage = " + str(maximum_coverage) + " sequences\n")
     return
 
 
@@ -804,6 +816,30 @@ def screen_filter_taxa(args, fasta_replace_dict):
 
     logging.debug('\t' + str(num_screened) + " sequences removed after failing screen.\n" +
                   '\t' + str(num_filtered) + " sequences removed after failing filter.\n" +
+                  '\t' + str(len(purified_fasta_dict.keys())) + " sequences retained.\n")
+
+    return purified_fasta_dict
+
+
+def remove_by_truncated_lineages(min_taxonomic_rank, fasta_replace_dict):
+    rank_depth_map = {'k': 1, 'p': 2, 'c': 3, 'o': 4, 'f': 5, 'g': 6, 's': 7}
+    min_depth = rank_depth_map[min_taxonomic_rank]
+    if min_taxonomic_rank == 'k':
+        return fasta_replace_dict
+
+    purified_fasta_dict = dict()
+    num_removed = 0
+
+    for mltree_id in fasta_replace_dict:
+        ref_seq = fasta_replace_dict[mltree_id]
+        if len(ref_seq.lineage.split("; ")) < min_depth:
+            num_removed += 1
+        elif re.search("^unclassified", ref_seq.lineage.split("; ")[min_depth-1], re.IGNORECASE):
+            num_removed += 1
+        else:
+            purified_fasta_dict[mltree_id] = ref_seq
+
+    logging.debug('\t' + str(num_removed) + " sequences removed with truncated taxonomic lineages.\n" +
                   '\t' + str(len(purified_fasta_dict.keys())) + " sequences retained for building tree.\n")
 
     return purified_fasta_dict
@@ -935,16 +971,16 @@ def estimate_taxonomic_redundancy(args, reference_dict):
     return lowest_reliable_rank
 
 
-def summarize_reference_taxa(args, reference_dict):
+def summarize_reference_taxa(reference_dict: dict, cluster_lca=False):
     """
-        Function for enumerating the representation of each taxonomic rank within the finalized reference sequences
-    :param args:
-    :param reference_dict:
+    Function for enumerating the representation of each taxonomic rank within the finalized reference sequences
+    :param reference_dict: A dictionary holding ReferenceSequence objects indexed by their unique numerical identifier
+    :param cluster_lca: Boolean specifying whether a cluster's LCA should be used for calculation or not
     :return: A formatted, human-readable string stating the number of unique taxa at each rank
     """
     taxonomic_summary_string = ""
     # Not really interested in Cellular Organisms or Strains.
-    rank_depth_map = {1: "Kingdoms", 2: "Phyla", 3: "Classes", 4: "Orders", 5: "Families", 6: "Genera", 7: "Species"}
+    rank_depth_map = {0: "Kingdoms", 1: "Phyla", 2: "Classes", 3: "Orders", 4: "Families", 5: "Genera", 6: "Species"}
     taxa_counts = dict()
     unclassifieds = 0
 
@@ -952,7 +988,7 @@ def summarize_reference_taxa(args, reference_dict):
         name = rank_depth_map[depth]
         taxa_counts[name] = set()
     for num_id in sorted(reference_dict.keys(), key=int):
-        if args.taxa_lca and reference_dict[num_id].cluster_lca:
+        if cluster_lca and reference_dict[num_id].cluster_lca:
             lineage = reference_dict[num_id].cluster_lca
         else:
             lineage = reference_dict[num_id].lineage
@@ -960,9 +996,10 @@ def summarize_reference_taxa(args, reference_dict):
         if re.search("unclassified", lineage, re.IGNORECASE):
             unclassifieds += 1
 
-        position = 1
-        taxa = lineage.split('; ')
-        while position < len(taxa) and position < 8:
+        position = 0
+        # Ensure the root/ cellular organisms designations are stripped
+        taxa = clean_lineage_string(lineage).split('; ')
+        while position < len(taxa) and position < 7:
             taxa_counts[rank_depth_map[position]].add(taxa[position])
             position += 1
 
@@ -1428,20 +1465,22 @@ def main():
         # Map proper accession to lineage from the tuple keys (accession, accession.version)
         #  in accession_lineage_map returned by get_multiple_lineages.
         fasta_record_objects, accession_lineage_map = verify_lineage_information(accession_lineage_map, all_accessions,
-                                                                                 fasta_record_objects, num_lineages_provided,
-                                                                                 args.molecule)
+                                                                                 fasta_record_objects, num_lineages_provided)
         write_accession_lineage_map(accession_map_file, accession_lineage_map)
     # Add lineage information to the ReferenceSequence() objects in fasta_record_objects if not contained
     finalize_ref_seq_lineages(fasta_record_objects, accession_lineage_map)
 
     ##
-    # Remove the sequences failing 'filter' and/or only retain the sequences in 'screen'
+    # Perform taxonomic lineage-based filtering and screening based on command-line arguments
     ##
     if args.add_lineage:
         if args.screen or args.filter:
             logging.warning("Skipping taxonomic filtering and screening in `--add_lineage` mode.\n")
     else:
+        # Remove the sequences failing 'filter' and/or only retain the sequences in 'screen'
         fasta_record_objects = screen_filter_taxa(args, fasta_record_objects)
+        # Remove the sequence records with low resolution lineages, according to args.min_taxonomic_rank
+        fasta_record_objects = remove_by_truncated_lineages(args.min_taxonomic_rank, fasta_record_objects)
 
     if len(fasta_record_objects.keys()) < 2:
         logging.error(str(len(fasta_record_objects)) + " sequences post-homology + taxonomy filtering\n")
@@ -1604,7 +1643,7 @@ def main():
         logging.warning(warnings + "\n")
 
     logging.info("Generated the taxonomic lineage map " + ref_pkg.lineage_ids + "\n")
-    taxonomic_summary = summarize_reference_taxa(args, fasta_replace_dict)
+    taxonomic_summary = summarize_reference_taxa(fasta_replace_dict, args.taxa_lca)
     logging.info(taxonomic_summary)
     marker_package.lowest_confident_rank = estimate_taxonomic_redundancy(args, fasta_replace_dict)
 
