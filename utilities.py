@@ -154,7 +154,8 @@ def find_executables(args):
     :return: exec_paths beings the absolute path to each executable
     """
     exec_paths = dict()
-    dependencies = ["prodigal", "hmmbuild", "hmmalign", "hmmsearch", "raxmlHPC", "usearch", "trimal", "BMGE.jar", "papara"]
+    dependencies = ["prodigal", "hmmbuild", "hmmalign", "hmmsearch", "raxmlHPC", "usearch", "trimal", "BMGE.jar",
+                    "papara"]
 
     # Extra executables necessary for certain modes of TreeSAPP
     if hasattr(args, "rpkm") and args.rpkm:
@@ -170,6 +171,10 @@ def find_executables(args):
             dependencies.append("usearch")
         if args.fast:
             dependencies.append("FastTree")
+
+    if hasattr(args, "lr"):
+        if args.lr:
+            dependencies += ["minimap"]
 
     if args.molecule == "rrna":
         dependencies += ["cmalign", "cmsearch", "cmbuild"]

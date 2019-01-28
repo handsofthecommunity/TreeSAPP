@@ -3122,9 +3122,9 @@ def main(argv):
         # STAGE 3: Run hmmsearch on the query sequences to search for marker homologs
         if args.lr:
             mmi = prepare_minimizer_index(marker_build_dict, args.various_outputs)
-            sam_file = run_minimap(args.executables["minimap"], mmi,
-                                    args.fasta_input, args.various_outputs + "mm")
-            minimap_match_dict = parse_sam(sam_file)
+            paf_file = run_minimap(args.executables["minimap"], mmi,
+                                   args.fasta_input, args.various_outputs + "mm")
+            minimap_match_dict = parse_paf(paf_file)
             homolog_seq_files, numeric_contig_index = extract_minimap_alignments(minimap_match_dict)
         else:
             hmm_domtbl_files = hmmsearch_orfs(args, marker_build_dict)

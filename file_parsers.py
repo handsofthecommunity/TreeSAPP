@@ -861,11 +861,11 @@ def read_rpkm(rpkm_output_file):
     return rpkm_values
 
 
-def parse_sam(sam_file):
+def parse_paf(paf_file):
     """
-    Parse a Sequence-Alignment Map format file, storing alignment information (e.g. read name, positions, CIGAR)
+    Parse a Pairwise mApping Format (PAF) file, storing alignment information (e.g. read name, positions)
     for reads that were mapped.
-    :param sam_file: Path to a SAM file
-    :return: A dictionary mapping refpkg names to SAM objects... ?
+    :param paf_file: Path to a PAF file
+    :return: A dictionary mapping refpkg names to PAF objects... ?
     """
     return
