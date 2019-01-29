@@ -1272,3 +1272,19 @@ class TaxonTest:
                 logging.warning(str(len(off_targets)) + " sequences were classified as " + marker + ":\n" +
                                 "\t\n".join(off_targets[marker]) + "\n")
         return
+
+class PAFObj:
+    def __init__(self, qname, qlen, qstart, qend, tname, tstart, tend, n_match_bases, n_total_bases, mapq):
+        self.qname = qname
+        self.qlen = qlen
+        self.qstart = qstart
+        self.qend = qend
+        self.tname = tname
+        self.tstart = tstart
+        self.tend = tend
+        self.n_match_bases = n_match_bases
+        self.n_total_bases = n_total_bases
+        self.mapq = mapq
+
+    def get_alignment_identity(self):
+        return float(self.n_match_bases) / self.n_total_bases * 100
