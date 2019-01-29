@@ -1274,12 +1274,13 @@ class TaxonTest:
         return
 
 class PAFObj:
-    def __init__(self, qname, qlen, qstart, qend, tname, tstart, tend, n_match_bases, n_total_bases, mapq):
+    def __init__(self, qname, qlen, qstart, qend, tname, tlen, tstart, tend, n_match_bases, n_total_bases, mapq):
         self.qname = qname
         self.qlen = qlen
         self.qstart = qstart
         self.qend = qend
         self.tname = tname
+        self.tlen = tlen
         self.tstart = tstart
         self.tend = tend
         self.n_match_bases = n_match_bases

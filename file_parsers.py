@@ -4,7 +4,7 @@ import sys
 import os
 import re
 import logging
-from classy import TreeLeafReference, MarkerBuild, Cluster
+from classy import TreeLeafReference, MarkerBuild, Cluster, PAFObj
 from utilities import Autovivify, calculate_overlap
 from HMMER_domainTblParser import DomainTableParser, format_split_alignments, filter_incomplete_hits, filter_poor_hits
 
@@ -864,8 +864,23 @@ def read_rpkm(rpkm_output_file):
 def parse_paf(paf_file):
     """
     Parse a Pairwise mApping Format (PAF) file, storing alignment information (e.g. read name, positions)
-    for reads that were mapped.
+    for reads that were mapped. Filters reads by maximum observed mapping quality.
     :param paf_file: Path to a PAF file
-    :return: A dictionary mapping refpkg names to PAF objects... ?
+    :return: A dictionary mapping query read names to PAF objects
     """
-    return
+    refpkg_name_paf_map = dict()
+    with open(paf_file, "r") as infile:
+        for line in infile:
+            qname, qlen, qstart, qend, _, tname, tlen, tstart, tend, n_match_bases, n_total_bases, mapq = line.split("\t")
+            paf_obj = PAFObj(qname, int(qlen), int(qstart), int(qend), tname, int(tlen), int(tstart), int(tend),
+                             int(n_match_bases), int(n_total_bases), int(mapq))
+
+            # filter reads by maximum mapping quality
+            if qname not in refpkg_name_paf_map:
+                if 0 < int(mapq) < 255:
+                    refpkg_name_paf_map[qname] = paf_obj
+            else:
+                stored_mapq = refpkg_name_paf_map[qname].mapq
+                if int(mapq) > stored_mapq:
+                    refpkg_name_paf_map[qname] = paf_obj
+    return refpkg_name_paf_map
