@@ -186,6 +186,10 @@ def check_parser_arguments(args):
         logging.error("Unable to calculate RPKM values for protein sequences.\n")
         sys.exit()
 
+    if args.molecule != "dna" and args.lr:
+        logging.error("DNA must be passed in for the long read workflow!")
+        sys.exit()
+
     # Parameterizing the hmmsearch output parsing:
     args.min_acc = 0.7
     args.min_e = 0.0001
@@ -3103,11 +3107,14 @@ def main(argv):
         validate_inputs(args, marker_build_dict)
     if args.skip == 'n':
         # STAGE 2: Predict open reading frames (ORFs) if the input is an assembly, read, format and write the FASTA
-        if args.molecule == "dna":
+        if args.molecule == "dna" and not args.lr:
             # args.fasta_input is set to the predicted ORF protein sequences
             args = predict_orfs(args)
         logging.info("Formatting " + args.fasta_input + " for pipeline... ")
-        formatted_fasta_dict = format_read_fasta(args.fasta_input, "prot", args.output)
+        if args.molecule == "dna" and args.lr:
+            formatted_fasta_dict = format_read_fasta(args.fasta_input, "dna", args.output)
+        else:
+            formatted_fasta_dict = format_read_fasta(args.fasta_input, "prot", args.output)
         logging.info("done.\n")
 
         logging.info("\tTreeSAPP will analyze the " + str(len(formatted_fasta_dict)) + " sequences found in input.\n")
@@ -3121,11 +3128,11 @@ def main(argv):
 
         # STAGE 3: Run hmmsearch on the query sequences to search for marker homologs
         if args.lr:
-            ref_packages_concat = prepare_fasta_target(marker_build_dict, args.various_outputs)
-            paf_file = run_minimap(args.executables["minimap"], ref_packages_concat,
+            fasta_reference = prepare_fasta_target(marker_build_dict, args.various_outputs)
+            paf_file = run_minimap(args.executables["minimap"], fasta_reference,
                                    args.fasta_input, args.various_outputs + "mm")
             minimap_match_dict = parse_paf(paf_file)
-            homolog_seq_files, numeric_contig_index = extract_minimap_alignments(minimap_match_dict)
+            homolog_seq_files, numeric_contig_index = extract_minimap_alignments(args, minimap_match_dict, formatted_fasta_dict)
         else:
             hmm_domtbl_files = hmmsearch_orfs(args, marker_build_dict)
             hmm_matches = parse_domain_tables(args, hmm_domtbl_files)
