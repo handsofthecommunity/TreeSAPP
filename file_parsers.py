@@ -866,21 +866,27 @@ def parse_paf(paf_file):
     Parse a Pairwise mApping Format (PAF) file, storing alignment information (e.g. read name, positions)
     for reads that were mapped. Filters reads by maximum observed mapping quality.
     :param paf_file: Path to a PAF file
-    :return: A dictionary mapping query read names to PAF objects
+    :return: A dictionary mapping reference packages a list of PAF objects
     """
     refpkg_name_paf_map = dict()
     with open(paf_file, "r") as infile:
+        prev_qname = ""
         for line in infile:
             qname, qlen, qstart, qend, _, tname, tlen, tstart, tend, n_match_bases, n_total_bases, mapq = line.split("\t")
             paf_obj = PAFObj(qname, int(qlen), int(qstart), int(qend), tname, int(tlen), int(tstart), int(tend),
                              int(n_match_bases), int(n_total_bases), int(mapq))
 
-            # filter reads by maximum mapping quality
-            if qname not in refpkg_name_paf_map:
-                if 0 < int(mapq) < 255:
-                    refpkg_name_paf_map[qname] = paf_obj
+            refpkg_name = tname.split("_")[1]
+            if refpkg_name not in refpkg_name_paf_map:
+                refpkg_name_paf_map[refpkg_name] = list()
             else:
-                stored_mapq = refpkg_name_paf_map[qname].mapq
-                if int(mapq) > stored_mapq:
-                    refpkg_name_paf_map[qname] = paf_obj
+                if prev_qname != qname:
+                    if 0 < int(mapq) < 255:
+                        refpkg_name_paf_map[refpkg_name].append(paf_obj)
+                else:
+                    # filter reads by maximum mapping quality
+                    stored_mapq = refpkg_name_paf_map[refpkg_name][-1].mapq
+                    if int(mapq) > stored_mapq:
+                        refpkg_name_paf_map[refpkg_name][-1] = paf_obj
+            prev_qname = qname
     return refpkg_name_paf_map
