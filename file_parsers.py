@@ -4,7 +4,7 @@ import sys
 import os
 import re
 import logging
-from classy import TreeLeafReference, MarkerBuild, Cluster
+from classy import TreeLeafReference, MarkerBuild, Cluster, PAFObj
 from utilities import Autovivify, calculate_overlap
 from HMMER_domainTblParser import DomainTableParser, format_split_alignments, filter_incomplete_hits, filter_poor_hits
 
@@ -15,6 +15,7 @@ def parse_ref_build_params(args):
     """
     Returns a dictionary of MarkerBuild objects storing information pertaining to the build parameters of each marker.
     :param args: Command-line argument object returned by get_options and check_parser_arguments
+    :return: Dictionary of denominator: MarkerBuild object pairs
     """
     ref_build_parameters = args.treesapp + 'data' + os.sep + 'tree_data' + os.sep + 'ref_build_parameters.tsv'
     try:
@@ -858,3 +859,34 @@ def read_rpkm(rpkm_output_file):
         rpkm_values[seq_name] = float(rpkm)
     rpkm_stats.close()
     return rpkm_values
+
+
+def parse_paf(paf_file):
+    """
+    Parse a Pairwise mApping Format (PAF) file, storing alignment information (e.g. read name, positions)
+    for reads that were mapped. Filters reads by maximum observed mapping quality.
+    :param paf_file: Path to a PAF file
+    :return: A dictionary mapping reference packages a list of PAF objects
+    """
+    refpkg_name_paf_map = dict()
+    with open(paf_file, "r") as infile:
+        prev_qname = ""
+        for line in infile:
+            qname, qlen, qstart, qend, _, tname, tlen, tstart, tend, n_match_bases, n_total_bases, mapq = line.split("\t")
+            paf_obj = PAFObj(qname, int(qlen), int(qstart), int(qend), tname, int(tlen), int(tstart), int(tend),
+                             int(n_match_bases), int(n_total_bases), int(mapq))
+
+            refpkg_name = tname.split("_")[1]  # reference header is always guaranteed to include gene name
+            if refpkg_name not in refpkg_name_paf_map:
+                refpkg_name_paf_map[refpkg_name] = list()
+            else:
+                if prev_qname != qname:
+                    if 0 < int(mapq) < 255:
+                        refpkg_name_paf_map[refpkg_name].append(paf_obj)
+                else:
+                    # filter reads by maximum mapping quality
+                    stored_mapq = refpkg_name_paf_map[refpkg_name][-1].mapq
+                    if int(mapq) > stored_mapq:
+                        refpkg_name_paf_map[refpkg_name][-1] = paf_obj
+            prev_qname = qname
+    return refpkg_name_paf_map

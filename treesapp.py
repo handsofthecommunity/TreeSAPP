@@ -29,7 +29,8 @@ try:
         reformat_string, available_cpu_count, write_phy_file, reformat_fasta_to_phy, profile_aligner, run_papara
     from classy import CommandLineWorker, CommandLineFarmer, ItolJplace, NodeRetrieverWorker,\
         TreeLeafReference, TreeProtein, ReferenceSequence, prep_logging
-    from fasta import format_read_fasta, get_headers, write_new_fasta, trim_multiple_alignment, read_fasta_to_dict
+    from fasta import format_read_fasta, format_read_fastq, get_headers, write_new_fasta, trim_multiple_alignment, \
+        read_fasta_to_dict
     from entish import create_tree_info_hash, deconvolute_assignments, read_and_understand_the_reference_tree,\
         get_node, annotate_partition_tree, find_cluster
     from external_command_interface import launch_write_command, setup_progress_bar
@@ -38,6 +39,7 @@ try:
     from file_parsers import *
     from phylo_dist import *
     from update_refpkg import CreateFuncTreeUtility
+    from long_read import *
 
     import _tree_parser
     import _fasta_reader
@@ -78,6 +80,8 @@ def get_options():
     parser.add_argument("-P", "--placement_parser", default="best", type=str, choices=["best", "lca"],
                         help="Algorithm used for parsing each sequence's potential RAxML placements. "
                              "[DEFAULT = 'best']")
+    parser.add_argument("--lr", default=False, required=False, action="store_true",
+                        help="Flag indicating input query sequences are long reads, activating the long-read workflow")
 
     rpkm_opts = parser.add_argument_group('RPKM options')
     rpkm_opts.add_argument("--rpkm", action="store_true", default=False,
@@ -182,6 +186,10 @@ def check_parser_arguments(args):
 
     if args.molecule == "prot" and args.rpkm:
         logging.error("Unable to calculate RPKM values for protein sequences.\n")
+        sys.exit()
+
+    if args.molecule != "dna" and args.lr:
+        logging.error("DNA must be passed in for the long read workflow!")
         sys.exit()
 
     # Parameterizing the hmmsearch output parsing:
@@ -3101,26 +3109,37 @@ def main(argv):
         validate_inputs(args, marker_build_dict)
     if args.skip == 'n':
         # STAGE 2: Predict open reading frames (ORFs) if the input is an assembly, read, format and write the FASTA
-        if args.molecule == "dna":
+        if args.molecule == "dna" and not args.lr:
             # args.fasta_input is set to the predicted ORF protein sequences
             args = predict_orfs(args)
         logging.info("Formatting " + args.fasta_input + " for pipeline... ")
-        formatted_fasta_dict = format_read_fasta(args.fasta_input, "prot", args.output)
+        if args.molecule == "dna" and args.lr:
+            formatted_input_dict = format_read_fastq(args.fasta_input, args.output)
+        else:
+            formatted_input_dict = format_read_fasta(args.fasta_input, "prot", args.output)
         logging.info("done.\n")
 
-        logging.info("\tTreeSAPP will analyze the " + str(len(formatted_fasta_dict)) + " sequences found in input.\n")
+        logging.info("\tTreeSAPP will analyze the " + str(len(formatted_input_dict)) + " sequences found in input.\n")
         if re.match(r'\A.*\/(.*)', args.fasta_input):
             input_multi_fasta = os.path.basename(args.fasta_input)
         else:
             input_multi_fasta = args.fasta_input
         args.formatted_input_file = args.output_dir_var + input_multi_fasta + "_formatted.fasta"
-        formatted_fasta_files = write_new_fasta(formatted_fasta_dict, args.formatted_input_file)
+        formatted_fasta_files = write_new_fasta(formatted_input_dict, args.formatted_input_file)
         ref_alignment_dimensions = get_alignment_dims(args, marker_build_dict)
 
         # STAGE 3: Run hmmsearch on the query sequences to search for marker homologs
-        hmm_domtbl_files = hmmsearch_orfs(args, marker_build_dict)
-        hmm_matches = parse_domain_tables(args, hmm_domtbl_files)
-        homolog_seq_files, numeric_contig_index = extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
+        if args.lr:
+            fasta_reference = prepare_fasta_target(marker_build_dict, args.various_outputs)
+            paf_file = run_minimap(args.executables["minimap"], fasta_reference,
+                                   args.fasta_input, args.various_outputs + "mm")
+            minimap_match_dict = parse_paf(paf_file)
+            homolog_seq_files, numeric_contig_index = extract_minimap_alignments(args, minimap_match_dict,
+                                                                                 formatted_input_dict)
+        else:
+            hmm_domtbl_files = hmmsearch_orfs(args, marker_build_dict)
+            hmm_matches = parse_domain_tables(args, hmm_domtbl_files)
+            homolog_seq_files, numeric_contig_index = extract_hmm_matches(args, hmm_matches, formatted_input_dict)
 
         # STAGE 4: Run hmmalign or PaPaRa, and optionally BMGE, to produce the MSAs required to for the ML estimations
         create_ref_phy_files(args, homolog_seq_files, marker_build_dict, ref_alignment_dimensions)
