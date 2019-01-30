@@ -3130,7 +3130,7 @@ def main(argv):
         # STAGE 3: Run hmmsearch on the query sequences to search for marker homologs
         if args.lr:
             fasta_reference = prepare_fasta_target(marker_build_dict, args.various_outputs)
-            paf_file = run_minimap(args.executables["minimap"], fasta_reference,
+            paf_file = run_minimap(args.executables["minimap2"], fasta_reference,
                                    args.fasta_input, args.various_outputs + "mm")
             minimap_match_dict = parse_paf(paf_file)
             homolog_seq_files, numeric_contig_index = extract_minimap_alignments(args, minimap_match_dict,

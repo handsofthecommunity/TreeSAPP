@@ -174,7 +174,7 @@ def find_executables(args):
 
     if hasattr(args, "lr"):
         if args.lr:
-            dependencies += ["minimap"]
+            dependencies += ["minimap2"]
 
     if args.molecule == "rrna":
         dependencies += ["cmalign", "cmsearch", "cmbuild"]
