@@ -10,38 +10,41 @@ from utilities import median, launch_write_command
 
 # No bioinformatic software would be complete without a contribution from Heng Li.
 # Adapted from his readfq generator
-def generate_fasta(fasta_handler):  # this is a generator function
+def generate_fasta_or_fastq(fp):  # this is a generator function
     last = None  # this is a buffer keeping the last unprocessed line
     while True:  # mimic closure; is it a bad idea?
-        if not last:
-            for line in fasta_handler:  # search for the start of the next record
-                if line[0] == '>':  # fasta header line
-                    last = line[:-1]  # save this line
+        if not last:  # the first record or a record following a fastq
+            for l in fp:  # search for the start of the next record
+                if l[0] in '>@':  # fasta/q header line
+                    last = l[:-1]  # save this line
                     break
-        if not last:
-            break
-        name, seqs, last = last[1:], [], None
-        for line in fasta_handler:  # read the sequence
-            if line[0] == '>':
-                last = line[:-1]
+        if not last: break
+        name, seqs, last = last[1:].partition(" ")[0], [], None
+        for l in fp:  # read the sequence
+            if l[0] in '@+>':
+                last = l[:-1]
                 break
-            seqs.append(line[:-1])
+            seqs.append(l[:-1])
         if not last or last[0] != '+':  # this is a fasta record
-            yield name, ''.join(seqs)  # yield a fasta record
-            if not last:
-                break
-        else:
-            seq, seqs = ''.join(seqs), []
-            for line in fasta_handler:  # read the quality
-                seqs.append(line[:-1])
+            yield name, ''.join(seqs), None  # yield a fasta record
+            if not last: break
+        else:  # this is a fastq record
+            seq, leng, seqs = ''.join(seqs), 0, []
+            for l in fp:  # read the quality
+                seqs.append(l[:-1])
+                leng += len(l) - 1
+                if leng >= len(seq):  # have read enough quality
+                    last = None
+                    yield name, seq, ''.join(seqs)  # yield a fastq record
+                    break
             if last:  # reach EOF before reading enough quality
-                yield name, seq  # yield a fasta record instead
+                yield name, seq, None  # yield a fasta record instead
                 break
 
 
 def read_fasta_to_dict(fasta_file):
     """
-    Reads any fasta file using a generator function (generate_fasta) into a dictionary collection
+    Reads any fasta file using a generator function (generate_fasta_or_fastq) into a dictionary collection
 
     :param fasta_file: Path to a FASTA file to be read into a dict
     :return: Dict where headers/record names are keys and sequences are the values
@@ -52,8 +55,8 @@ def read_fasta_to_dict(fasta_file):
     except IOError:
         logging.error("Unable to open " + fasta_file + " for reading!\n")
         sys.exit(5)
-    for record in generate_fasta(fasta_handler):
-        name, sequence = record
+    for record in generate_fasta_or_fastq(fasta_handler):
+        name, sequence, _ = record
         fasta_dict[name] = sequence.upper()
     return fasta_dict
 
@@ -100,6 +103,19 @@ def format_read_fasta(fasta_input, molecule, output_dir, max_header_length=110, 
 
     return formatted_fasta_dict
 
+
+def format_read_fastq(fastq_input, max_header_length=110, min_seq_length=10):
+    fastq_dict = dict()
+    for record in generate_fasta_or_fastq(fastq_input):
+        name, seq, _ = record
+        name[0] = ">"
+        if len(seq) < min_seq_length:
+            continue
+        else:
+            if len(name) > max_header_length:
+                name = name[:max_header_length]
+            fastq_dict[name] = seq
+    return fastq_dict
 
 def get_headers(fasta_file):
     """

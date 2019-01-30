@@ -876,7 +876,7 @@ def parse_paf(paf_file):
             paf_obj = PAFObj(qname, int(qlen), int(qstart), int(qend), tname, int(tlen), int(tstart), int(tend),
                              int(n_match_bases), int(n_total_bases), int(mapq))
 
-            refpkg_name = tname.split("_")[1]
+            refpkg_name = tname.split("_")[1]  # reference header is always guaranteed to include gene name
             if refpkg_name not in refpkg_name_paf_map:
                 refpkg_name_paf_map[refpkg_name] = list()
             else:
