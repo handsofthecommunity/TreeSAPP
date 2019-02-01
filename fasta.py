@@ -106,9 +106,14 @@ def format_read_fasta(fasta_input, molecule, output_dir, max_header_length=110, 
 
 def format_read_fastq(fastq_input, max_header_length=110, min_seq_length=10):
     fastq_dict = dict()
-    for record in generate_fasta_or_fastq(fastq_input):
+    try:
+        fastq_handler = open(fastq_input, "r")
+    except IOError:
+        logging.error("Unable to open {} for reading!".format(fastq_input))
+        sys.exit(5)
+    for record in generate_fasta_or_fastq(fastq_handler):
         name, seq, _ = record
-        name[0] = ">"
+        name = ">" + name[1:]
         if len(seq) < min_seq_length:
             continue
         else:

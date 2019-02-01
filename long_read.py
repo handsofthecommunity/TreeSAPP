@@ -5,9 +5,10 @@ import sys
 import os
 from external_command_interface import launch_write_command
 from utilities import reformat_string
+from fasta import generate_fasta_or_fastq
 
 
-def prepare_fasta_target(marker_build_dict, index_prefix):
+def prepare_fasta_target(args, marker_build_dict, index_prefix):
     """
     From a list of target reference packages, concatenate the FASTA files for input to minimap2
     :param marker_build_dict: Dictionary mapping denominator/code names to MarkerBuild objects
@@ -15,13 +16,15 @@ def prepare_fasta_target(marker_build_dict, index_prefix):
     :return: Path to the fasta index
     """
     fasta_file = os.path.join(index_prefix, "ref.fa")
-    reference_package_dir = os.path.join(".", "data", "alignment_data")
+    reference_package_dir = os.path.join(args.treesapp, "data", "alignment_data")
     with open(fasta_file, "w") as outfile:
         for marker_build_obj in marker_build_dict.values():
-            reference_package_path = os.path.join(reference_package_dir, marker_build_obj.cog)
+            reference_package_path = os.path.join(reference_package_dir, marker_build_obj.cog + ".fa")
             with open(reference_package_path, "r") as infile:
-                for line in infile:
-                    outfile.write(line)
+                for record in generate_fasta_or_fastq(infile):
+                    header, seq, _ = record
+                    seq = seq.replace("-", "")
+                    outfile.write("{0}\n{1}\n".format(header, seq))
     return fasta_file
 
 

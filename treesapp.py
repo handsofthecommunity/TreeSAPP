@@ -3113,7 +3113,7 @@ def main(argv):
             args = predict_orfs(args)
         logging.info("Formatting " + args.fasta_input + " for pipeline... ")
         if args.molecule == "dna" and args.lr:
-            formatted_input_dict = format_read_fastq(args.fasta_input, args.output)
+            formatted_input_dict = format_read_fastq(args.fasta_input)
         else:
             formatted_input_dict = format_read_fasta(args.fasta_input, "prot", args.output)
         logging.info("done.\n")
@@ -3129,9 +3129,9 @@ def main(argv):
 
         # STAGE 3: Run hmmsearch on the query sequences to search for marker homologs
         if args.lr:
-            fasta_reference = prepare_fasta_target(marker_build_dict, args.output_dir_var)
+            fasta_reference = prepare_fasta_target(args, marker_build_dict, args.output_dir_var)
             paf_file = run_minimap(args.executables["minimap2"], fasta_reference,
-                                   args.fasta_input, args.output_dir_var + "mm")
+                                   args.fasta_input, args.output_dir_var)
             minimap_match_dict = parse_paf(paf_file)
             homolog_seq_files, numeric_contig_index = extract_minimap_alignments(args, minimap_match_dict,
                                                                                  formatted_input_dict)
