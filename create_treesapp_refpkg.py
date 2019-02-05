@@ -16,18 +16,18 @@ try:
 
     from time import gmtime, strftime, sleep
 
-    from utilities import os_type, which, find_executables, reformat_string, return_sequence_info_groups,\
+    from utilities import find_executables, reformat_string, return_sequence_info_groups,\
         reformat_fasta_to_phy, write_phy_file, cluster_sequences, clean_lineage_string
     from fasta import format_read_fasta, get_headers, get_header_format, write_new_fasta, summarize_fasta_sequences,\
         trim_multiple_alignment, read_fasta_to_dict
-    from classy import ReferenceSequence, ReferencePackage, Header, Cluster, MarkerBuild,\
+    from classy import ReferenceSequence, ReferencePackage, Cluster, MarkerBuild,\
         prep_logging, register_headers, get_header_info
     from external_command_interface import launch_write_command
     from entish import annotate_partition_tree
-    from lca_calculations import megan_lca, lowest_common_taxonomy, clean_lineage_list
+    from lca_calculations import megan_lca, clean_lineage_list
     from entrez_utils import get_multiple_lineages, verify_lineage_information, read_accession_taxa_map, \
         write_accession_lineage_map, build_entrez_queries
-    from file_parsers import parse_domain_tables, read_phylip_to_dict, read_uc
+    from file_parsers import parse_domain_tables, read_phylip_to_dict, read_uc, validate_alignment_trimming
     from placement_trainer import regress_rank_distance
 
 except ImportError:
@@ -1141,7 +1141,7 @@ def update_build_parameters(param_file, marker_package: MarkerBuild):
 
     :param param_file: Path to the ref_build_parameters.tsv file used by TreeSAPP for storing refpkg metadata
     :param marker_package: A MarkerBuild instance
-    :return: 
+    :return: None
     """
     try:
         params = open(param_file, 'a')
@@ -1345,8 +1345,6 @@ def main():
     hmm_purified_fasta = args.output_dir + args.code_name + "_hmm_purified.fasta"
     filtered_fasta_name = args.output_dir + '.'.join(os.path.basename(args.fasta_input).split('.')[:-1]) + "_filtered.fa"
     uclust_prefix = args.output_dir + '.'.join(os.path.basename(filtered_fasta_name).split('.')[:-1]) + "_uclust" + args.identity
-    clustered_fasta = uclust_prefix + ".fa"
-    clustered_uc = uclust_prefix + ".uc"
     od_input = args.output_dir + "od_input.fasta"
     unaln_ref_fasta = args.output_dir + args.code_name + "_ref.fa"  # FASTA file of unaligned reference sequences
     phylip_file = args.output_dir + args.code_name + ".phy"  # Used for building the phylogenetic tree with RAxML
@@ -1506,7 +1504,7 @@ def main():
     ##
     if args.cluster:
         cluster_sequences(args.executables["usearch"], filtered_fasta_name, uclust_prefix, args.identity)
-        args.uc = clustered_uc
+        args.uc = uclust_prefix + ".uc"
 
     ##
     # Read the uc file if present
@@ -1694,20 +1692,20 @@ def main():
         logging.info("Running BMGE... ")
         trimmed_msa_file = trim_multiple_alignment(args.executables["BMGE.jar"], ref_pkg.msa, args.molecule)
         logging.info("done.\n")
-        trimmed_aligned_fasta_dict = read_fasta_to_dict(trimmed_msa_file)
-        if len(trimmed_aligned_fasta_dict) == 0:
-            logging.warning("Trimming removed all your sequences. " +
-                            "This could mean you have many non-homologous sequences or they are very dissimilar.\n" +
-                            "Proceeding with the untrimmed multiple alignment instead.\n")
-            for seq_name in aligned_fasta_dict:
-                dict_for_phy[seq_name.split('_')[0]] = aligned_fasta_dict[seq_name]
-        else:
-            for seq_name in aligned_fasta_dict:
-                dict_for_phy[seq_name.split('_')[0]] = trimmed_aligned_fasta_dict[seq_name]
+
+        unique_ref_headers = set([re.sub('_' + re.escape(ref_pkg.prefix), '', x) for x in aligned_fasta_dict.keys()])
+        msa_dict, summary_str = validate_alignment_trimming([trimmed_msa_file], unique_ref_headers)
+        logging.debug("Number of sequences discarded: " + summary_str + "\n")
+        if trimmed_msa_file not in msa_dict.keys():
+            # At least one of the reference sequences were discarded and therefore this package is invalid.
+            logging.error("Trimming removed reference sequences. This indicates you have non-homologous sequences.\n" +
+                          "Please improve sequence quality-control and/or re-run without the '--trim_align' flag.\n")
+            sys.exit(13)
+        aligned_fasta_dict = msa_dict[trimmed_msa_file]
         os.remove(trimmed_msa_file)
-    else:
-        for seq_name in aligned_fasta_dict:
-            dict_for_phy[seq_name.split('_')[0]] = aligned_fasta_dict[seq_name]
+
+    for seq_name in aligned_fasta_dict:
+        dict_for_phy[seq_name.split('_')[0]] = aligned_fasta_dict[seq_name]
     phy_dict = reformat_fasta_to_phy(dict_for_phy)
     write_phy_file(phylip_file, phy_dict)
 
