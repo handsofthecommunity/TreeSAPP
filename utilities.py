@@ -5,6 +5,8 @@ import re
 import sys
 import subprocess
 import logging
+import time
+from shutil import copy
 from external_command_interface import launch_write_command
 
 
@@ -480,43 +482,6 @@ def write_phy_file(phy_output_file: str, phy_dict: dict, alignment_dims=None):
     return
 
 
-def calculate_overlap(info):
-    """
-    Returns the overlap length of the base and the check sequences.
-    :param info: Autovivify() object holding start and end sequence coordinates for overlapping sequences
-    :return overlap: The number of overlapping bases between the sequences
-    """
-
-    overlap = 0
-    base_start = info['base']['start']
-    base_end = info['base']['end']
-    check_start = info['check']['start']
-    check_end = info['check']['end']
-
-    # Calculate the overlap based on the relative positioning of the base and check sequences
-    assert isinstance(base_end, (int, int, float, complex))
-    if base_start <= check_start:
-        if check_end >= base_end >= check_start:
-            # Base     ----
-            # Check      -------
-            overlap = base_end - check_start
-        elif check_end <= base_end:
-            # Base     --------
-            # Check        --
-            overlap = check_end - check_start
-    elif check_start <= base_start:
-        if base_start <= check_end <= base_end:
-            # Base         -----
-            # Check    -----
-            overlap = check_end - base_start
-        elif base_end <= check_end:
-            # Base       --
-            # Check    --------
-            overlap = base_end - base_start
-
-    return overlap
-
-
 def cluster_sequences(uclust_exe, fasta_input, uclust_prefix, similarity=0.60):
     """
     Wrapper function for clustering a FASTA file at some similarity using usearch's cluster_fast algorithm
@@ -542,6 +507,166 @@ def cluster_sequences(uclust_exe, fasta_input, uclust_prefix, similarity=0.60):
                       ' '.join(uclust_cmd) + "\n")
         sys.exit(13)
     return
+
+
+def build_hmm_profile(hmmbuild_exe, msa_in, output_hmm):
+    logging.debug("Building HMM profile... ")
+    hmm_build_command = [hmmbuild_exe, output_hmm, msa_in]
+    stdout, hmmbuild_pro_returncode = launch_write_command(hmm_build_command)
+    logging.debug("done.\n")
+
+    if hmmbuild_pro_returncode != 0:
+        logging.error("hmmbuild did not complete successfully for:\n" +
+                      ' '.join(hmm_build_command) + "\n")
+        sys.exit(7)
+    return
+
+
+def launch_evolutionary_placement_queries(args, phy_files, marker_build_dict):
+    """
+    Run RAxML using the provided Autovivifications of phy files and COGs, as well as the list of models used for each COG.
+
+    Returns an Autovivification listing the output files of RAxML.
+    Returns an Autovivification containing the reference tree file associated with each functional or rRNA COG.
+    :param args:
+    :param phy_files:
+    :param marker_build_dict:
+    :return:
+    """
+    logging.info("Running RAxML... coffee?\n")
+
+    start_time = time.time()
+
+    raxml_outfiles = Autovivify()
+    raxml_calls = 0
+    # Maximum-likelihood sequence placement analyses
+    denominator_reference_tree_dict = dict()
+    mltree_resources = args.treesapp + os.sep + 'data' + os.sep
+    for denominator in sorted(phy_files.keys()):
+        if not isinstance(denominator, str):
+            logging.error(str(denominator) + " is not string but " + str(type(denominator)) + "\n")
+            raise AssertionError()
+        # Establish the reference tree file to be used for this contig
+        reference_tree_file = mltree_resources + 'tree_data' + os.sep + args.reference_tree
+        ref_marker = marker_build_dict[denominator]
+        if not denominator == 'p' and not denominator == 'g' and not denominator == 'i':
+            reference_tree_file = mltree_resources + 'tree_data' + os.sep + ref_marker.cog + '_tree.txt'
+        if denominator not in denominator_reference_tree_dict.keys():
+            denominator_reference_tree_dict[denominator] = reference_tree_file
+        for phy_file in phy_files[denominator]:
+            query_name = re.sub("_hmm_purified.phy.*$", '', os.path.basename(phy_file))
+            query_name = re.sub(marker_build_dict[denominator].cog, denominator, query_name)
+            raxml_files = raxml_evolutionary_placement(args.executables["raxmlHPC"], reference_tree_file, phy_file,
+                                                       ref_marker.model, args.output_dir_var, query_name, args.num_threads)
+            raxml_outfiles[denominator][query_name]['classification'] = raxml_files["classification"]
+            raxml_outfiles[denominator][query_name]['labelled_tree'] = raxml_files["tree"]
+            raxml_calls += 1
+
+    end_time = time.time()
+    hours, remainder = divmod(end_time - start_time, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    logging.debug("\tRAxML time required: " +
+                  ':'.join([str(hours), str(minutes), str(round(seconds, 2))]) + "\n")
+    logging.debug("\tRAxML was called " + str(raxml_calls) + " times.\n")
+
+    return raxml_outfiles, denominator_reference_tree_dict, len(phy_files.keys())
+
+
+def raxml_evolutionary_placement(raxml_exe: str, reference_tree_file: str, multiple_alignment: str, model: str,
+                                 output_dir: str, query_name: str, num_threads=2):
+    """
+    A wrapper for RAxML's evolutionary placement algorithm (EPA)
+        1. checks to ensure the output files do not already exist, and removes them if they do
+        2. ensures the output directory is an absolute path, satisfying RAxML
+        3. Runs RAxML with the provided parameters
+        4. Renames the files for consistency in TreeSAPP
+    :param raxml_exe: Path to the RAxML executable to be used
+    :param reference_tree_file: The reference tree for evolutionary placement to operate on
+    :param multiple_alignment: Path to a multiple alignment file containing reference and query sequences
+    :param model: The substitution model to be used by RAxML e.g. PROTGAMMALG, GTRCAT
+    :param output_dir: Path to write the EPA outputs
+    :param query_name: Prefix name for all of the output files
+    :param num_threads: Number of threads EPA should use (default = 2)
+    :return: A dictionary of files written by RAxML's EPA that are used by TreeSAPP. For example epa_files["jplace"]
+    """
+    epa_files = dict()
+    ##
+    # Start with some housekeeping - are the inputs looking alright?
+    # Do the outputs already exist?
+    # Is the output directory an absolute path?
+    ##
+    if not os.path.isabs(output_dir):
+        output_dir = os.getcwd() + os.sep + output_dir
+    if output_dir[-1] != os.sep:
+        output_dir += os.sep
+
+    if model is None:
+        logging.error("No substitution model provided for evolutionary placement of " + query_name + ".\n")
+        raise AssertionError()
+
+    # Determine the output file names, and remove any pre-existing output files
+    if not isinstance(reference_tree_file, str):
+        logging.error(str(reference_tree_file) + " is not string but " + str(type(reference_tree_file)) + "\n")
+        raise AssertionError()
+
+    if len(reference_tree_file) == 0:
+        logging.error("Could not find reference tree for " + query_name + " to be used by EPA.\n")
+        raise AssertionError()
+
+    # This is the final set of files that will be written by RAxML's EPA algorithm
+    epa_files["stdout"] = output_dir + query_name + '_RAxML.txt'
+    epa_info = output_dir + 'RAxML_info.' + query_name
+    epa_files["info"] = output_dir + query_name + '.RAxML_info.txt'
+    epa_labelled_tree = output_dir + 'RAxML_labelledTree.' + query_name
+    epa_tree = output_dir + 'RAxML_originalLabelledTree.' + query_name
+    epa_files["tree"] = output_dir + query_name + '.originalRAxML_labelledTree.txt'
+    epa_classification = output_dir + 'RAxML_classification.' + query_name
+    epa_files["classification"] = output_dir + query_name + '.RAxML_classification.txt'
+    epa_files["jplace"] = output_dir + "RAxML_portableTree." + query_name + ".jplace"
+    epa_entropy = output_dir + "RAxML_entropy." + query_name
+    epa_weights = output_dir + "RAxML_classificationLikelihoodWeights." + query_name
+
+    for raxml_file in [epa_info, epa_labelled_tree, epa_tree, epa_classification, epa_entropy, epa_weights]:
+        try:
+            os.remove(raxml_file)
+        except OSError:
+            pass
+
+    # Set up the command to run RAxML
+    raxml_command = [raxml_exe,
+                     '-m', model,
+                     '-T', str(int(num_threads)),
+                     '-s', multiple_alignment,
+                     "-p", str(12345),
+                     '-t', reference_tree_file,
+                     '-G', str(0.2),
+                     '-f', 'v',
+                     '-n', query_name,
+                     '-w', output_dir,
+                     '>', epa_files["stdout"]]
+    launch_write_command(raxml_command)
+
+    # Rename the RAxML output files
+    if os.path.exists(epa_info):
+        copy(epa_info, epa_files["info"])
+        os.remove(epa_info)
+    if os.path.exists(epa_classification):
+        copy(epa_classification, epa_files["classification"])
+        os.remove(epa_classification)
+    if os.path.exists(epa_tree):
+        copy(epa_tree, epa_files["tree"])
+        os.remove(epa_tree)
+    else:
+        logging.error("Some files were not successfully created for " + query_name + "\n" +
+                      "Check " + epa_files["stdout"] + " for an error!\n")
+        sys.exit(3)
+    # Remove useless files
+    if os.path.exists(epa_labelled_tree):
+        os.remove(epa_labelled_tree)
+        os.remove(epa_weights)
+        os.remove(epa_entropy)
+
+    return epa_files
 
 
 def profile_aligner(executables, ref_aln, ref_profile, input_fasta, output_multiple_alignment, kind="functional"):
