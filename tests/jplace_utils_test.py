@@ -48,7 +48,7 @@ class JplaceUtilsTests(unittest.TestCase):
         jplace_data = jplace_utils.jplace_parser(jplace_path)
 
         jplace_ref_data = TEST_DIR + "test_data/ref_jplace.jplace"
-        jplace_out = args.output_dir_var + 'RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace'
+        jplace_out = args.output_dir_var + '/RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace'
         copyfile(jplace_ref_data, jplace_out)
         
         jplace_utils.sub_indices_for_seq_names_jplace(args, short_numeric_contig_index, marker_build_dict)       
