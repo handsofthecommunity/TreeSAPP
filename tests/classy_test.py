@@ -490,4 +490,53 @@ class HeaderTest(unittest.TestCase):
             assert(val.formatted == '>' + str(i) + '_McrA')
             assert(val.first_split == '>' + str(i) + '_McrA')
 
-    #MarkerTest, MyFormatter, TaxonTest
+class MarkerTestTest(unittest.TestCase):
+    def test_init(self):
+        marker_name = 'test'
+        mt = MarkerTest(marker_name)
+        assert(mt.target_marker == 'test')
+        assert(len(mt.ranks) == 0)
+        assert(len(mt.markers) == 0)
+        assert(mt.taxa_filter["Unclassified"] == 0)
+        assert(mt.taxa_filter["Classified"] == 0)
+        assert(mt.taxa_filter["Unique_taxa"] == 0)
+        assert(len(mt.taxa_tests.keys()) == 0)
+        assert(len(mt.classifications.keys()) == 0)
+
+    def test_new_taxa(self):
+        rank = "rank"
+        lineage = "lineage"
+
+        mt = MarkerTest("test")
+        mt.new_taxa_test(rank, lineage)
+
+        assert(len(mt.taxa_tests.keys()) != 0)
+        assert(len(mt.taxa_tests[rank]) == 1)
+        assert(mt.taxa_tests[rank][0].lineage == lineage)
+
+    def test_delete_test(self):
+        rank = "rank"
+        lineage = "lineage"
+
+        mt = MarkerTest("test")
+        mt.new_taxa_test(rank, lineage)
+
+        assert(len(mt.taxa_tests.keys()) == 1)
+        mt.delete_test(rank, lineage)
+        assert(len(mt.taxa_tests[rank]) == 0)
+
+    def test_get_sensitivity(self):
+        rank = "rank"
+        lineage = "lineage"
+        
+        mt = MarkerTest("test")
+        
+        queries, classified, relation = mt.get_sensitivity(rank)
+        assert(queries == 0)
+        assert(classified == 0)
+        assert(relation == 0.0)
+        
+        mt.new_taxa_test(rank, lineage)
+
+        
+    #MyFormatter, TaxonTest
