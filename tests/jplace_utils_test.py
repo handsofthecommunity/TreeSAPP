@@ -13,7 +13,7 @@ import treesapp
 
 TEST_DATA_PATH ='/home/travis/build/hallamlab/TreeSAPP/tests/test_data'
 TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/'
-TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests'
+TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/'
 
 class JplaceUtilsTests(unittest.TestCase):
 
