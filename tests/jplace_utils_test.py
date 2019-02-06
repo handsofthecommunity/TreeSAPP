@@ -4,7 +4,6 @@ import os
 import argparse
 import glob
 
-from shutil import copyfile
 from .treesapp_test import create_parser
 
 import sys, inspect
@@ -48,11 +47,11 @@ class JplaceUtilsTests(unittest.TestCase):
         jplace_data = jplace_utils.jplace_parser(jplace_path)
 
         jplace_ref_data = TEST_DIR + "test_data/ref_jplace.jplace"
-        jplace_out = args.output_dir_var + '/RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace'
-        copyfile(jplace_ref_data, jplace_out)
+
+        args.output_dir_var = '/home/build/hallamlab/TreeSAPP/tests/'
         
         jplace_utils.sub_indices_for_seq_names_jplace(args, short_numeric_contig_index, marker_build_dict)       
-        test_data = jplace_utils.jplace_parser(jplace_out)
+        test_data = jplace_utils.jplace_parser(jplace_ref_data)
         for i in range(len(test_data.placements)):
             assert(jplace_data.placements[i] == test_data.placements[i])
 
