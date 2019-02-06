@@ -4,6 +4,7 @@ import os
 import argparse
 import glob
 
+from shutil import copyfile
 from .treesapp_test import create_parser
 
 import sys, inspect
