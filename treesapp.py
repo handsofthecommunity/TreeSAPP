@@ -27,7 +27,7 @@ try:
 
     from utilities import Autovivify, os_type, which, find_executables, generate_blast_database, clean_lineage_string,\
         reformat_string, available_cpu_count, write_phy_file, reformat_fasta_to_phy, profile_aligner, run_papara
-    from classy import CreateFuncTreeUtility, CommandLineWorker, CommandLineFarmer, ItolJplace, NodeRetrieverWorker,\
+    from classy import CommandLineWorker, CommandLineFarmer, ItolJplace, NodeRetrieverWorker,\
         TreeLeafReference, TreeProtein, ReferenceSequence, prep_logging
     from fasta import format_read_fasta, format_read_fastq, get_headers, write_new_fasta, trim_multiple_alignment, \
         read_fasta_to_dict
@@ -38,6 +38,7 @@ try:
     from jplace_utils import *
     from file_parsers import *
     from phylo_dist import *
+    from update_refpkg import CreateFuncTreeUtility
     from long_read import *
 
     import _tree_parser
