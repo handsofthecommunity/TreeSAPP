@@ -872,21 +872,22 @@ def parse_paf(paf_file):
     with open(paf_file, "r") as infile:
         prev_qname = ""
         for line in infile:
-            qname, qlen, qstart, qend, _, tname, tlen, tstart, tend, n_match_bases, n_total_bases, mapq = line.split("\t")
-            paf_obj = PAFObj(qname, int(qlen), int(qstart), int(qend), tname, int(tlen), int(tstart), int(tend),
-                             int(n_match_bases), int(n_total_bases), int(mapq))
+            data = line.split("\t")
+            # qname, qlen, qstart, qend, _, tname, tlen, tstart, tend, n_match_bases, n_total_bases, mapq, _, _, _, _ = line.split("\t")
+            paf_obj = PAFObj(data[0], int(data[1]), int(data[2]), int(data[3]), data[5], int(data[6]), int(data[7]), int(data[8]),
+                             int(data[9]), int(data[10]), int(data[11]))
 
-            refpkg_name = tname.split("_")[1]  # reference header is always guaranteed to include gene name
+            refpkg_name = data[5].split("_")[1]  # reference header is always guaranteed to include gene name
             if refpkg_name not in refpkg_name_paf_map:
                 refpkg_name_paf_map[refpkg_name] = list()
             else:
-                if prev_qname != qname:
-                    if 0 < int(mapq) < 255:
+                if prev_qname != data[0]:
+                    if 0 < int(data[11]) < 255:
                         refpkg_name_paf_map[refpkg_name].append(paf_obj)
                 else:
                     # filter reads by maximum mapping quality
                     stored_mapq = refpkg_name_paf_map[refpkg_name][-1].mapq
-                    if int(mapq) > stored_mapq:
+                    if int(data[11]) > stored_mapq:
                         refpkg_name_paf_map[refpkg_name][-1] = paf_obj
-            prev_qname = qname
+            prev_qname = data[0]
     return refpkg_name_paf_map

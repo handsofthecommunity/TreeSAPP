@@ -1010,7 +1010,7 @@ def create_ref_phy_files(args, single_query_fasta_files, marker_build_dict, ref_
 
     # Convert the reference sequence alignments to .phy files for every marker identified
     for query_fasta in single_query_fasta_files:
-        marker = re.match("(.*)_hmm_purified.*", os.path.basename(query_fasta)).group(1)
+        marker = re.match("(.*)_(hmm|mm2)_purified.*", os.path.basename(query_fasta)).group(1)
         denominator = None
         for denominator in marker_build_dict.keys():
             if marker_build_dict[denominator].cog == marker:
@@ -1106,9 +1106,9 @@ def prepare_and_run_hmmalign(args, single_query_fasta_files, marker_build_dict):
 
     # Run hmmalign on each fasta file
     for query_fasta in sorted(single_query_fasta_files):
-        file_name_info = re.match("(.*)_hmm_purified.*\.(f.*)$", os.path.basename(query_fasta))
+        file_name_info = re.match("(.*)_(hmm|mm2)_purified.*\.(f.*)$", os.path.basename(query_fasta))
         if file_name_info:
-            marker, extension = file_name_info.groups()
+            marker, _, extension = file_name_info.groups()
         else:
             logging.error("Unable to parse information from file name:" + "\n" + str(query_fasta) + "\n")
             sys.exit(3)

@@ -24,7 +24,7 @@ def prepare_fasta_target(args, marker_build_dict, index_prefix):
                 for record in generate_fasta_or_fastq(infile):
                     header, seq, _ = record
                     seq = seq.replace("-", "")
-                    outfile.write("{0}\n{1}\n".format(header, seq))
+                    outfile.write(">{0}\n{1}\n".format(header, seq))
     return fasta_file
 
 
@@ -72,13 +72,14 @@ def extract_minimap_alignments(args, minimap_matches, fasta_reference_map):
         if marker not in marker_gene_dict:
             marker_gene_dict[marker] = dict()
 
-        for paf_obj in sorted(minimap_matches[marker], key=lambda x: x.end - x.start):
+        for paf_obj in sorted(minimap_matches[marker], key=lambda x: x.qend - x.qstart):
             if paf_obj.qname not in fasta_reference_map:
+                print(fasta_reference_map.keys())
                 logging.error("Read name {0} was aligned using minimap2 but not found in the input fasta!".format(paf_obj.qname))
                 sys.exit(5)
             read_coordinates = str(paf_obj.qstart) + "_" + str(paf_obj.qend)
-            numeric_read_index[marker][numeric_decrementor] = paf_obj.readname + "_" + read_coordinates
-            query_sequence = fasta_reference_map[reformat_string(">" + paf_obj.qname)]
+            numeric_read_index[marker][numeric_decrementor] = paf_obj.qname + "_" + read_coordinates
+            query_sequence = fasta_reference_map[reformat_string(paf_obj.qname)]
             binned = False
             for bin_num in sorted(bins):
                 bin_rep = bins[bin_num][0]
@@ -92,14 +93,12 @@ def extract_minimap_alignments(args, minimap_matches, fasta_reference_map):
             if not binned:
                 bin_num = len(bins)
                 bins[bin_num] = [paf_obj]
-                trimmed_query_bins[bin_num] += ">" + str(numeric_decrementor) + "_" + "\n" + \
+                trimmed_query_bins[bin_num] = ">" + str(numeric_decrementor) + "_" + "\n" + \
                                                query_sequence[paf_obj.qstart:paf_obj.qend+1] + "\n"
             
             # bulk FASTA header format
             # >qname|marker_gene|start_end
-            bulk_header = ">" + paf_obj.qname + "|" + \
-                          paf_obj.tname + "|" + \
-                          paf_obj.qstart + "_" + paf_obj.qend
+            bulk_header = ">{0}|{1}|{2}_{3}".format(paf_obj.qname, paf_obj.tname, paf_obj.qstart, paf_obj.qend)
 
             marker_gene_dict[marker][bulk_header] = query_sequence[paf_obj.qstart:paf_obj.qend+1]
             numeric_decrementor -= 1

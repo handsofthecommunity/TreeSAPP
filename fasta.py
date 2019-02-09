@@ -113,7 +113,6 @@ def format_read_fastq(fastq_input, max_header_length=110, min_seq_length=10):
         sys.exit(5)
     for record in generate_fasta_or_fastq(fastq_handler):
         name, seq, _ = record
-        name = ">" + name[1:]
         if len(seq) < min_seq_length:
             continue
         else:
