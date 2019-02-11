@@ -47,6 +47,9 @@ def parse_ref_build_params(args):
         if args.targets != ["ALL"] and marker_build.denominator not in args.targets:
             skipped_lines.append(line)
         else:
+            if marker_build.denominator in marker_build_dict:
+                logging.debug("Multiple '" + marker_build.denominator + "' codes in " + ref_build_parameters +
+                              ". Previous entry in marker_build_dict being overwritten...\n")
             marker_build_dict[marker_build.denominator] = marker_build
             if marker_build.load_pfit_params(line):
                 missing_info.append(marker_build)
@@ -540,9 +543,10 @@ def read_uc(uc_file):
         logging.error("Unable to open USEARCH cluster file " + uc_file + " for reading!\n")
         sys.exit(13)
 
-    line = uc.readline()
+    logging.debug("Reading usearch cluster file... ")
+
     # Find all clusters with multiple identical sequences
-    while line:
+    for line in uc:
         cluster_type, num_id, length, identity, _, _, _, cigar, header, representative = line.strip().split("\t")
         if cluster_type == "S":
             cluster_dict[num_id] = Cluster('>' + header)
@@ -554,7 +558,9 @@ def read_uc(uc_file):
         else:
             logging.error("Unexpected cluster type '" + str(cluster_type) + "' in " + uc_file + "\n")
             sys.exit(13)
-        line = uc.readline()
+
+    uc.close()
+    logging.debug("done.\n")
     return cluster_dict
 
 
@@ -633,7 +639,8 @@ def validate_alignment_trimming(msa_files: list, unique_ref_headers: set, querie
             except ValueError:
                 if re.match("^_\d+", seq_name):
                     seq_name = re.sub("^_", '-', seq_name)
-                elif re.match("^\d+_[A-Z]\d{4,6}$", seq_name):
+                # The section of regular expresion after '_' needs to match denominator and refpkg names
+                elif re.match("^\d+_\w{3,7}$", seq_name):
                     seq_name = seq_name.split('_')[0]
                 else:
                     logging.error("Unexpected sequence name " + seq_name +

@@ -23,6 +23,7 @@ class ReferencePackage:
         self.tree = ""
         self.boot_tree = ""
         self.lineage_ids = ""
+        self.sub_model = ""
         self.core_ref_files = list()
         self.num_seqs = 0
 
@@ -779,6 +780,12 @@ class Cluster:
         self.representative = rep_name
         self.members = list()
         self.lca = ''
+
+    def get_info(self):
+        info_string = "Representative: " + str(self.representative) + "\n" + \
+                      "LCA: " + self.lca + "\n" + \
+                      "Members:\n\t" + "\n\t".join([', '.join(member) for member in self.members]) + "\n"
+        return info_string
 
 
 class MyFormatter(logging.Formatter):
