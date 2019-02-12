@@ -7,6 +7,7 @@ import logging
 from classy import TreeLeafReference, MarkerBuild, Cluster, PAFObj
 from utilities import Autovivify, calculate_overlap
 from HMMER_domainTblParser import DomainTableParser, format_split_alignments, filter_incomplete_hits, filter_poor_hits
+from fasta import read_fasta_to_dict
 
 __author__ = 'Connor Morgan-Lang'
 
@@ -48,6 +49,9 @@ def parse_ref_build_params(args):
         if args.targets != ["ALL"] and marker_build.denominator not in args.targets:
             skipped_lines.append(line)
         else:
+            if marker_build.denominator in marker_build_dict:
+                logging.debug("Multiple '" + marker_build.denominator + "' codes in " + ref_build_parameters +
+                              ". Previous entry in marker_build_dict being overwritten...\n")
             marker_build_dict[marker_build.denominator] = marker_build
             if marker_build.load_pfit_params(line):
                 missing_info.append(marker_build)
@@ -525,275 +529,6 @@ def read_stockholm_to_dict(sto_file):
     return seq_dict
 
 
-def parse_blast_results(args, blast_tables, cog_list):
-    """
-    Returns an Autovivification of purified (eg. non-redundant) BLAST hits.
-    :param args: Command-line argument object from get_options and check_parser_arguments
-    :param blast_tables: file produced by BLAST alignment
-    :param cog_list: list of COGs included in analysis pipeline
-    """
-
-    logging.info("Parsing BLAST results... ")
-
-    # reg_cog_id = re.compile(r'.*(.{5})\Z')
-    counter = 0
-    purified_blast_hits = Autovivify()
-    contigs = {}
-    hit_logger = dict()
-    alignment_count = 0
-
-    for blast_table in blast_tables:
-        try:
-            blast_results = open(blast_table, 'r')
-        except IOError:
-            logging.error("Cannot open BLAST output file " + blast_table + "\n")
-            sys.exit(3)
-
-        identifier = 0
-        for line in blast_results:
-            # Clear variables referencing the contig, COG, qstart, qend, reference start, reference end, and bitscore
-            # Interpret the BLAST hit, and assign the details accordingly
-            alignment_count += 1
-            temp_contig, temp_detailed_cog, _, _, _, _, temp_query_start, temp_query_end, temp_ref_start, temp_ref_end, _, temp_bitscore = line.split('\t')
-            temp_ref_end = int(temp_ref_end)
-            temp_ref_start = int(temp_ref_start)
-            temp_query_end = int(temp_query_end)
-            temp_query_start = int(temp_query_start)
-            temp_bitscore = float(temp_bitscore)
-
-            # Skip to next BLAST hit if bit score is less than user-defined minimum
-            if temp_bitscore <= args.bitscore:
-                continue
-
-            # Determine the direction of the hit relative to the reference
-            direction = 'forward'
-            if temp_ref_start > temp_ref_end:
-                temp = temp_ref_start
-                temp_ref_start = temp_ref_end
-                temp_ref_end = temp
-                direction = 'reverse'
-            if temp_query_start > temp_query_end:
-                temp = temp_query_start
-                temp_query_start = temp_query_end
-                temp_query_end = temp
-                if direction == 'reverse':
-                    logging.error("Confusing BLAST result!\n" +
-                                  "Please notify the authors about " +
-                                  temp_contig + ' at ' +
-                                  temp_detailed_cog +
-                                  " q(" + str(temp_query_end) + '..' + str(temp_query_start) + ")," +
-                                  " r(" + str(temp_ref_end) + '..' + str(temp_ref_start) + ")")
-                    sys.exit(3)
-                direction = 'reverse'
-
-            # This limitation is so-far not necessary
-            # result = reg_cog_id.match(temp_detailed_cog)
-            # if result:
-            #     tempCOG = result.group(1)
-            result = '_'.join(temp_detailed_cog.split('_')[1:])
-            if result:
-                tempCOG = result
-            else:
-                sys.exit('ERROR: Could not detect the COG of sequence ' + temp_detailed_cog)
-
-            # Save contig details to the list
-            if temp_contig not in contigs:
-                contigs[temp_contig] = {}
-
-            if identifier not in contigs[temp_contig]:
-                contigs[temp_contig][identifier] = {}
-
-            contigs[temp_contig][identifier]['bitscore'] = temp_bitscore
-            contigs[temp_contig][identifier]['cog'] = tempCOG
-            contigs[temp_contig][identifier]['seq_start'] = temp_query_start
-            contigs[temp_contig][identifier]['seq_end'] = temp_query_end
-            contigs[temp_contig][identifier]['direction'] = direction
-            contigs[temp_contig][identifier]['validity'] = True
-            identifier += 1
-
-        # Close the file
-        blast_results.close()
-
-    # Purify the BLAST hits
-    # For each contig sorted by their string-wise comparison...
-    for contig in sorted(contigs.keys()):
-        identifier = 0
-
-        # create tuple array to sort
-        IDs = []
-        for raw_identifier in sorted(contigs[contig].keys()):
-            base_start = contigs[contig][raw_identifier]['seq_start']
-            IDs.append((raw_identifier, base_start))
-        _IDs = sorted(IDs, key=lambda x: x[1])
-        IDs = [x[0] for x in _IDs]
-
-        base_blast_result_raw_identifier = IDs.pop()
-        contigs[contig][base_blast_result_raw_identifier]['validity'] = True
-        base_bitscore = contigs[contig][base_blast_result_raw_identifier]['bitscore']
-        base_cog = contigs[contig][base_blast_result_raw_identifier]['cog']
-        base_start = contigs[contig][base_blast_result_raw_identifier]['seq_start']
-        base_end = contigs[contig][base_blast_result_raw_identifier]['seq_end']
-        direction = contigs[contig][base_blast_result_raw_identifier]['direction']
-        base_length = base_end - base_start
-
-        # Compare the BLAST hit (base) against all others
-        # There may be several opinions about how to do this. This way is based on the original MLTreeMap
-        # ----A----  --C--
-        #        ---B---
-        # A kills B, B kills C. (Another approach would be to let C live,
-        # but the original MLTreeMap authors don't expect C to be useful)
-        for check_blast_result_raw_identifier in IDs:
-            check_bitscore = contigs[contig][check_blast_result_raw_identifier]['bitscore']
-            check_cog = contigs[contig][check_blast_result_raw_identifier]['cog']
-            check_start = contigs[contig][check_blast_result_raw_identifier]['seq_start']
-            check_end = contigs[contig][check_blast_result_raw_identifier]['seq_end']
-            check_length = check_end - check_start
-
-            # Compare the base and check BLAST hits
-            info = Autovivify()
-            info['base']['start'] = base_start
-            info['base']['end'] = base_end
-            info['check']['start'] = check_start
-            info['check']['end'] = check_end
-            overlap = calculate_overlap(info)
-            counter += 1
-
-            # Check for validity for hits with overlap
-            if overlap == 0:
-                base_blast_result_raw_identifier = check_blast_result_raw_identifier
-                base_bitscore = check_bitscore
-                base_cog = check_cog
-                base_start = check_start
-                base_end = check_end
-                base_length = check_length
-                contigs[contig][base_blast_result_raw_identifier]['validity'] = True
-            else:
-                if overlap > 0.5*base_length and base_bitscore < check_bitscore:
-                    contigs[contig][base_blast_result_raw_identifier]['validity'] = False
-                    base_blast_result_raw_identifier = check_blast_result_raw_identifier
-                    base_bitscore = check_bitscore
-                    base_cog = check_cog
-                    base_start = check_start
-                    base_end = check_end
-                    base_length = check_length
-                    contigs[contig][base_blast_result_raw_identifier]['validity'] = True
-                elif overlap > 0.5*check_length and check_bitscore < base_bitscore:
-                    contigs[contig][check_blast_result_raw_identifier]['validity'] = False
-                elif base_start == check_start and base_end == check_end:
-                    # If both are the same, keep only the one with the smaller identifier
-                    if check_blast_result_raw_identifier > base_blast_result_raw_identifier:
-                        contigs[contig][check_blast_result_raw_identifier]['validity'] = False
-
-        # Set validity to 0 if COG is not in list of TreeSAPP COGs
-        if base_cog not in cog_list['all_cogs']:
-            contigs[contig][base_blast_result_raw_identifier]['validity'] = False
-            logging.warning("WARNING: " + base_cog + " not in list of TreeSAPP markers\n")
-
-        # Save purified hits for valid base hits
-        for base_blast_result_raw_identifier in IDs:
-            base_bitscore = contigs[contig][base_blast_result_raw_identifier]['bitscore']
-            base_cog = contigs[contig][base_blast_result_raw_identifier]['cog']
-            base_start = contigs[contig][base_blast_result_raw_identifier]['seq_start']
-            base_end = contigs[contig][base_blast_result_raw_identifier]['seq_end']
-            direction = contigs[contig][base_blast_result_raw_identifier]['direction']
-            if contigs[contig][base_blast_result_raw_identifier]['validity']:
-                purified_blast_hits[contig][identifier]['bitscore'] = base_bitscore
-                purified_blast_hits[contig][identifier]['cog'] = base_cog
-                purified_blast_hits[contig][identifier]['start'] = base_start
-                purified_blast_hits[contig][identifier]['end'] = base_end
-                purified_blast_hits[contig][identifier]['direction'] = direction
-                purified_blast_hits[contig][identifier]['is_already_placed'] = False
-                identifier += 1
-
-    # Print the BLAST results for each contig
-    for contig in sorted(purified_blast_hits.keys()):
-        outfile = args.output_dir_var + contig + '_blast_result_purified.txt'
-        out = open(outfile, 'w')
-        sorting_hash = {}
-
-        # Identify the first instance of each bitscore
-        for identifier in sorted(purified_blast_hits[contig].keys()):
-            if not purified_blast_hits[contig][identifier]['bitscore'] in sorting_hash:
-                sorting_hash[purified_blast_hits[contig][identifier]['bitscore']] = {}
-            sorting_hash[purified_blast_hits[contig][identifier]['bitscore']][identifier] = 1
-
-        # Print the (potentially reduced set of) BLAST results ordered by decreasing bitscore
-        for bitscore in sorted(sorting_hash.keys(), reverse=True):
-            for identifier in sorted(sorting_hash[bitscore]):
-                marker = purified_blast_hits[contig][identifier]['cog']
-                if marker not in hit_logger:
-                    hit_logger[marker] = 0
-                hit_logger[marker] += 1
-                out.write(contig + '\t' + str(purified_blast_hits[contig][identifier]['start']) + '\t' +
-                          str(purified_blast_hits[contig][identifier]['end']) + '\t' +
-                          str(purified_blast_hits[contig][identifier]['direction']) + '\t' +
-                          purified_blast_hits[contig][identifier]['cog'] + '\t' + str(bitscore) + '\n')
-
-        out.close()
-    logging.info("done.\n")
-
-    logging.debug("\t" + str(alignment_count) + " intial BLAST alignments found.\n")
-    total = 0
-    for n in hit_logger.values():
-        total += n
-    logging.debug("\t" + str(total) + " purified BLAST alignments:\n" +
-                  "\n".join(["\t\t" + str(hit_logger[marker]) + " " + marker for marker in hit_logger]))
-
-    return purified_blast_hits
-
-
-def blastp_parser(args, blast_hits_purified):
-    """
-    For each contig, produces a file similar to the Genewise output file
-    (this is in cases where Genewise is unnecessary because it is already an AA sequence.
-    :param args: Command-line argument object from get_options and check_parser_arguments
-    :param blast_hits_purified: Parsed blastp outputs
-    :return blastp_summary_files: Autovivification of the output file for each contig.
-    """
-
-    blastp_summary_files = Autovivify()
-
-    reg_header = re.compile(r'\A>')
-
-    for contig in sorted(blast_hits_purified.keys()):
-        output_file = args.output_dir_var + contig + '_blast_result_summary.txt'
-        try:
-            output = open(output_file, 'w')
-        except IOError:
-            sys.exit('ERROR: Unable to open ' + output_file + '!\n')
-        blastp_summary_files[contig][output_file] = 1
-        shortened_sequence_file = args.output_dir_var + contig + '_sequence_shortened.txt'
-        try:
-            sequence_file = open(shortened_sequence_file, 'r')
-        except IOError:
-            sys.exit('ERROR: Could not open ' + shortened_sequence_file + '!\n')
-        flag_seq = 0
-        sequence = ''
-
-        # Get the sequence from the shortened sequence file
-        for line in sequence_file:
-            if reg_header.search(line):
-                if flag_seq == 1:
-                    sys.exit('ERROR: Unexpected multiple shortened sequences found!\n')
-                flag_seq = 1
-                continue
-            else:
-                line.strip()
-                sequence += line
-
-        # Write the output file to imitate the Genewise results
-        for count in sorted(blast_hits_purified[contig].keys()):
-            output.write(str(blast_hits_purified[contig][count]['cog']) + '\t')
-            output.write(str(blast_hits_purified[contig][count]['start']) + '\t')
-            output.write(str(blast_hits_purified[contig][count]['end']) + '\t')
-            output.write(str(blast_hits_purified[contig][count]['direction']) + '\t')
-            output.write(str(sequence) + '\n')
-        sequence_file.close()
-        output.close()
-
-    return blastp_summary_files
-
-
 def read_uc(uc_file):
     """
     Function to read a USEARCH cluster (.uc) file
@@ -810,9 +545,10 @@ def read_uc(uc_file):
         logging.error("Unable to open USEARCH cluster file " + uc_file + " for reading!\n")
         sys.exit(13)
 
-    line = uc.readline()
+    logging.debug("Reading usearch cluster file... ")
+
     # Find all clusters with multiple identical sequences
-    while line:
+    for line in uc:
         cluster_type, num_id, length, identity, _, _, _, cigar, header, representative = line.strip().split("\t")
         if cluster_type == "S":
             cluster_dict[num_id] = Cluster('>' + header)
@@ -824,7 +560,9 @@ def read_uc(uc_file):
         else:
             logging.error("Unexpected cluster type '" + str(cluster_type) + "' in " + uc_file + "\n")
             sys.exit(13)
-        line = uc.readline()
+
+    uc.close()
+    logging.debug("done.\n")
     return cluster_dict
 
 
@@ -861,6 +599,7 @@ def read_rpkm(rpkm_output_file):
     return rpkm_values
 
 
+<<<<<<< HEAD
 def parse_paf(paf_file):
     """
     Parse a Pairwise mApping Format (PAF) file, storing alignment information (e.g. read name, positions)
@@ -891,3 +630,99 @@ def parse_paf(paf_file):
                         refpkg_name_paf_map[refpkg_name][-1] = paf_obj
             prev_qname = data[0]
     return refpkg_name_paf_map
+=======
+def validate_alignment_trimming(msa_files: list, unique_ref_headers: set, queries_mapped=False, min_seq_length=30):
+    """
+    Parse a list of multiple sequence alignment (MSA) files and determine whether the multiple alignment:
+        1. is shorter then the min_seq_length (30 by default)
+        2. is missing any reference sequences
+    The number of query sequences discarded - these may have been added by hmmalign or PaPaRa - is returned via a string
+    NOTE: Initially design for sequences records with numeric names (e.g. >4889) but accomodates other TreeSAPP formats
+    :param msa_files: A list of either Phylip- or FASTA-formatted MSA files
+    :param unique_ref_headers: A set of all headers that were in the untrimmed MSA
+    :param queries_mapped: Boolean indicating whether sequences should be present in addition to reference sequences.
+        While query sequences _could_ be identified as any that are not in unique_ref_headers,
+        queries have names that are negative integers for more rapid and scalable identification
+    :param min_seq_length: Optional minimum unaligned (no '-'s) length a sequence must exceed to be retained
+    :return: 1. Dictionary indexed by MSA file name mapping to FASTA-dictionaries and
+    2. A string mapping the number of query sequences removed from each MSA file
+    """
+    discarded_seqs_string = ""
+    successful_multiple_alignments = dict()
+    for multi_align_file in msa_files:
+        filtered_multi_align = dict()
+        discarded_seqs = list()
+        num_queries_retained = 0
+        f_ext = multi_align_file.split('.')[-1]
+
+        # Read the multiple alignment file
+        if re.search("phy", f_ext):  # File is in Phylip format
+            seq_dict = read_phylip_to_dict(multi_align_file)
+        elif re.match("^f", f_ext):  # This is meant to match all fasta extensions
+            seq_dict = read_fasta_to_dict(multi_align_file)
+        else:
+            logging.error("Unable to detect file format of " + multi_align_file + ".\n")
+            sys.exit(13)
+
+        # Parse the MSA dict and ensure headers are integer-compatible
+        multi_align = dict()
+        for seq_name in seq_dict:
+            seq = seq_dict[seq_name]
+            try:
+                int(seq_name)
+            except ValueError:
+                if re.match("^_\d+", seq_name):
+                    seq_name = re.sub("^_", '-', seq_name)
+                # The section of regular expresion after '_' needs to match denominator and refpkg names
+                elif re.match("^\d+_\w{3,7}$", seq_name):
+                    seq_name = seq_name.split('_')[0]
+                else:
+                    logging.error("Unexpected sequence name " + seq_name +
+                                  " detected in " + multi_align_file + ".\n")
+                    sys.exit(13)
+            multi_align[seq_name] = seq
+        if len(multi_align) == 0:
+            logging.error("No sequences were read from " + multi_align_file + ".\n")
+            sys.exit(3)
+        # The numeric identifiers make it easy to maintain order in the Phylip file by a numerical sort
+        for seq_name in sorted(multi_align, key=int):
+            seq_dummy = re.sub('-', '', multi_align[seq_name])
+            if len(seq_dummy) < min_seq_length:
+                discarded_seqs.append(seq_name)
+            else:
+                filtered_multi_align[seq_name] = multi_align[seq_name]
+                # The negative integers indicate this is a query sequence
+                if seq_name[0] == '-':
+                    num_queries_retained += 1
+
+        discarded_seqs_string += "\n\t\t" + multi_align_file + " = " + str(len(discarded_seqs))
+        multi_align_seq_names = set(multi_align.keys())
+        filtered_multi_align_seq_names = set(filtered_multi_align.keys())
+        if len(discarded_seqs) == len(multi_align.keys()):
+            # Throw an error if the final trimmed alignment is shorter than min_seq_length, and therefore empty
+            logging.warning("Multiple sequence alignment in " + multi_align_file +
+                            " is shorter than minimum sequence length threshold (" + str(min_seq_length) +
+                            ").\nThese sequences will not be analyzed.\n")
+        # Calculate the number of reference sequences removed
+        elif not unique_ref_headers.issubset(filtered_multi_align_seq_names):
+            logging.warning("Reference sequences shorter than the minimum character length (" +
+                            str(min_seq_length) + ") in " + multi_align_file +
+                            " were removed after alignment trimming.\n" +
+                            "These sequences will not be analyzed.\n")
+        elif not unique_ref_headers.issubset(multi_align_seq_names):
+            logging.error("Reference sequences in " + multi_align_file + " were removed during alignment trim.\n" +
+                          "Note: this suggests the initial reference alignment is terrible.\n")
+            sys.exit(3)
+        # Ensure that there is at least 1 query sequence retained after trimming the multiple alignment
+        elif queries_mapped and num_queries_retained == 0:
+            logging.debug("No query sequences in " + multi_align_file + " were retained after trimming.\n")
+        else:
+            successful_multiple_alignments[multi_align_file] = filtered_multi_align
+
+        if multi_align_file in successful_multiple_alignments:
+            discarded_seqs_string += " (retained)"
+        else:
+            discarded_seqs_string += " (removed)"
+
+    return successful_multiple_alignments, discarded_seqs_string
+>>>>>>> 1f27434f83cfb2fdee4e58f10ae89c65a732fae6
