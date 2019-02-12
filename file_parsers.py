@@ -5,7 +5,6 @@ import os
 import re
 import logging
 from classy import TreeLeafReference, MarkerBuild, Cluster, PAFObj
-from utilities import Autovivify, calculate_overlap
 from HMMER_domainTblParser import DomainTableParser, format_split_alignments, filter_incomplete_hits, filter_poor_hits
 from fasta import read_fasta_to_dict
 
@@ -599,7 +598,6 @@ def read_rpkm(rpkm_output_file):
     return rpkm_values
 
 
-<<<<<<< HEAD
 def parse_paf(paf_file):
     """
     Parse a Pairwise mApping Format (PAF) file, storing alignment information (e.g. read name, positions)
@@ -630,7 +628,8 @@ def parse_paf(paf_file):
                         refpkg_name_paf_map[refpkg_name][-1] = paf_obj
             prev_qname = data[0]
     return refpkg_name_paf_map
-=======
+
+
 def validate_alignment_trimming(msa_files: list, unique_ref_headers: set, queries_mapped=False, min_seq_length=30):
     """
     Parse a list of multiple sequence alignment (MSA) files and determine whether the multiple alignment:
@@ -725,4 +724,4 @@ def validate_alignment_trimming(msa_files: list, unique_ref_headers: set, querie
             discarded_seqs_string += " (removed)"
 
     return successful_multiple_alignments, discarded_seqs_string
->>>>>>> 1f27434f83cfb2fdee4e58f10ae89c65a732fae6
+
