@@ -19,12 +19,13 @@ def prepare_fasta_target(args, marker_build_dict, index_prefix):
     reference_package_dir = os.path.join(args.treesapp, "data", "alignment_data")
     with open(fasta_file, "w") as outfile:
         for marker_build_obj in marker_build_dict.values():
-            reference_package_path = os.path.join(reference_package_dir, marker_build_obj.cog + ".fa")
-            with open(reference_package_path, "r") as infile:
-                for record in generate_fasta_or_fastq(infile):
-                    header, seq, _ = record
-                    seq = seq.replace("-", "")
-                    outfile.write(">{0}\n{1}\n".format(header, seq))
+            if marker_build_obj.molecule == "dna":
+                reference_package_path = os.path.join(reference_package_dir, marker_build_obj.cog + ".fa")
+                with open(reference_package_path, "r") as infile:
+                    for record in generate_fasta_or_fastq(infile):
+                        header, seq, _ = record
+                        seq = seq.replace("-", "")
+                        outfile.write(">{0}\n{1}\n".format(header, seq))
     return fasta_file
 
 
