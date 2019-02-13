@@ -725,8 +725,6 @@ def validate_alignment_trimming(msa_files: list, unique_ref_headers: set, querie
 
     return successful_multiple_alignments, discarded_seqs_string
 
-<<<<<<< HEAD
-=======
 
 def multiple_alignment_dimensions(seq_dict, mfa_file):
     """
@@ -748,4 +746,3 @@ def multiple_alignment_dimensions(seq_dict, mfa_file):
             pass
             # Sequence is the right length, carrying on
     return len(seq_dict), sequence_length
->>>>>>> f6fda781414e08a3494689241fd49dab2bf23718
