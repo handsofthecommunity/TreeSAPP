@@ -2938,6 +2938,7 @@ def main(argv):
             paf_file = run_minimap(args.executables["minimap2"], fasta_reference,
                                    args.fasta_input, args.output_dir_var)
             minimap_match_dict = parse_paf(paf_file)
+            args = write_minimap_orfs(args, formatted_input_dict, minimap_match_dict)
             homolog_seq_files, numeric_contig_index = extract_minimap_alignments(args, minimap_match_dict,
                                                                                  formatted_input_dict)
         else:

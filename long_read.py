@@ -50,6 +50,30 @@ def run_minimap(minimap_executable, index_file, query_reads, output_prefix, thre
     return outpath
 
 
+def write_minimap_orfs(args, formatted_input_dict, minimap_match_dict):
+    sample_prefix = '.'.join(os.path.basename(args.fasta_input).split('.')[:-1])
+    nuc_orfs_file = args.output_dir_final + sample_prefix + "_ORFs.fna"
+
+    logging.info("Extracting aligned regions of input FASTQ... ")
+
+    try:
+        outfile = open(nuc_orfs_file, "w")
+    except IOError:
+        logging.error("Unable to open the FASTA file '{}' for reading!".format(nuc_orfs_file))
+        sys.exit(5)
+
+    for marker_gene_list in minimap_match_dict.values():
+        for paf_obj in marker_gene_list:
+            header = paf_obj.qname
+            extracted_seq = formatted_input_dict[header][paf_obj.qstart:paf_obj.qend+1]
+            outfile.write(">{0}\n{1}\n".format(header, extracted_seq))
+
+    outfile.close()
+    logging.info("done.\n")
+    args.nucleotide_orfs = nuc_orfs_file
+    return args
+
+
 def extract_minimap_alignments(args, minimap_matches, fasta_reference_map):
     """
     Extracts regions of query sequence which mapped to a reference, and writes FASTA files for homologous regions.
@@ -75,7 +99,6 @@ def extract_minimap_alignments(args, minimap_matches, fasta_reference_map):
 
         for paf_obj in sorted(minimap_matches[marker], key=lambda x: x.qend - x.qstart):
             if paf_obj.qname not in fasta_reference_map:
-                print(fasta_reference_map.keys())
                 logging.error("Read name {0} was aligned using minimap2 but not found in the input fasta!".format(paf_obj.qname))
                 sys.exit(5)
             read_coordinates = str(paf_obj.qstart) + "_" + str(paf_obj.qend)
@@ -89,8 +112,8 @@ def extract_minimap_alignments(args, minimap_matches, fasta_reference_map):
                     bins[bin_num].append(paf_obj)
                     trimmed_query_bins[bin_num] += ">" + str(numeric_decrementor) + "_" + "\n" + \
                                                    query_sequence[paf_obj.qstart:paf_obj.qend+1] + "\n"
-                binned = True
-                break
+                    binned = True
+                    break
             if not binned:
                 bin_num = len(bins)
                 bins[bin_num] = [paf_obj]
