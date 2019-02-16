@@ -51,6 +51,13 @@ def run_minimap(minimap_executable, index_file, query_reads, output_prefix, thre
 
 
 def write_minimap_orfs(args, formatted_input_dict, minimap_match_dict):
+    """
+    Writes a FASTA file containing the aligned portions of reads after aligning with minimap2.
+    :param args: command line arguments as extracted from get_options and check_parser_argument
+    :param formatted_input_dict: the input sequence file represented as a dictionary
+    :param minimap_match_dict: a dictionary mapping marker genes to a list of aligned reads
+    :return:
+    """
     sample_prefix = '.'.join(os.path.basename(args.fasta_input).split('.')[:-1])
     nuc_orfs_file = args.output_dir_final + sample_prefix + "_ORFs.fna"
 
