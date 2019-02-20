@@ -220,21 +220,21 @@ def get_header_format(header, code_name=""):
     sp_re = re.compile(">sp\|(.*)\|.*Full=.*;?.*$")  # a
     fungene_gi_bad = re.compile("^>[0-9]+\s+coded_by=.+,organism=.+,definition=.+$")
     mltree_re = re.compile("^>(\d+)_" + re.escape(code_name) + "$")
-    refseq_prot_re = re.compile("^>([A-Z]{2}_[0-9]+\.[0-9]) (.*) \[(.*)\]$")  # a, d, o
-    genbank_prot_re = re.compile("^>([A-Z]{3}[0-9]{5}\.?[0-9]?)[ ]+(.+) \[(.*)\]$")  # a, d, o
+    # refseq_prot_re = re.compile("^>([A-Z]{2}_[0-9]+\.[0-9]) (.*) \[(.*)\]$")  # a, d, o
+    # genbank_prot_re = re.compile("^>([A-Z]{3}[0-9]{5}\.?[0-9]?)[ ]+(.+) \[(.*)\]$")  # a, d, o
     pfam_re = re.compile("^>([A-Za-z0-9_|]+)/[0-9]+-[0-9]+$")  # a
-    interpro_re = re.compile("^>([A-Z][0-9]{1,3}[A-Z]{1,2}[A-Z0-9]+)$")  # a
+    # interpro_re = re.compile("^>([A-Z][0-9]{1,3}[A-Z]{1,2}[A-Z0-9]+)$")  # a
 
     # Nucleotide databases:
-    silva_arb_re = re.compile("^>([A-Z0-9]+)\.([0-9]+)\.([0-9]+)_(.*)$")
-    refseq_nuc_re = re.compile("^>([A-Z]+_[0-9]+\.[0-9])_.+$")  # a
-    nr_re = re.compile("^>([A-Z0-9]+\.[0-9])_.*$")  # a
+    # silva_arb_re = re.compile("^>([A-Z0-9]+)\.([0-9]+)\.([0-9]+)_(.*)$")
+    # refseq_nuc_re = re.compile("^>([A-Z]+_[0-9]+\.[0-9])_.+$")  # a
+    # nr_re = re.compile("^>([A-Z0-9]+\.[0-9])_.*$")  # a
 
     # Ambiguous:
-    genbank_exact_genome = re.compile("^>([A-Z]{1,2}[0-9]{5,6}\.?[0-9]?) .* \[(.*)\]$")  # a, o
+    # genbank_exact_genome = re.compile("^>([A-Z]{1,2}[0-9]{5,6}\.?[0-9]?) .* \[(.*)\]$")  # a, o
     accession_only = re.compile("^>([A-Z]{1,2}_?[0-9]+\.?[0-9]?)$")  # a
-    ncbi_ambiguous = re.compile(r"^>([A-Z0-9]+\.?[0-9]?)\s+.*(?<!\])$")  # a
-    ncbi_org = re.compile(r"^>([A-Z0-9]+\.?[0-9]?)\s+.*\[[A-Za-z0-9 .-]+\]$")  # a
+    ncbi_ambiguous = re.compile(r"^>([A-Za-z0-9.-_]+)\s+.*$")  # a
+    # ncbi_org = re.compile(r"^>([A-Z0-9]+\.?[0-9]?)\s+.*\[[A-Za-z0-9 .-]+\]$")  # a
     # Custom fasta header with taxonomy:
     # First group = contig/sequence name, second = full taxonomic lineage, third = description for tree
     # There are no character restrictions on the first and third groups
@@ -252,20 +252,11 @@ def get_header_format(header, code_name=""):
                                gi_re: "gi_re",
                                gi_prepend_proper_re: "gi_proper",
                                gi_prepend_mess_re: "gi_mess",
-                               refseq_prot_re: "refseq_prot",
-                               genbank_prot_re: "gen_prot",
-                               interpro_re: "interpro",
                                pfam_re: "pfam",
                                presf_re: "prf"},
-                      "dna": {mltree_re: "mltree",
-                              silva_arb_re: "silva",
-                              refseq_nuc_re: "refseq_nuc",
-                              ncbi_org: "ncbi_org",
-                              nr_re: "nr"},
-                      "ambig": {ncbi_ambiguous: "ncbi_ambig",
-                                genbank_exact_genome: "gen_genome",
-                                accession_only: "bare",
-                                # treesapp_re: "treesapp",
+                      "dna": {mltree_re: "mltree"},
+                      "ambig": {accession_only: "bare",
+                                ncbi_ambiguous: "ncbi_ambig",
                                 custom_tax: "custom"}
                       }
 
@@ -373,11 +364,12 @@ def trim_multiple_alignment(executable, mfa_file, molecule, tool="BMGE"):
                          '-gt', str(0.02)]
     elif tool == "BMGE":
         if molecule == "prot":
-            bmge_settings = ["-t", "AA", "-m", "BLOSUM62", "-g", "0.99:0.20"]
+            bmge_settings = ["-t", "AA", "-m", "BLOSUM30"]
         else:
-            bmge_settings = ["-t", "DNA"]
+            bmge_settings = ["-t", "DNA", "-m", "DNAPAM100:2"]
         trim_command = ["java", "-jar", executable]
         trim_command += bmge_settings
+        trim_command += ["-g", "0.95:0.33"]  # Specifying the gap rate per_sequence:per_character
         trim_command += ['-i', mfa_file,
                          '-of', trimmed_msa_file]
     else:

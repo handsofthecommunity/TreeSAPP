@@ -11,6 +11,7 @@ from json import loads, dumps
 from fasta import get_header_format
 from utilities import reformat_string, return_sequence_info_groups, median
 from entish import get_node, create_tree_info_hash, subtrees_to_dictionary
+from numpy import var
 
 import _tree_parser
 
@@ -23,6 +24,7 @@ class ReferencePackage:
         self.tree = ""
         self.boot_tree = ""
         self.lineage_ids = ""
+        self.sub_model = ""
         self.core_ref_files = list()
         self.num_seqs = 0
 
@@ -780,6 +782,12 @@ class Cluster:
         self.members = list()
         self.lca = ''
 
+    def get_info(self):
+        info_string = "Representative: " + str(self.representative) + "\n" + \
+                      "LCA: " + self.lca + "\n" + \
+                      "Members:\n\t" + "\n\t".join([', '.join(member) for member in self.members]) + "\n"
+        return info_string
+
 
 class MyFormatter(logging.Formatter):
 
@@ -821,6 +829,13 @@ class MyFormatter(logging.Formatter):
 
 
 def prep_logging(log_file_name, verbosity):
+    output_dir = os.path.dirname(log_file_name)
+    try:
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
+    except (IOError, OSError):
+        sys.stderr.write("ERROR: Unable to make directory '" + output_dir + "'.\n")
+        sys.exit(3)
     logging.basicConfig(level=logging.DEBUG,
                         filename=log_file_name,
                         filemode='w',
@@ -914,16 +929,20 @@ class MarkerTest:
             distance_summary = ["Rank\tType\tMean\tMedian\tVariance",
                                 "\t".join([rank, "Distal",
                                            str(round(sum(distals) / float(n_dists), 4)),
-                                           str(median(distals))]),
+                                           str(round(median(distals), 4)),
+                                           str(round(float(var(distals)), 4))]),
                                 "\t".join([rank, "Pendant",
                                            str(round(sum(pendants) / float(n_dists), 4)),
-                                           str(median(pendants))]),
+                                           str(round(median(pendants), 4)),
+                                           str(round(float(var(pendants)), 4))]),
                                 "\t".join([rank, "Tip",
                                            str(round(sum(tips) / float(n_dists), 4)),
-                                           str(median(tips))]),
+                                           str(round(median(tips), 4)),
+                                           str(round(float(var(tips)), 4))]),
                                 "\t".join([rank, "Total",
                                            str(round(sum(totals) / float(n_dists), 4)),
-                                           str(median(totals))], )]
+                                           str(round(median(totals), 4)),
+                                           str(round(float(var(totals)), 4))])]
             sys.stdout.write("\n".join(distance_summary) + "\n")
             return distals, pendants, tips
         else:

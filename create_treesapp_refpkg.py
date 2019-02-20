@@ -16,8 +16,7 @@ try:
 
     from time import gmtime, strftime, sleep
 
-    from utilities import find_executables, reformat_string, return_sequence_info_groups,\
-        reformat_fasta_to_phy, write_phy_file, cluster_sequences, clean_lineage_string
+    import utilities
     from fasta import format_read_fasta, get_headers, get_header_format, write_new_fasta, summarize_fasta_sequences,\
         trim_multiple_alignment, read_fasta_to_dict
     from classy import ReferenceSequence, ReferencePackage, Cluster, MarkerBuild,\
@@ -25,9 +24,9 @@ try:
     from external_command_interface import launch_write_command
     from entish import annotate_partition_tree
     from lca_calculations import megan_lca, clean_lineage_list
-    from entrez_utils import get_multiple_lineages, verify_lineage_information, read_accession_taxa_map, \
-        write_accession_lineage_map, build_entrez_queries
-    from file_parsers import parse_domain_tables, read_phylip_to_dict, read_uc, validate_alignment_trimming
+    from entrez_utils import *
+    from file_parsers import parse_domain_tables, read_phylip_to_dict, read_uc, validate_alignment_trimming,\
+        multiple_alignment_dimensions
     from placement_trainer import regress_rank_distance
 
 except ImportError:
@@ -73,9 +72,9 @@ def get_arguments():
                                  "Domains will be excised from input sequences based on hmmsearch alignments.",
                             required=False, default=None)
     seqop_args.add_argument('-l', '--min_seq_length',
-                            help='Minimal sequence length [DEFAULT = 100]',
+                            help='Minimal sequence length [DEFAULT = 10]',
                             required=False,
-                            default=100,
+                            default=10,
                             type=int)
     seqop_args.add_argument('-m', '--molecule',
                             help='The type of input sequences:\n'
@@ -111,9 +110,12 @@ def get_arguments():
                                 "[ --cluster or --uc REQUIRED ]",
                            default=False, required=False, action="store_true")
     taxa_args.add_argument("--taxa_norm",
-                           help="[ IN PROGRESS ] Perform taxonomic normalization on the provided sequences.\n"
+                           help="[ IN DEVELOPMENT ] Perform taxonomic normalization on the provided sequences.\n"
                                 "A comma-separated argument with the Rank (e.g. Phylum) and\n"
                                 "number of representatives is required.\n")
+    taxa_args.add_argument("--accession2taxid", required=False, default=None,
+                           help="[ IN DEVELOPMENT ]\n" +
+                                "Path to an NCBI accession2taxid file for more rapid accession-to-lineage mapping.\n")
 
     optopt = parser.add_argument_group("Optional arguments")
     optopt.add_argument("-b", "--bootstraps",
@@ -304,6 +306,7 @@ def run_mafft(mafft_exe: str, fasta_in: str, fasta_out: str, num_threads):
     mafft_align_command += ["--maxiterate", str(1000)]
     mafft_align_command += ["--thread", str(num_threads)]
     mafft_align_command.append("--auto")
+    mafft_align_command += ["--randomseed", str(12345)]
     mafft_align_command += [fasta_in, '1>' + fasta_out]
     mafft_align_command += ["2>", "/dev/null"]
 
@@ -377,145 +380,6 @@ def create_new_ref_fasta(out_fasta, ref_seq_dict, dashes=False):
     return
 
 
-def hmmsearch_input_references(args, fasta_replaced_file):
-    """
-    Function for searching a fasta file with an hmm profile
-    :param args:
-    :param fasta_replaced_file:
-    :return:
-    """
-    # Find the name of the HMM. Use it to name the output file
-    rp_marker = re.sub(".hmm", '', os.path.basename(args.domain))
-    domtbl = args.output_dir + rp_marker + "_to_ORFs_domtbl.txt"
-
-    # Basic hmmsearch command
-    hmmsearch_command_base = [args.executables["hmmsearch"]]
-    hmmsearch_command_base += ["--cpu", str(args.num_threads)]
-    hmmsearch_command_base.append("--noali")
-    # Customize the command for this input and HMM
-    final_hmmsearch_command = hmmsearch_command_base + ["--domtblout", domtbl]
-    final_hmmsearch_command += [args.domain, fasta_replaced_file]
-    stdout, ret_code = launch_write_command(final_hmmsearch_command)
-
-    # Check to ensure the job finished properly
-    if ret_code != 0:
-        logging.error("hmmsearch did not complete successfully!\n" + stdout + "\n" +
-                      "Command used:\n" + ' '.join(final_hmmsearch_command) + "\n")
-        sys.exit(13)
-
-    return [domtbl]
-
-
-def extract_hmm_matches(hmm_matches, fasta_dict, header_registry):
-    """
-    Function for slicing sequences guided by alignment co-ordinates.
-    :param hmm_matches: Dictionary containing a list HmmMatch() objects as values for each 'marker' key
-    :param fasta_dict: A dictionary with headers as keys and sequences as values
-    :param header_registry: A list of Header() objects, each used to map various header formats to each other
-    :return:
-    """
-
-    if len(hmm_matches.keys()) > 1:
-        logging.error("Number of markers found from HMM alignments is >1\n" +
-                      "Does your HMM file contain more than 1 profile? TreeSAPP is unprepared for this.\n")
-        sys.exit(13)
-
-    marker_gene_dict = dict()
-    header_matching_dict = dict()
-
-    logging.debug("Creating a temporary dictionary for rapid sequence name look-ups... ")
-    for num in header_registry:
-        header_matching_dict[header_registry[num].first_split[1:]] = header_registry[num]
-    logging.debug("done.\n")
-
-    logging.info("Extracting the quality-controlled protein sequences... ")
-
-    for marker in hmm_matches:
-        if marker not in marker_gene_dict:
-            marker_gene_dict[marker] = dict()
-
-        for hmm_match in hmm_matches[marker]:
-            # Now for the header format to be used in the bulk FASTA:
-            # >contig_name|marker_gene|start_end
-            query_names = header_matching_dict[hmm_match.orf]
-            try:
-                sequence = fasta_dict[query_names.formatted]
-            except KeyError:
-                logging.debug("Unable to map " + hmm_match.orf + " to a sequence in the input FASTA.\n")
-                continue
-            if hmm_match.of > 1:
-                query_names.post_align = ' '.join([query_names.first_split,
-                                                   str(hmm_match.num) + '.' + str(hmm_match.of),
-                                                   re.sub(re.escape(query_names.first_split), '', query_names.original)])
-            else:
-                query_names.post_align = query_names.original
-            bulk_header = query_names.post_align
-
-            if bulk_header in marker_gene_dict[marker]:
-                logging.warning(bulk_header + " being overwritten by an alternative alignment!\n" + hmm_match.get_info())
-            marker_gene_dict[marker][bulk_header] = sequence[hmm_match.start-1:hmm_match.end]
-
-    logging.info("done.\n")
-    return marker_gene_dict[marker]
-
-
-def hmm_pile(hmm_matches):
-    """
-    Function to inspect the placement of query sequences on the reference HMM
-    :param hmm_matches:
-    :return:
-    """
-    hmm_bins = dict()
-    window_size = 2
-
-    for marker in hmm_matches:
-        for hmm_match in hmm_matches[marker]:
-            # Initialize the hmm_bins using the HMM profile length
-            if not hmm_bins:
-                i = 1
-                hmm_length = int(hmm_match.hmm_len)
-                while i < hmm_length:
-                    if i+window_size-1 > hmm_length:
-                        hmm_bins[(i, hmm_length)] = 0
-                    else:
-                        hmm_bins[(i, i+window_size-1)] = 0
-                    i += window_size
-            # Skip ahead to the HMM profile position where the query sequence began aligning
-            for bin_start, bin_end in hmm_bins:
-                if hmm_match.pstart <= bin_start and hmm_match.pend >= bin_end:
-                    hmm_bins[(bin_start, bin_end)] += 1
-                else:
-                    pass
-        low_coverage_start = 0
-        low_coverage_stop = 0
-        maximum_coverage = 0
-        low_cov_summary = ""
-        for window in sorted(hmm_bins.keys()):
-            height = hmm_bins[window]
-            if height > maximum_coverage:
-                maximum_coverage = height
-            if height < len(hmm_matches[marker])/2:
-                begin, end = window
-                if low_coverage_start == low_coverage_stop:
-                    low_coverage_start = begin
-                    low_coverage_stop = end
-                else:
-                    low_coverage_stop = end
-            elif height > len(hmm_matches[marker])/2 and low_coverage_stop != 0:
-                low_cov_summary += "\t" + str(low_coverage_start) + '-' + str(low_coverage_stop) + "\n"
-                low_coverage_start = 0
-                low_coverage_stop = 0
-            else:
-                pass
-        if low_coverage_stop != low_coverage_start:
-            low_cov_summary += "\t" + str(low_coverage_start) + "-end\n"
-
-        if low_cov_summary:
-            logging.info("Low coverage HMM windows (start-stop):\n" + low_cov_summary)
-        logging.info("Maximum coverage = " + str(maximum_coverage) + " sequences\n")
-    return
-
-
 def regenerate_cluster_rep_swaps(args, cluster_dict, fasta_replace_dict):
     """
     Function to regenerate the swappers dictionary with the original headers as keys and
@@ -584,13 +448,20 @@ def finalize_cluster_reps(cluster_dict: dict, refseq_objects, header_registry):
     :param header_registry: A list of Header() objects, each used to map various header formats to each other
     :return: Dictionary of ReferenceSequence objects with complete clustering information
     """
+    logging.debug("Finalizing representative sequence clusters... ")
+    # Create a temporary dictionary mapping formatted headers to TreeSAPP numeric IDs
+    tmp_dict = dict()
+    for treesapp_id in header_registry:
+        tmp_dict[header_registry[treesapp_id].formatted] = treesapp_id
+
     for cluster_id in sorted(cluster_dict, key=int):
         cluster_info = cluster_dict[cluster_id]
-        for treesapp_id in sorted(refseq_objects, key=int):
-            if header_registry[treesapp_id].formatted == cluster_info.representative:
-                refseq_objects[treesapp_id].cluster_rep_similarity = '*'
-                refseq_objects[treesapp_id].cluster_rep = True
-                refseq_objects[treesapp_id].cluster_lca = cluster_info.lca
+        treesapp_id = tmp_dict[cluster_info.representative]
+        refseq_objects[treesapp_id].cluster_rep_similarity = '*'
+        refseq_objects[treesapp_id].cluster_rep = True
+        refseq_objects[treesapp_id].cluster_lca = cluster_info.lca
+
+    logging.debug("done.\n")
     return refseq_objects
 
 
@@ -661,7 +532,7 @@ def reformat_headers(header_dict):
     swappers = dict()
 
     for old, new in header_dict.items():
-        swappers[reformat_string(old)] = reformat_string(new)
+        swappers[utilities.reformat_string(old)] = utilities.reformat_string(new)
     return swappers
 
 
@@ -689,9 +560,9 @@ def get_sequence_info(code_name, fasta_dict, fasta_replace_dict, header_registry
                 original_header = header_registry[mltree_id].original
                 header_format_re, header_db, header_molecule = get_header_format(original_header, code_name)
                 sequence_info = header_format_re.match(original_header)
-                _, fasta_header_organism, _, _, _ = return_sequence_info_groups(sequence_info, header_db, header)
+                _, fasta_header_organism, _, _, _ = utilities.return_sequence_info_groups(sequence_info, header_db, header)
                 if re.search(ref_seq.accession, header):
-                    if re.search(reformat_string(ref_seq.organism), reformat_string(fasta_header_organism)):
+                    if re.search(utilities.reformat_string(ref_seq.organism), utilities.reformat_string(fasta_header_organism)):
                         ref_seq.sequence = fasta_dict[header]
                     else:
                         logging.warning("Accession '" + ref_seq.accession + "' matches, organism differs:\n" +
@@ -755,7 +626,7 @@ def get_sequence_info(code_name, fasta_dict, fasta_replace_dict, header_registry
                 ref_seq.organism,\
                 ref_seq.locus,\
                 ref_seq.description,\
-                ref_seq.lineage = return_sequence_info_groups(sequence_info, header_db, original_header)
+                ref_seq.lineage = utilities.return_sequence_info_groups(sequence_info, header_db, original_header)
 
             ref_seq.short_id = mltree_id + '_' + code_name
             fasta_replace_dict[mltree_id] = ref_seq
@@ -880,6 +751,7 @@ def order_dict_by_lineage(fasta_object_dict):
     :return: An ordered, filtered version of the input dictionary
     """
     # Create a new dictionary with lineages as keys
+    logging.debug("Re-enumerating the reference sequences in taxonomic order... ")
     lineage_dict = dict()
     sorted_lineage_dict = dict()
     accessions = list()
@@ -912,6 +784,7 @@ def order_dict_by_lineage(fasta_object_dict):
                 sorted_lineage_dict[str(num_key)] = ref_seq
                 num_key += 1
 
+    logging.debug("done.\n")
     return sorted_lineage_dict
 
 
@@ -1153,9 +1026,6 @@ def update_build_parameters(param_file, marker_package: MarkerBuild):
 
     marker_package.update = strftime("%d_%b_%Y", gmtime())
 
-    if marker_package.molecule == "prot":
-        marker_package.model = "PROTGAMMA" + marker_package.model
-
     build_list = [marker_package.cog, marker_package.denominator, marker_package.molecule, marker_package.model,
                   marker_package.kind, str(marker_package.pid), str(marker_package.num_reps), marker_package.tree_tool,
                   ','.join([str(param) for param in marker_package.pfit]),
@@ -1318,6 +1188,69 @@ def finalize_ref_seq_lineages(fasta_record_objects, accession_lineages):
     return fasta_record_objects
 
 
+def remove_outlier_sequences(fasta_record_objects, od_seq_exe, mafft_exe, output_dir="./outliers", num_threads=2):
+    od_input = output_dir + "od_input.fasta"
+    od_output = output_dir + "outliers.fasta"
+    outlier_names = list()
+    tmp_dict = dict()
+
+    outlier_test_fasta_dict = order_dict_by_lineage(fasta_record_objects)
+
+    logging.info("Detecting outlier reference sequences... ")
+    create_new_ref_fasta(od_input, outlier_test_fasta_dict)
+    od_input_m = '.'.join(od_input.split('.')[:-1]) + ".mfa"
+    # Perform MSA with MAFFT
+    run_mafft(mafft_exe, od_input, od_input_m, num_threads)
+    # Run OD-seq on MSA to identify outliers
+    run_odseq(od_seq_exe, od_input_m, od_output, num_threads)
+    # Remove outliers from fasta_record_objects collection
+    outlier_seqs = read_fasta_to_dict(od_output)
+    for seq_num_id in fasta_record_objects:
+        ref_seq = fasta_record_objects[seq_num_id]
+        tmp_dict[ref_seq.short_id] = ref_seq
+
+    for seq_name in outlier_seqs:
+        ref_seq = tmp_dict[seq_name]
+        ref_seq.cluster_rep = False
+        outlier_names.append(ref_seq.accession)
+
+    logging.info("done.\n")
+    logging.debug(str(len(outlier_seqs)) + " outlier sequences detected and discarded.\n\t" +
+                  "\n\t".join([outseq for outseq in outlier_names]) + "\n")
+
+    return fasta_record_objects
+
+
+def guarantee_ref_seqs(cluster_dict, important_seqs):
+    num_swaps = 0
+    nonredundant_guarantee_cluster_dict = dict()  # Will be used to replace cluster_dict
+    expanded_cluster_id = 0
+    for cluster_id in sorted(cluster_dict, key=int):
+        if len(cluster_dict[cluster_id].members) == 0:
+            nonredundant_guarantee_cluster_dict[cluster_id] = cluster_dict[cluster_id]
+        else:
+            contains_important_seq = False
+            # The case where a member of a cluster is a guaranteed sequence, but not the representative
+            representative = cluster_dict[cluster_id].representative
+            for member in cluster_dict[cluster_id].members:
+                if member[0] in important_seqs.keys():
+                    nonredundant_guarantee_cluster_dict[expanded_cluster_id] = Cluster(member[0])
+                    nonredundant_guarantee_cluster_dict[expanded_cluster_id].members = []
+                    nonredundant_guarantee_cluster_dict[expanded_cluster_id].lca = cluster_dict[cluster_id].lca
+                    expanded_cluster_id += 1
+                    contains_important_seq = True
+            if contains_important_seq and representative not in important_seqs.keys():
+                num_swaps += 1
+            elif contains_important_seq and representative in important_seqs.keys():
+                # So there is no opportunity for the important representative sequence to be swapped, clear members
+                cluster_dict[cluster_id].members = []
+                nonredundant_guarantee_cluster_dict[cluster_id] = cluster_dict[cluster_id]
+            else:
+                nonredundant_guarantee_cluster_dict[cluster_id] = cluster_dict[cluster_id]
+        expanded_cluster_id += 1
+    return nonredundant_guarantee_cluster_dict
+
+
 def main():
     # TODO: Record each external software command and version in log
     ##
@@ -1335,7 +1268,7 @@ def main():
     logging.info("\n##\t\t\tCreating TreeSAPP reference package for '" + args.code_name + "' \t\t\t##\n")
     logging.info("Command used:\n" + ' '.join(sys.argv) + "\n")
 
-    args = find_executables(args)
+    args = utilities.find_executables(args)
 
     if args.pc:
         terminal_commands(args.final_output_dir, args.code_name)
@@ -1347,7 +1280,6 @@ def main():
     hmm_purified_fasta = args.output_dir + args.code_name + "_hmm_purified.fasta"
     filtered_fasta_name = args.output_dir + '.'.join(os.path.basename(args.fasta_input).split('.')[:-1]) + "_filtered.fa"
     uclust_prefix = args.output_dir + '.'.join(os.path.basename(filtered_fasta_name).split('.')[:-1]) + "_uclust" + args.identity
-    od_input = args.output_dir + "od_input.fasta"
     unaln_ref_fasta = args.output_dir + args.code_name + "_ref.fa"  # FASTA file of unaligned reference sequences
     phylip_file = args.output_dir + args.code_name + ".phy"  # Used for building the phylogenetic tree with RAxML
 
@@ -1391,26 +1323,25 @@ def main():
             logging.info("Using " + hmm_purified_fasta + " from a previous attempt.\n")
         else:
             logging.info("Searching for domain sequences... ")
-            hmm_domtbl_files = hmmsearch_input_references(args, args.fasta_input)
+            hmm_domtbl_files = utilities.hmmsearch_input_references(args, args.fasta_input)
             logging.info("done.\n")
             hmm_matches = parse_domain_tables(args, hmm_domtbl_files)
             # If we're screening a massive fasta file, we don't want to read every sequence - just those with hits
             # TODO: Implement a screening procedure in _fasta_reader._read_format_fasta()
             fasta_dict = format_read_fasta(args.fasta_input, args.molecule, args.output_dir)
             header_registry = register_headers(get_headers(args.fasta_input))
-            marker_gene_dict = extract_hmm_matches(hmm_matches, fasta_dict, header_registry)
+            marker_gene_dict = utilities.extract_hmm_matches(hmm_matches, fasta_dict, header_registry)
             write_new_fasta(marker_gene_dict, hmm_purified_fasta)
             summarize_fasta_sequences(hmm_purified_fasta)
-            hmm_pile(hmm_matches)
+            utilities.hmm_pile(hmm_matches)
 
-        fasta_dict = format_read_fasta(hmm_purified_fasta, args.molecule, args.output_dir)
+        fasta_dict = format_read_fasta(hmm_purified_fasta, args.molecule, args.output_dir, 110, args.min_seq_length)
         header_registry = register_headers(get_headers(hmm_purified_fasta))
         # Point all future operations to the HMM purified FASTA file as the original input
         args.fasta_input = hmm_purified_fasta
     else:
-        fasta_dict = format_read_fasta(args.fasta_input, args.molecule, args.output_dir)
+        fasta_dict = format_read_fasta(args.fasta_input, args.molecule, args.output_dir, 110, args.min_seq_length)
         header_registry = register_headers(get_headers(args.fasta_input))
-    unprocessed_fasta_dict = read_fasta_to_dict(args.fasta_input)
 
     ##
     # Synchronize records between fasta_dict and header_registry (e.g. short ones may be removed by format_read_fasta())
@@ -1423,8 +1354,8 @@ def main():
                 excluded_headers.append(header_registry[num_id].original)
             else:
                 sync_header_registry[num_id] = header_registry[num_id]
-        logging.warning("The following sequences have been excluded from downstream analyses:\n" +
-                        "\n".join(excluded_headers))
+        logging.debug("The following " + str(len(excluded_headers)) + " sequences have been excluded:\n" +
+                      "\n".join(excluded_headers) + "\n")
         header_registry = sync_header_registry
 
     ##
@@ -1459,8 +1390,29 @@ def main():
         accession_lineage_map = read_accession_taxa_map(accession_map_file)
         logging.info("done.\n")
     else:
-        accession_lineage_map, all_accessions = get_multiple_lineages(query_accession_list,
-                                                                      args.molecule)
+        if args.accession2taxid:
+            # Determine find the query accessions that are located in the provided accession2taxid file
+            entrez_record_dict = map_accession2taxid(query_accession_list, args.accession2taxid)
+            # Map lineages to taxids for successfully-mapped query sequences
+            fetch_lineages_from_taxids(entrez_record_dict.values())
+            # Use the normal querying functions to obtain lineage information for the unmapped queries
+            unmapped_queries = pull_unmapped_entrez_records(entrez_record_dict.values())
+            if len(unmapped_queries) > 0:
+                # This tends to be a minority so shouldn't be too taxing
+                for e_record in get_multiple_lineages(unmapped_queries, args.molecule):  # type: EntrezRecord
+                    try:
+                        entrez_record_dict[e_record.accession] = e_record
+                    except KeyError:
+                        logging.warning(e_record.accession + " not found in original query list.\n")
+                        continue
+            entrez_records = list(entrez_record_dict.values())
+            entrez_record_dict.clear()
+            unmapped_queries.clear()
+        else:
+            entrez_records = get_multiple_lineages(query_accession_list, args.molecule)
+        accession_lineage_map = entrez_records_to_accession_lineage_map(entrez_records)
+        all_accessions = entrez_records_to_accessions(entrez_records, query_accession_list)
+
         # Download lineages separately for those accessions that failed
         # Map proper accession to lineage from the tuple keys (accession, accession.version)
         #  in accession_lineage_map returned by get_multiple_lineages.
@@ -1505,7 +1457,7 @@ def main():
     # Optionally cluster the input sequences using USEARCH at the specified identity
     ##
     if args.cluster:
-        cluster_sequences(args.executables["usearch"], filtered_fasta_name, uclust_prefix, args.identity)
+        utilities.cluster_sequences(args.executables["usearch"], filtered_fasta_name, uclust_prefix, args.identity)
         args.uc = uclust_prefix + ".uc"
 
     ##
@@ -1519,25 +1471,33 @@ def main():
             members = list()
             for num_id in cluster_dict:
                 cluster = cluster_dict[num_id]
-                cluster.representative = reformat_string(cluster.representative)
+                cluster.representative = utilities.reformat_string(cluster.representative)
                 for member in cluster.members:
                     header, identity = member
-                    members.append([reformat_string(header), identity])
+                    members.append([utilities.reformat_string(header), identity])
                 cluster.members = members
                 members.clear()
         logging.debug("\t" + str(len(cluster_dict.keys())) + " sequence clusters\n")
         ##
         # Calculate LCA of each cluster to represent the taxonomy of the representative sequence
         ##
+        # Create a temporary dictionary for faster mapping
+        formatted_to_num_map = dict()
+        for num_id in fasta_record_objects:
+            formatted_to_num_map[header_registry[num_id].formatted] = num_id
+
         lineages = list()
         for cluster_id in sorted(cluster_dict, key=int):
             members = [cluster_dict[cluster_id].representative]
             # format of member list is: [header, identity, member_seq_length/representative_seq_length]
             members += [member[0] for member in cluster_dict[cluster_id].members]
             # Create a lineage list for all sequences in the cluster
-            for num_id in fasta_record_objects:
-                if header_registry[num_id].formatted in members:
+            for member in members:
+                try:
+                    num_id = formatted_to_num_map[member]
                     lineages.append(fasta_record_objects[num_id].lineage)
+                except KeyError:
+                    logging.warning("Unable to map " + str(member) + " to a TreeSAPP numeric ID.\n")
             cleaned_lineages = clean_lineage_list(lineages)
             cluster_dict[cluster_id].lca = megan_lca(cleaned_lineages)
             # For debugging
@@ -1550,6 +1510,7 @@ def main():
             #         print(l)
             #     print("LCA:", cluster_dict[cluster_id].lca)
             lineages.clear()
+        formatted_to_num_map.clear()
     else:
         cluster_dict = None
 
@@ -1560,33 +1521,7 @@ def main():
         # We don't want to make the tree redundant so instead of simply adding the sequences in guarantee,
         #  we will swap them for their respective representative sequences.
         # All important sequences become representative, even if multiple are in the same cluster
-        num_swaps = 0
-        nonredundant_guarantee_cluster_dict = dict()  # Will be used to replace cluster_dict
-        expanded_cluster_id = 0
-        for cluster_id in sorted(cluster_dict, key=int):
-            if len(cluster_dict[cluster_id].members) == 0:
-                nonredundant_guarantee_cluster_dict[cluster_id] = cluster_dict[cluster_id]
-            else:
-                contains_important_seq = False
-                # The case where a member of a cluster is a guaranteed sequence, but not the representative
-                representative = cluster_dict[cluster_id].representative
-                for member in cluster_dict[cluster_id].members:
-                    if member[0] in important_seqs.keys():
-                        nonredundant_guarantee_cluster_dict[expanded_cluster_id] = Cluster(member[0])
-                        nonredundant_guarantee_cluster_dict[expanded_cluster_id].members = []
-                        nonredundant_guarantee_cluster_dict[expanded_cluster_id].lca = cluster_dict[cluster_id].lca
-                        expanded_cluster_id += 1
-                        contains_important_seq = True
-                if contains_important_seq and representative not in important_seqs.keys():
-                    num_swaps += 1
-                elif contains_important_seq and representative in important_seqs.keys():
-                    # So there is no opportunity for the important representative sequence to be swapped, clear members
-                    cluster_dict[cluster_id].members = []
-                    nonredundant_guarantee_cluster_dict[cluster_id] = cluster_dict[cluster_id]
-                else:
-                    nonredundant_guarantee_cluster_dict[cluster_id] = cluster_dict[cluster_id]
-            expanded_cluster_id += 1
-        cluster_dict = nonredundant_guarantee_cluster_dict
+        cluster_dict = guarantee_ref_seqs(cluster_dict, important_seqs)
 
     # TODO: Taxonomic normalization
 
@@ -1606,27 +1541,9 @@ def main():
             fasta_record_objects[num_id].cluster_rep = True
             # fasta_record_objects[num_id].cluster_lca is left empty
 
-    logging.info("Detecting outlier reference sequences... ")
-    outlier_test_fasta_dict = order_dict_by_lineage(fasta_record_objects)
-    create_new_ref_fasta(od_input, outlier_test_fasta_dict)
-    od_input_m = '.'.join(od_input.split('.')[:-1]) + ".mfa"
-    od_output = args.output_dir + "outliers.fasta"
-    # Perform MSA with MAFFT
-    run_mafft(args.executables["mafft"], od_input, od_input_m, args.num_threads)
-    # Run OD-seq on MSA to identify outliers
-    run_odseq(args.executables["OD-seq"], od_input_m, od_output, args.num_threads)
-    # Remove outliers from fasta_record_objects collection
-    outlier_seqs = read_fasta_to_dict(od_output)
-    outlier_names = list()
-    for seq_name in outlier_seqs:
-        for seq_num_id in fasta_record_objects:
-            ref_seq = fasta_record_objects[seq_num_id]
-            if ref_seq.short_id == seq_name:
-                ref_seq.cluster_rep = False
-                outlier_names.append(ref_seq.accession)
-    logging.info("done.\n")
-    logging.debug(str(len(outlier_seqs)) + " outlier sequences detected and discarded.\n\t" +
-                  "\n\t".join([outseq for outseq in outlier_names]) + "\n")
+    fasta_record_objects = remove_outlier_sequences(fasta_record_objects,
+                                                    args.executables["OD-seq"], args.executables["mafft"],
+                                                    args.output_dir, args.num_threads)
 
     ##
     # Re-order the fasta_record_objects by their lineages (not phylogenetic, just alphabetical sort)
@@ -1664,8 +1581,13 @@ def main():
         logging.info("done.\n")
     else:
         pass
-    aligned_fasta_dict = read_fasta_to_dict(ref_pkg.msa)
-    marker_package.num_reps = len(aligned_fasta_dict.keys())
+    ref_aligned_fasta_dict = read_fasta_to_dict(ref_pkg.msa)
+    marker_package.num_reps = len(ref_aligned_fasta_dict.keys())
+    n_rows, n_cols = multiple_alignment_dimensions(seq_dict=ref_aligned_fasta_dict,
+                                                   mfa_file=ref_pkg.msa)
+    logging.debug("Reference alignment contains " +
+                  str(n_rows) + " sequences with " +
+                  str(n_cols) + " character positions.\n")
 
     ##
     # Build the HMM profile from the aligned reference FASTA file
@@ -1695,7 +1617,7 @@ def main():
         trimmed_msa_file = trim_multiple_alignment(args.executables["BMGE.jar"], ref_pkg.msa, args.molecule)
         logging.info("done.\n")
 
-        unique_ref_headers = set([re.sub('_' + re.escape(ref_pkg.prefix), '', x) for x in aligned_fasta_dict.keys()])
+        unique_ref_headers = set([re.sub('_' + re.escape(ref_pkg.prefix), '', x) for x in ref_aligned_fasta_dict.keys()])
         msa_dict, summary_str = validate_alignment_trimming([trimmed_msa_file], unique_ref_headers)
         logging.debug("Number of sequences discarded: " + summary_str + "\n")
         if trimmed_msa_file not in msa_dict.keys():
@@ -1705,11 +1627,13 @@ def main():
             sys.exit(13)
         aligned_fasta_dict = msa_dict[trimmed_msa_file]
         os.remove(trimmed_msa_file)
+    else:
+        aligned_fasta_dict = ref_aligned_fasta_dict
 
     for seq_name in aligned_fasta_dict:
         dict_for_phy[seq_name.split('_')[0]] = aligned_fasta_dict[seq_name]
-    phy_dict = reformat_fasta_to_phy(dict_for_phy)
-    write_phy_file(phylip_file, phy_dict)
+    phy_dict = utilities.reformat_fasta_to_phy(dict_for_phy)
+    utilities.write_phy_file(phylip_file, phy_dict)
 
     ##
     # Build the tree using either RAxML or FastTree
@@ -1733,9 +1657,12 @@ def main():
                                 fasta_replace_dict,
                                 tree_output_dir + os.sep + "RAxML_bipartitions." + args.code_name)
         marker_package.model = find_model_used(tree_output_dir + os.sep + "RAxML_info." + args.code_name)
+    if marker_package.molecule == "prot":
+        marker_package.model = "PROTGAMMA" + marker_package.model
+    ref_pkg.sub_model = marker_package.model
 
     # Build the regression model of placement distances to taxonomic ranks
-    marker_package.pfit, _, _ = regress_rank_distance(args, ref_pkg, accession_lineage_map, aligned_fasta_dict)
+    marker_package.pfit, _, _ = regress_rank_distance(args, ref_pkg, accession_lineage_map, ref_aligned_fasta_dict)
 
     ##
     # Finish validating the file and append the reference package build parameters to the master table

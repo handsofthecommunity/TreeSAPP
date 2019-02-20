@@ -88,7 +88,7 @@ def tolerant_entrez_query(search_term_list: list, db="Taxonomy", method="fetch",
         if duration < 0.66:
             time.sleep(0.66 - duration)
             duration = 0.66
-        # TODO: allow for the durations to be summed by a number of queries or time
+        # TODO: allow for the durations to be summed by a number of queries
         hours, remainder = divmod(duration, 3600)
         minutes, seconds = divmod(remainder, 60)
         durations.append(str(i) + ' - ' + str(i + chunk_size) + "\t" + ':'.join([str(minutes), str(round(seconds, 2))]))
@@ -213,12 +213,183 @@ def check_lineage(lineage: str, organism_name: str, verbosity=0):
     return lineage_list
 
 
+def match_file_to_dict(file_handler, key_dict, sep="\t", join_by=0):
+    """
+    Generator function for mapping a particular field in a file, separated by 'sep', to dictionary keys
+    :param file_handler: Opened file object
+    :param key_dict: Dictionary to map the selected field to
+    :param sep: Field separator
+    :param join_by: The field number to search the dictionary for
+    :return: Line that matches a key
+    """
+    for line in file_handler:
+        if line.split(sep)[join_by] in key_dict:
+            yield line
+
+
+def map_accession2taxid(query_accession_list, accession2taxid_list):
+    er_acc_dict = dict()
+    unmapped_queries = list()
+
+    # Create a dictionary for O(1) look-ups, load all the query accessions into unmapped queries
+    for acc in query_accession_list:  # type: str
+        if acc.find('.') >= 0:
+            ver = acc
+            # Strip off any version numbers from the accessions so we only need to check for one item
+            acc = '.'.join(acc.split('.')[0:-1])
+        else:
+            ver = ""
+        er_acc_dict[acc] = EntrezRecord(acc, ver)
+        unmapped_queries.append(acc)
+
+    logging.info("Mapping query accessions to NCBI taxonomy IDs... ")
+    for accession2taxid in accession2taxid_list.split(','):
+        init_qlen = len(unmapped_queries)
+        final_qlen = len(unmapped_queries)
+        start = time.time()
+        try:
+            rosetta_handler = open(accession2taxid, 'r')
+        except IOError:
+            logging.error("Unable to open '" + accession2taxid + "' for reading.\n")
+            sys.exit(13)
+
+        for line_match in match_file_to_dict(rosetta_handler, er_acc_dict):
+            try:
+                accession, ver, taxid, _ = line_match.strip().split("\t")
+            except (ValueError, IndexError):
+                logging.warning("Parsing '" + accession2taxid + "' failed.\n")
+                break
+
+            try:
+                # Update the EntrezRecord elements
+                record = er_acc_dict[accession]
+                record.versioned = ver
+                record.ncbi_tax = taxid
+                record.bitflag = 3  # Necessary for downstream filters - indicates taxid has been found
+                # Remove accession from unmapped queries
+                i = 0
+                while i < final_qlen:
+                    if unmapped_queries[i] == accession:
+                        unmapped_queries.pop(i)
+                        final_qlen -= 1
+                        break
+                    i += 1
+                if final_qlen == 0:
+                    break
+            except KeyError:
+                logging.error("Bad key returned by generator.\n")
+                sys.exit(13)
+
+        rosetta_handler.close()
+        end = time.time()
+        logging.debug("Time required to parse '" + accession2taxid + "': " + str(round(end - start, 1)) + "s.\n")
+        # Report the number percentage of query accessions mapped
+        logging.debug(
+            str(round(((init_qlen - final_qlen) * 100 / len(query_accession_list)), 2)) +
+            "% of query accessions mapped by " + accession2taxid + ".\n")
+    logging.info("done.\n")
+
+    return er_acc_dict
+
+
+def pull_unmapped_entrez_records(entrez_records: list):
+    """
+    Prepares a list of accession identifiers for EntrezRecord instances where the bitflag is not equal to 7,
+     inferring lineage information was not properly entered.
+    :param entrez_records: A list of EntrezRecord instances
+    :return: List of strings, each being an accession of an EntrezRecord with bitflag != 7
+    """
+    unmapped_queries = list()
+    for e_record in entrez_records:
+        if e_record.bitflag != 7:
+            unmapped_queries.append(e_record.accession)
+    return unmapped_queries
+
+
+def fetch_lineages_from_taxids(entrez_records: list):
+    """
+    Query Entrez's Taxonomy database for lineages using NCBI taxonomic IDs.
+    The TaxId queries are pulled from EntrezRecord instances.
+    :param entrez_records: A list of EntrezRecord instances that should have TaxIds in their ncbi_tax element
+    :return: entrez_records where successful queries have a populated lineage element
+    """
+    tax_id_map = dict()
+
+    prep_for_entrez_query()
+
+    # Create a dictionary that will enable rapid look-ups and mapping to EntrezRecord instances
+    for e_record in entrez_records:  # type: EntrezRecord
+        if e_record.bitflag == 7:
+            continue
+        elif e_record.bitflag < 3:
+            continue
+        taxid = e_record.ncbi_tax
+        if taxid and taxid not in tax_id_map:
+            tax_id_map[taxid] = []
+        tax_id_map[taxid].append(e_record)
+
+    logging.info("Retrieving lineage information for each taxonomy ID... ")
+    records_batch, durations, lin_failures = tolerant_entrez_query(list(tax_id_map.keys()))
+    logging.info("done.\n")
+    for record in records_batch:
+        tax_id = parse_gbseq_info_from_entrez_xml(record, "TaxId")
+        if len(tax_id) == 0:
+            logging.warning("Empty TaxId returned in Entrez XML.\n")
+        tax_lineage = parse_gbseq_info_from_entrez_xml(record, "Lineage")
+        try:
+            for e_record in tax_id_map[tax_id]:
+                e_record.lineage = tax_lineage
+                # If the lineage can be mapped to the original taxonomy, then add 4 indicating success
+                if e_record.lineage:
+                    e_record.bitflag += 4
+        except KeyError:
+            pass
+    return entrez_records
+
+
+def entrez_records_to_accessions(entrez_records_list, search_term_list):
+    all_accessions = dict()
+    # Instantiate all query terms with a 0, indicating a failure
+    for term in search_term_list:
+        all_accessions[term] = 0
+    # Update the bitflags for those queries that were searched for
+    for record in entrez_records_list:
+        all_accessions.update({record.accession: record.bitflag, record.versioned: record.bitflag})
+    return all_accessions
+
+
 def entrez_records_to_accession_lineage_map(entrez_records_list):
+    # TODO: Remove this necessity. Currently need to reformat and tally accessions like so but its a waste
+    # Used for tallying the status of Entrez queries
+    success = 0
+    bad_tax = 0
+    bad_org = 0
+    rescued = 0
     accession_lineage_map = dict()
+
     for e_record in entrez_records_list:
         accession_lineage_map[(e_record.accession, e_record.versioned)] = dict()
         accession_lineage_map[(e_record.accession, e_record.versioned)]["lineage"] = e_record.lineage
         accession_lineage_map[(e_record.accession, e_record.versioned)]["organism"] = e_record.organism
+        # Report on the tolerance for failed Entrez accession queries
+        if e_record.bitflag == 7:
+            success += 1
+        elif e_record.bitflag == 6:
+            rescued += 1
+        elif e_record.bitflag == 3:
+            bad_tax += 1
+        elif e_record.bitflag == 1:
+            bad_org += 1
+        else:
+            logging.error("Unexpected bitflag (" + str(e_record.bitflag) + ") encountered for EntrezRecord:\n" +
+                          e_record.get_info() + "tax_id = " + str(e_record.ncbi_tax) + "\n")
+            sys.exit(19)
+
+    logging.debug("Queries mapped ideally = " + str(success) +
+                  "\nQueries with organism unmapped = " + str(bad_org) +
+                  "\nQueries with NCBI taxonomy ID unmapped = " + str(bad_tax) +
+                  "\nQueries mapped with alternative accessions = " + str(rescued) + "\n")
+
     return accession_lineage_map
 
 
@@ -231,25 +402,17 @@ def get_multiple_lineages(search_term_list: list, molecule_type: str):
 
     :param search_term_list: A list of GenBank accession IDs to be mapped to lineages
     :param molecule_type: The type of molecule (e.g. prot, nuc) to be mapped to a proper Entrez database name
-    :return: Dictionary mapping accession and accession.version to taxonomic values;
-     dictionary tracking the success (1) or failure (0) of an accession's query.
+    :return: List of EntrezRecord instances
     """
     if not search_term_list:
         logging.error("Search_term for Entrez query is empty\n")
         sys.exit(9)
 
     entrez_record_map = dict()
+    entrez_records = list()
     organism_map = dict()
-    tax_id_map = dict()
-    accession_lineage_map = dict()
     unique_organisms = set()
     updated_accessions = dict()
-
-    # Used for tallying the status of Entrez queries
-    success = 0
-    bad_tax = 0
-    bad_org = 0
-    rescued = 0
 
     prep_for_entrez_query()
     entrez_db = validate_target_db(molecule_type)
@@ -310,7 +473,8 @@ def get_multiple_lineages(search_term_list: list, molecule_type: str):
                             "Unable to link taxonomy ID to organism.\n")
             continue
         tax_id = parse_gbseq_info_from_esearch_record(record)
-        tax_id_map[tax_id] = []
+        if not tax_id:
+            logging.warning("Entrez returned an empty TaxId for organism '" + organism + "'\n")
         try:
             # This can, and will, lead to multiple accessions being assigned the same tax_id - not a problem, though
             for e_record in entrez_record_map[organism]:
@@ -318,56 +482,15 @@ def get_multiple_lineages(search_term_list: list, molecule_type: str):
                     continue
                 e_record.ncbi_tax = tax_id
                 e_record.bitflag += 2
-                tax_id_map[tax_id].append(e_record)
         except KeyError:
             organism_map[organism] = tax_id
 
-    ##
-    # Step 3: Fetch the taxonomic lineage for all of the taxonomic IDs
-    ##
-    logging.info("Retrieving lineage information for each taxonomy ID... ")
-    records_batch, durations, lin_failures = tolerant_entrez_query(list(tax_id_map.keys()))
-    logging.info("done.\n")
-    for record in records_batch:
-        tax_id = parse_gbseq_info_from_entrez_xml(record, "TaxId")
-        tax_lineage = parse_gbseq_info_from_entrez_xml(record, "Lineage")
-        for e_record in tax_id_map[tax_id]:
-            e_record.lineage = tax_lineage
-            # If the lineage can be mapped to the original taxonomy, then add 4 indicating success
-            if e_record.lineage:
-                e_record.bitflag += 4
-
-    ##
-    # Step 4: Convert the EntrezRecord objects to accession_lineage_map format for downstream functions
-    ##
-    # TODO: Remove this necessity. Currently need to reformat and tally accessions like so but its a waste
-    all_accessions = dict()
-    for term in search_term_list:
-        all_accessions[term] = 0  # Indicating a failure
     for organism in entrez_record_map:
-        accession_lineage_map.update(entrez_records_to_accession_lineage_map(entrez_record_map[organism]))
-        # Report on the tolerance for failed Entrez accession queries
-        for e_record in entrez_record_map[organism]:
-            all_accessions.update({e_record.accession: e_record.bitflag, e_record.versioned: e_record.bitflag})
-            if e_record.bitflag == 7:
-                success += 1
-            elif e_record.bitflag == 6:
-                rescued += 1
-            elif e_record.bitflag == 3:
-                bad_tax += 1
-            elif e_record.bitflag == 1:
-                bad_org += 1
-            else:
-                logging.error("Unexpected bitflag (" + str(e_record.bitflag) + ") encountered for EntrezRecord:\n" +
-                              e_record.get_info() + "\n" + "tax_id = " + str(e_record.ncbi_tax) + "\n")
-                sys.exit(19)
+        entrez_records += entrez_record_map[organism]
 
-    logging.debug("Queries mapped ideally = " + str(success) +
-                  "\nQueries with organism unmapped = " + str(bad_org) +
-                  "\nQueries with NCBI taxonomy ID unmapped = " + str(bad_tax) +
-                  "\nQueries mapped with alternative accessions = " + str(rescued) + "\n")
+    entrez_records = fetch_lineages_from_taxids(entrez_records)
 
-    return accession_lineage_map, all_accessions
+    return entrez_records
 
 
 def verify_lineage_information(accession_lineage_map, all_accessions, fasta_record_objects, taxa_searched):
