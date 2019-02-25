@@ -8,18 +8,20 @@ import os
 import inspect
 import shutil
 import glob
+from numpy import sqrt
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 sys.path.insert(0, cmd_folder + os.sep + ".." + os.sep)
-from fasta import format_read_fasta, write_new_fasta, get_headers, read_fasta_to_dict
-from create_treesapp_refpkg import get_header_format, finalize_ref_seq_lineages
-from utilities import return_sequence_info_groups, find_executables
+from fasta import get_headers
 from external_command_interface import launch_write_command
 import file_parsers
-from classy import prep_logging, get_header_info, register_headers, MarkerTest
+from classy import prep_logging, ReferencePackage
 from entrez_utils import *
+from lca_calculations import compute_taxonomic_distance, all_possible_assignments, \
+    optimal_taxonomic_assignment, grab_graftm_taxa
+from utilities import fish_refpkg_from_build_params
 
 
 class ClassifiedSequence:
@@ -34,26 +36,49 @@ class ClassifiedSequence:
 
 class ConfusionTest:
     def __init__(self, gene_list):
+        self._MAX_TAX_DIST = -1
         self.header_regex = None
-        self.test_markers = gene_list
+        self.ref_packages = {key: ReferencePackage() for key in gene_list}
         self.fn = {key: [] for key in gene_list}
         self.fp = {key: [] for key in gene_list}
         self.tp = {key: [] for key in gene_list}  # This will be a list of ClassifiedSequence instances
         self.tax_lineage_map = dict()
         self.dist_wise_tp = dict()
-        self.tn = 0
+        self.num_total_queries = 0
 
-    def get_info(self):
-        info_string = ""
+    def get_info(self, verbose=False):
+        info_string = "Reference packages being tested:\n"
+        info_string += ", ".join(list(self.ref_packages.keys())) + "\n"
+
+        self.check_dist()
+        info_string += "Stats based on taxonomic distance < " + str(self._MAX_TAX_DIST) + "\n"
+
+        if self.num_total_queries > 0:
+            info_string += str(self.num_total_queries) + " query sequences being used for testing.\n"
+
+        if verbose:
+            for refpkg in self.ref_packages:
+                info_string += self.marker_classification_summary(refpkg)
+
         return info_string
 
-    def marker_classifcation_summary(self, g_name):
+    def marker_classification_summary(self, refpkg_name):
         """
-        Provide a classification summary for a specific marker gene, g_name
-        :param g_name:
-        :return:
+        Provide a classification summary for a specific marker gene, refpkg_name
+        :param refpkg_name:
+        :return: A string summarizing the classification performance of a single marker/refpkg_name
         """
-        summary_string = ""
+        self.check_dist()
+        self.check_refpkg_name(refpkg_name)
+        num_tp, remainder = self.get_true_positives_at_dist(refpkg_name)
+
+        summary_string = "\nSummary for reference package '" + str(refpkg_name) + "':\n"
+        summary_string += "\tTrue positives\t\t" + str(len(self.tp[refpkg_name])) + "\n"
+        summary_string += "Stats based on taxonomic distance <" + str(self._MAX_TAX_DIST) + ":\n"
+        summary_string += "\tTrue positives\t\t" + str(num_tp) + "\n"
+        summary_string += "\tFalse positives\t\t" + str(self.get_false_positives(refpkg_name) + remainder) + "\n"
+        summary_string += "\tFalse negatives\t\t" + str(self.get_false_negatives(refpkg_name)) + "\n"
+        summary_string += "\tTrue negatives\t\t" + str(self.get_true_negatives(refpkg_name)) + "\n"
         return summary_string
 
     def retrieve_lineages(self, group=1):
@@ -64,62 +89,193 @@ class ConfusionTest:
         # Gather the unique taxonomy IDs and store in EntrezRecord instances
         entrez_records = list()
         for marker in self.tp:
-            for header in self.tp[marker]:
+            for tp_seq in self.tp[marker]:  # type: ClassifiedSequence
+                header = tp_seq.name
                 try:
                     tax_id = self.header_regex.search(header).group(group)
                 except (KeyError, TypeError):
-                    logging.error("Header '" + header + "' in test FASTA file does not match the supported format.\n")
+                    logging.error("Header '" + str(header) + "' in test FASTA doesn't match the supported format.\n")
                     sys.exit(5)
 
                 # Only make Entrez records for new NCBI taxonomy IDs
                 if tax_id not in self.tax_lineage_map:
                     e_record = EntrezRecord(header, "")
                     e_record.ncbi_tax = tax_id
+                    e_record.bitflag = 3
                     entrez_records.append(e_record)
 
         # Query the Entrez database for these unique taxonomy IDs
         fetch_lineages_from_taxids(entrez_records)
 
         for e_record in entrez_records:  # type: EntrezRecord
-            self.tax_lineage_map[e_record.ncbi_tax] = e_record.lineage
+            self.tax_lineage_map[e_record.ncbi_tax] = clean_lineage_string(e_record.lineage)
         return
 
-    def bin_true_positives_by_taxdist(self):
-        for marker in self.tp:
+    def bin_true_positives_by_taxdist(self, refpkg_name=None):
+        """
+        Defines the number of true positives at each taxonomic distance x where 0 <= x <= 7,
+        since there are 7 ranks in the NCBI taxonomic hierarchy.
+        All sequences correctly classified (at the gene level) are assigned a taxonomic distance,
+        so the sum of dist_wise_tp[x] for all x will equal the number of all true positives.
+
+        :return: None
+        """
+        if not refpkg_name:
+            marker_set = self.tp
+        else:
+            marker_set = [refpkg_name]
+        for marker in marker_set:
+            self.dist_wise_tp[marker] = dict()
             for tp_inst in self.tp[marker]:  # type: ClassifiedSequence
-                tp_inst.tax_dist = taxonomic_distance(tp_inst.assigned_lineage, self.tax_lineage_map[tp_inst.ncbi_tax])
+                # Find the optimal taxonomic assignment
+                optimal_taxon = optimal_taxonomic_assignment(self.ref_packages[marker].taxa_trie,
+                                                             self.tax_lineage_map[tp_inst.ncbi_tax])
+                tp_inst.tax_dist, status = compute_taxonomic_distance(tp_inst.assigned_lineage, optimal_taxon)
+                if status > 0:
+                    logging.debug("Lineages didn't converge between:\n" +
+                                  tp_inst.assigned_lineage + "\n" +
+                                  self.tax_lineage_map[tp_inst.ncbi_tax] + "\n")
                 try:
-                    self.dist_wise_tp[tp_inst.tax_dist] += 1
+                    self.dist_wise_tp[marker][tp_inst.tax_dist].append(tp_inst.name)
                 except KeyError:
-                    self.dist_wise_tp[tp_inst.tax_dist] = 1
+                    self.dist_wise_tp[marker][tp_inst.tax_dist] = [tp_inst.name]
         return
 
-    def get_true_positives_at_dist(self, max_distance=7, g_name=None):
-        total_tp = 0
-        for tax_dist in sorted(self.dist_wise_tp, key=int):
-            if tax_dist <= max_distance:
-                total_tp += self.dist_wise_tp[tax_dist]
-        return total_tp
+    def check_dist(self):
+        if self._MAX_TAX_DIST < 0:
+            logging.error("ConfusionTest's _MAX_TAX_DIST has yet to be set.\n")
+            sys.exit(5)
+        return
 
-    def get_true_negatives(self, all_queries: int):
+    def check_refpkg_name(self, refpkg_name):
+        if refpkg_name not in self.ref_packages:
+            logging.error(refpkg_name + " is not found in the names of markers to be tested.\n")
+            sys.exit(9)
+        return
+
+    def get_true_positives_at_dist(self, refpkg_name=None):
+        """
+        Calculates the sum of all true positives at a specified maximum taxonomic distance and less.
+        Sequences classified at a distance greater than self._MAX_TAX_DIST are counted as false negatives,
+        since it is as if the sequences were not classified at all.
+
+        :return: The sum of true positives at taxonomic distance <= max_distance
+        """
+        self.check_dist()
+        all_tp_headers = set()
+        remainder_headers = set()
+        if refpkg_name:
+            marker_set = [refpkg_name]
+        else:
+            marker_set = self.dist_wise_tp
+        for ref_name in marker_set:
+            for tax_dist in sorted(self.dist_wise_tp[ref_name], key=int):  # type: int
+                if tax_dist <= self._MAX_TAX_DIST:
+                    all_tp_headers.update(set(self.dist_wise_tp[ref_name][tax_dist]))
+                else:
+                    remainder_headers.update(set(self.dist_wise_tp[ref_name][tax_dist]))
+        return len(all_tp_headers), len(remainder_headers)
+
+    def get_true_negatives(self, refpkg_name=None):
         acc = 0
-        for marker in self.test_markers:
+        if refpkg_name:
+            marker_set = [refpkg_name]
+        else:
+            marker_set = self.ref_packages
+        for marker in marker_set:
             acc += len(self.fn[marker])
             acc += len(self.fp[marker])
             acc += len(self.tp[marker])
-        self.tn = all_queries - acc
+        return self.num_total_queries - acc
 
-    def get_false_positives(self, g_name=None):
-        if g_name:
-            return len(self.fp[g_name])
+    def get_false_positives(self, refpkg_name=None):
+        if refpkg_name:
+            return len(self.fp[refpkg_name])
         else:
-            return sum([len(self.fp[marker]) for marker in self.test_markers])
+            unique_fp = set()
+            return len([unique_fp.update(self.fp[marker]) for marker in self.ref_packages])
 
-    def get_false_negatives(self, g_name=None):
-        if g_name:
-            return len(self.fn[g_name])
+    def get_false_negatives(self, refpkg_name=None):
+        if refpkg_name:
+            return len(self.fn[refpkg_name])
         else:
-            return sum([len(self.fn[marker]) for marker in self.test_markers])
+            unique_fn = set()
+            return len([unique_fn.update(self.fn[marker]) for marker in self.ref_packages])
+
+    def bin_headers(self, test_seq_names, assignments, annot_map, marker_build_dict):
+        """
+        Function for sorting/binning the classified sequences at T/F positives/negatives based on the
+        :param test_seq_names: List of all headers in the input FASTA file
+        :param assignments: Dictionary mapping taxonomic lineages to a list of headers that were classified to this lineage
+        :param annot_map: Dictionary mapping reference package (gene) name keys to database names values
+        :param marker_build_dict:
+        :return: None
+        """
+        # False positives: those that do not belong to the annotation matching a reference package name
+        # False negatives: those whose annotations match a reference package name and were not classified
+        # True positives: those with a matching annotation and reference package name and were classified
+        # True negatives: those that were not classified and should not have been
+        mapping_dict = dict()
+        positive_queries = dict()
+
+        for refpkg in annot_map:
+            marker = marker_build_dict[refpkg].cog
+            orthos = annot_map[refpkg]  # List of all orthologous genes corresponding to a reference package
+            for gene in orthos:
+                if gene not in mapping_dict:
+                    mapping_dict[gene] = []
+                mapping_dict[gene].append(marker)
+
+        logging.info("Labelling true test sequences... ")
+        for header in test_seq_names:
+            try:
+                ref_g, tax_id = self.header_regex.match(header).groups()
+            except (TypeError, KeyError):
+                logging.error("Header '" + header + "' in test FASTA file does not match the supported format.\n")
+                sys.exit(5)
+            # Keep the name in
+            if ref_g in mapping_dict:
+                markers = mapping_dict[ref_g]
+                ##
+                # TODO: This leads to double-counting and therefore needs to be deduplicated later
+                ##
+                for marker in markers:
+                    if marker not in positive_queries:
+                        positive_queries[marker] = []
+                    positive_queries[marker].append(header)
+        logging.info("done.\n")
+
+        logging.info("Assigning test sequences to the four class conditions... ")
+        for marker in assignments:
+            positives = set(positive_queries[marker])
+            true_positives = set()
+            refpkg = fish_refpkg_from_build_params(marker, marker_build_dict).denominator
+            for tax_lin in assignments[marker]:
+                classified_seqs = assignments[marker][tax_lin]
+                for seq_name in classified_seqs:
+                    try:
+                        ref_g, tax_id = self.header_regex.match(seq_name).groups()
+                    except (TypeError, KeyError, AttributeError):
+                        logging.error(
+                            "Classified sequence name '" + seq_name + "' does not match the supported format.\n")
+                        sys.exit(5)
+                    if ref_g in mapping_dict and marker in mapping_dict[ref_g]:
+                        # Populate the relevant information for the classified sequence
+                        tp_inst = ClassifiedSequence(seq_name)
+                        tp_inst.ncbi_tax = tax_id
+                        tp_inst.ref = marker
+                        tp_inst.assigned_lineage = tax_lin
+
+                        # Add the True Positive to the relevant collections
+                        self.tp[refpkg].append(tp_inst)
+                        true_positives.add(seq_name)
+                    else:
+                        self.fp[refpkg].append(seq_name)
+
+            # Identify the False Negatives using set difference - those that were not classified but should have been
+            self.fn[refpkg] = list(positives.difference(true_positives))
+        logging.info("done.\n")
+        return
 
 
 def get_arguments():
@@ -144,6 +300,8 @@ def get_arguments():
                              " Files must follow 'name.gpkg' scheme and 'name' is in the first column of --annot_map")
     optopt.add_argument("--output", required=False, default="./MCC_output/",
                         help="Path to a directory for writing output files")
+    optopt.add_argument("-p", "--pkg_path", required=False, default=None,
+                        help="The path to the TreeSAPP-formatted reference package(s) [ DEFAULT = TreeSAPP/data/ ].")
     # optopt.add_argument('-m', '--molecule',
     #                     help='the type of input sequences (prot = Protein [DEFAULT]; dna = Nucleotide; rrna = rRNA)',
     #                     default='prot',
@@ -154,6 +312,8 @@ def get_arguments():
     #                          "Useful for testing classification accuracy for fragments.")
 
     miscellaneous_opts = parser.add_argument_group("Miscellaneous options")
+    miscellaneous_opts.add_argument("-T", "--num_threads", default=4, required=False,
+                                    help="The number of threads to use when running either TreeSAPP or GraftM")
     miscellaneous_opts.add_argument('--overwrite', action='store_true', default=False,
                                     help='overwrites previously processed output folders')
     miscellaneous_opts.add_argument('-v', '--verbose', action='store_true', default=False,
@@ -167,6 +327,9 @@ def get_arguments():
     if args.output[-1] != os.sep:
         args.output += os.sep
     args.treesapp = os.path.abspath(os.path.dirname(os.path.realpath(__file__))) + os.sep + ".." + os.sep
+    if args.tool == "treesapp" and not args.pkg_path:
+        args.pkg_path = args.treesapp + "data" + os.sep
+    args.targets = ["ALL"]
 
     if sys.version_info > (2, 9):
         args.py_version = 3
@@ -229,68 +392,10 @@ def read_annotation_mapping_file(annot_map_file):
     return annot_map
 
 
-def bin_headers(test_seq_names, assignments, annot_map, confusion_obj: ConfusionTest):
-    """
-    Function for sorting/binning the classified sequences at T/F positives/negatives based on the
-    :param test_seq_names: List of all headers in the input FASTA file
-    :param assignments: Dictionary mapping taxonomic lineages to a list of headers that were classified to this lineage
-    :param annot_map: Dictionary mapping reference package (gene) name keys to database names values
-    :return:
-    """
-    # False positives: those that do not belong to the annotation matching a reference package name
-    # False negatives: those whose annotations match a reference package name and were not classified
-    # True positives: those with a matching annotation and reference package name and were classified
-    # True negatives: those that were not classified and should not have been
-
-    mapping_dict = dict()
-    for refpkg in annot_map:
-        orthos = annot_map[refpkg].split(',')
-        for gene in orthos:
-            mapping_dict[gene] = refpkg
-
-    # test the format of the header in test_seq_names
-    eggnog_re = re.compile(r"^(COG[A-Z0-9]+|ENOG[A-Z0-9]+)_(\d+)\..*")
-    positive_queries = dict()
-    for header in test_seq_names:
-        try:
-            ref_g, tax_id = eggnog_re.match(header).groups()
-        except (TypeError, KeyError):
-            logging.error("Header '" + header + "' in test FASTA file does not match the supported format.\n")
-            sys.exit(5)
-        # Keep the name in
-        if ref_g in mapping_dict:
-            marker = mapping_dict[ref_g]
-            if marker not in positive_queries:
-                positive_queries[marker] = []
-            positive_queries[marker].append(header)
-
-    for marker in assignments:
-        positives = set(positive_queries[marker])
-        true_positives = set()
-        for tax_lin in assignments:
-            classified_seqs = assignments[marker][tax_lin]
-            for seq_name in classified_seqs:
-                try:
-                    ref_g, tax_id = eggnog_re.match(seq_name).groups()
-                except (TypeError, KeyError):
-                    logging.error("Classified sequence name '" + seq_name + "' does not match the supported format.\n")
-                    sys.exit(5)
-                if annot_map[marker] == ref_g:
-                    # Populate the relevant information for the classified sequence
-                    tp_inst = ClassifiedSequence(seq_name)
-                    tp_inst.ncbi_tax = tax_id
-                    tp_inst.ref = marker
-                    tp_inst.assigned_lineage = tax_lin
-
-                    # Add the True Positive to the relevant collections
-                    confusion_obj.tp[marker].append(tp_inst)
-                    true_positives.add(seq_name)
-                else:
-                    confusion_obj.fp[marker].append(seq_name)
-
-        # Identify the False Negatives using set difference - those that were not classified but should have been
-        confusion_obj.fn[marker] = list(positives.difference(true_positives))
-    return
+def calculate_matthews_correlation_coefficient(tp: int, fp: int, fn: int, tn: int):
+    numerator = float((tp * tn) - (fp * fn))
+    denominator = float((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
+    return round(numerator/sqrt(denominator), 3)
 
 
 def main():
@@ -303,71 +408,104 @@ def main():
     # Read the file mapping reference package name to the database annotations
     ##
     pkg_name_dict = read_annotation_mapping_file(args.annot_map)
+    marker_build_dict = file_parsers.parse_ref_build_params(args)
     test_obj = ConfusionTest(pkg_name_dict.keys())
 
     ##
-    # TODO: Run the specified taxonomic analysis tool and collect the classifications
+    # Load the taxonomic trie for each reference package
+    ##
+    if args.tool == "treesapp":
+        for pkg_name in test_obj.ref_packages:
+            refpkg = test_obj.ref_packages[pkg_name]
+            marker = marker_build_dict[pkg_name].cog
+            refpkg.gather_package_files(marker, args.pkg_path)
+            test_obj.ref_packages[pkg_name].taxa_trie = all_possible_assignments(test_obj.ref_packages[pkg_name].lineage_ids)
+    else:
+        for gpkg in glob.glob(args.gpkg_dir + "*gpkg"):
+            pkg_name = str(os.path.basename(gpkg).split('.')[0])
+            tax_ids_file = gpkg + os.sep + pkg_name + "_taxonomy.csv"
+            test_obj.ref_packages[pkg_name].taxonomic_tree = grab_graftm_taxa(tax_ids_file)
+
+    ##
+    # Run the specified taxonomic analysis tool and collect the classifications
     ##
     assignments = {}
     test_fa_prefix = '.'.join(args.fasta_input.split('.')[:-1])
     if args.tool == "treesapp":
         ref_pkgs = ','.join(pkg_name_dict.keys())
-        # TODO: Replace with a call to the treesapp main function
-        classify_call = [args.treesapp + "treesapp.py", "-i", args.fasta_input,
-                         "-t", ref_pkgs, "-T", str(4),
-                         "-m", "prot", "--output", args.output + "TreeSAPP_output" + os.sep,
-                         "--trim_align", "--overwrite"]
-        launch_write_command(classify_call, False)
         classification_table = os.sep.join([args.output, "TreeSAPP_output", "final_outputs", "marker_contig_map.tsv"])
+        if not os.path.isfile(classification_table):
+            # TODO: Replace with a call to the treesapp main function
+            classify_call = [args.treesapp + "treesapp.py", "-i", args.fasta_input,
+                             "-t", ref_pkgs, "-T", str(args.num_threads),
+                             "-m", "prot", "--output", args.output + "TreeSAPP_output" + os.sep,
+                             "--trim_align", "--overwrite"]
+            launch_write_command(classify_call, False)
         classification_lines = file_parsers.read_marker_classification_table(classification_table)
         assignments = file_parsers.parse_assignments(classification_lines)
     else:
         # Since you are only able to analyze a single reference package at a time with GraftM, this is ran iteratively
         for gpkg in glob.glob(args.gpkg_dir + "*gpkg"):
-            pkg_name = os.path.basename(gpkg).split('.')[0]
+            pkg_name = str(os.path.basename(gpkg).split('.')[0])
             if pkg_name not in pkg_name_dict:
-                logging.warning(gpkg + " not in " + args.annot_map + " and will be skipped...\n")
+                logging.warning("'" + pkg_name + "' not in " + args.annot_map + " and will be skipped...\n")
                 continue
             output_dir = os.sep.join([args.output, "GraftM_output", pkg_name]) + os.sep
-            classify_call = ["graftM", "graft",
-                             "--forward", args.fasta_input,
-                             "--graftm_package", gpkg,
-                             "--input_sequence_type", "aminoacid",
-                             "--threads", str(8),
-                             "--output_directory", output_dir,
-                             "--force"]
-            launch_write_command(classify_call, False)
             classification_table = output_dir + test_fa_prefix + os.sep + test_fa_prefix + "_read_tax.tsv"
+            if not os.path.isfile(classification_table):
+                classify_call = ["graftM", "graft",
+                                 "--forward", args.fasta_input,
+                                 "--graftm_package", gpkg,
+                                 "--input_sequence_type", "aminoacid",
+                                 "--threads", str(args.num_threads),
+                                 "--output_directory", output_dir,
+                                 "--force"]
+                launch_write_command(classify_call, False)
+
             assignments[pkg_name] = file_parsers.read_graftm_classifications(classification_table)
 
+    if len(assignments) == 0:
+        logging.error("No sequences were classified by " + args.tool + ".\n")
+        sys.exit(3)
+
+    logging.info("Reading headers in " + args.fasta_input + "... ")
     test_seq_names = get_headers(args.fasta_input)
+    logging.info("done.\n")
+    test_obj.num_total_queries = len(test_seq_names)
+    eggnog_re = re.compile(r"^>?(COG[A-Z0-9]+|ENOG[A-Z0-9]+)_(\d+)\..*")
+    test_obj.header_regex = eggnog_re
 
     ##
     # Bin the test sequence names into their respective confusion categories (TP, TN, FP, FN)
     ##
-    bin_headers(test_seq_names, assignments, pkg_name_dict, test_obj)
+    test_obj.bin_headers(test_seq_names, assignments, pkg_name_dict, marker_build_dict)
     test_seq_names.clear()
 
     ##
     # Parse the taxonomic IDs from EggNOG headers and map taxonomic lineage information to classified sequences
     ##
-    test_obj.retrieve_lineages(2)
+    _TAXID_GROUP = 2
+    test_obj.retrieve_lineages(_TAXID_GROUP)
     test_obj.bin_true_positives_by_taxdist()
 
+    # test_obj._MAX_TAX_DIST = 2
+    # print(test_obj.get_info(True))
     ##
-    # TODO: Report the MCC score across different taxonomic distances - should increase with greater allowed distance
+    # Report the MCC score across different taxonomic distances - should increase with greater allowed distance
     ##
-    # d = 0
-    # while d < 7:
-    #     num_tp = test_obj.get_true_positives_at_dist(d)
-    #     mcc = calculate_matthews_correlation_coefficient(num_tp,
-    #                                                      test_obj.get_true_negatives(),
-    #                                                      test_obj.get_false_negatives()
-    #                                                      test_obj.get_false_positives())
-    #     d += 1
+    d = 0
+    mcc_string = "Tax.dist\tMCC\tTrue.Pos\tTrue.Neg\tFalse.Pos\tFalse.Neg\n"
+    while d < 7:
+        test_obj._MAX_TAX_DIST = d
+        num_tp, remainder = test_obj.get_true_positives_at_dist()
+        num_fp = test_obj.get_false_positives() + remainder
+        num_fn = test_obj.get_false_negatives()
+        num_tn = test_obj.get_true_negatives()
+        mcc = calculate_matthews_correlation_coefficient(num_tp, num_fp, num_fn, num_tn)
+        mcc_string += "\t".join([str(x) for x in [d, mcc, num_tp, num_tn, num_fp, num_fn]]) + "\n"
+        d += 1
+    logging.info(mcc_string)
+    return
 
 
 main()
-
-if __name__ == "__main__":
-    main()
