@@ -24,6 +24,7 @@ class ReferencePackage:
         self.tree = ""
         self.boot_tree = ""
         self.lineage_ids = ""
+        self.taxa_trie = ""
         self.sub_model = ""
         self.core_ref_files = list()
         self.num_seqs = 0
@@ -109,8 +110,8 @@ class MarkerBuild:
         self.molecule = build_param_fields[2]
         self.model = build_param_fields[3]
         self.kind = build_param_fields[4]
-        self.pid = build_param_fields[5]
-        self.num_reps = build_param_fields[6]
+        self.pid = float(build_param_fields[5])
+        self.num_reps = int(build_param_fields[6])
         self.tree_tool = build_param_fields[7]
         self.lowest_confident_rank = build_param_fields[9]
         self.update = build_param_fields[10]
@@ -829,6 +830,13 @@ class MyFormatter(logging.Formatter):
 
 
 def prep_logging(log_file_name, verbosity):
+    output_dir = os.path.dirname(log_file_name)
+    try:
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
+    except (IOError, OSError):
+        sys.stderr.write("ERROR: Unable to make directory '" + output_dir + "'.\n")
+        sys.exit(3)
     logging.basicConfig(level=logging.DEBUG,
                         filename=log_file_name,
                         filemode='w',
