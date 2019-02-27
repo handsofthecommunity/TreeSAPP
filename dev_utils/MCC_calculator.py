@@ -7,7 +7,7 @@ import sys
 import os
 import inspect
 import shutil
-import glob
+from glob import glob
 from numpy import sqrt
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
@@ -66,7 +66,7 @@ class ConfusionTest:
             fp_ogs.clear()
 
         if verbose:
-            for refpkg in self.ref_packages:
+            for refpkg in sorted(self.ref_packages):
                 info_string += self.marker_classification_summary(refpkg)
 
         return info_string
@@ -236,6 +236,7 @@ class ConfusionTest:
                 if gene not in mapping_dict:
                     mapping_dict[gene] = []
                 mapping_dict[gene].append(marker)
+        og_names_mapped = list(mapping_dict.keys())
 
         logging.info("Labelling true test sequences... ")
         for header in test_seq_names:
@@ -244,21 +245,41 @@ class ConfusionTest:
             except (TypeError, KeyError):
                 logging.error("Header '" + header + "' in test FASTA file does not match the supported format.\n")
                 sys.exit(5)
-            # Keep the name in
             if ref_g in mapping_dict:
                 markers = mapping_dict[ref_g]
                 ##
                 # This leads to double-counting and is therefore deduplicated later
                 ##
                 for marker in markers:
+                    if not marker:
+                        logging.error("Bad marker name in " + str(mapping_dict.keys()) + "\n")
+                        sys.exit(5)
                     if marker not in positive_queries:
                         positive_queries[marker] = []
+                        if ref_g in og_names_mapped:
+                            i = 0
+                            while i < len(og_names_mapped):
+                                if og_names_mapped[i] == ref_g:
+                                    og_names_mapped.pop(i)
+                                    i = len(og_names_mapped)
+                                i += 1
                     positive_queries[marker].append(header)
         logging.info("done.\n")
 
+        # Ensure all reference genes in mapping_dict have been used
+        if len(og_names_mapped) > 0:
+            logging.warning("Some orthologous groups in the annotation mapping file were not found in the FASTA file." +
+                            " Perhaps a mistake was made when making this file? The following OGs will be skipped:\n" +
+                            '\n'.join([str(og) + ": " + str(mapping_dict[og]) for og in og_names_mapped]) + "\n")
+
         logging.info("Assigning test sequences to the four class conditions... ")
         for marker in assignments:
-            positives = set(positive_queries[marker])
+            try:
+                positives = set(positive_queries[marker])
+            except KeyError:
+                logging.error("Unable to find '" + marker + "' in the set of positive queries:\n" +
+                              ", ".join([str(n) for n in positive_queries.keys()]) + "\n")
+                sys.exit(5)
             true_positives = set()
             refpkg = fish_refpkg_from_build_params(marker, marker_build_dict).denominator
             for tax_lin in assignments[marker]:
@@ -352,8 +373,6 @@ def get_arguments():
     required_args = parser.add_argument_group("Required arguments")
     required_args.add_argument("--fasta_input", required=True,
                                help="FASTA-formatted file used for testing the classifiers")
-    # required_args.add_argument("--reference_marker", required=True,
-    #                            help="Short-form name of the marker gene to be tested (e.g. mcrA, pmoA, nosZ)")
     required_args.add_argument("--annot_map", required=True,
                                help="Path to a tabular file mapping markers being tested to their database annotations."
                                     " First column is the ")
@@ -369,14 +388,6 @@ def get_arguments():
                         help="Path to a directory for writing output files")
     optopt.add_argument("-p", "--pkg_path", required=False, default=None,
                         help="The path to the TreeSAPP-formatted reference package(s) [ DEFAULT = TreeSAPP/data/ ].")
-    # optopt.add_argument('-m', '--molecule',
-    #                     help='the type of input sequences (prot = Protein [DEFAULT]; dna = Nucleotide; rrna = rRNA)',
-    #                     default='prot',
-    #                     choices=['prot', 'dna', 'rrna'])
-    # optopt.add_argument("-l", "--length",
-    #                     required=False, type=int, default=0,
-    #                     help="Arbitrarily slice the input sequences to this length. "
-    #                          "Useful for testing classification accuracy for fragments.")
 
     miscellaneous_opts = parser.add_argument_group("Miscellaneous options")
     miscellaneous_opts.add_argument("-T", "--num_threads", default=4, required=False,
@@ -420,7 +431,7 @@ def validate_command(args):
         elif not os.path.isdir(args.gpkg_dir):
             logging.error(args.gpkg_dir + " GraftM reference package directory does not exist!\n")
             sys.exit(17)
-        elif len(glob.glob(args.gpkg_dir + "*gpkg")) == 0:
+        elif len(glob(args.gpkg_dir + "*gpkg")) == 0:
             logging.error("Not GraftM reference packages found in " + args.gpkg_dir + ".\n")
             sys.exit(17)
     elif args.tool == "treesapp" and args.gpkg_dir:
@@ -462,7 +473,10 @@ def read_annotation_mapping_file(annot_map_file):
 def calculate_matthews_correlation_coefficient(tp: int, fp: int, fn: int, tn: int):
     numerator = float((tp * tn) - (fp * fn))
     denominator = float((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn))
-    return round(numerator/sqrt(denominator), 3)
+    if numerator == 0 or denominator == 0:
+        return 0
+    else:
+        return round(numerator/sqrt(denominator), 3)
 
 
 def main():
@@ -488,16 +502,21 @@ def main():
             refpkg.gather_package_files(marker, args.pkg_path)
             test_obj.ref_packages[pkg_name].taxa_trie = all_possible_assignments(test_obj.ref_packages[pkg_name].lineage_ids)
     else:
-        for gpkg in glob.glob(args.gpkg_dir + "*gpkg"):
-            pkg_name = str(os.path.basename(gpkg).split('.')[0])
-            tax_ids_file = gpkg + os.sep + pkg_name + "_taxonomy.csv"
-            test_obj.ref_packages[pkg_name].taxonomic_tree = grab_graftm_taxa(tax_ids_file)
+        for gpkg in glob(args.gpkg_dir + "*gpkg"):
+            marker = str(os.path.basename(gpkg).split('.')[0])
+            pkg_name = fish_refpkg_from_build_params(marker, marker_build_dict).denominator
+            if pkg_name in pkg_name_dict:
+                try:
+                    tax_ids_file = glob(os.sep.join([gpkg, marker + ".gpkg.refpkg", marker + "*_taxonomy.csv"])).pop()
+                    test_obj.ref_packages[pkg_name].taxonomic_tree = grab_graftm_taxa(tax_ids_file)
+                except IndexError:
+                    logging.warning("No GraftM taxonomy file found for " + marker + ". Is this refpkg incomplete?\n")
 
     ##
     # Run the specified taxonomic analysis tool and collect the classifications
     ##
     assignments = {}
-    test_fa_prefix = '.'.join(args.fasta_input.split('.')[:-1])
+    test_fa_prefix = '.'.join(os.path.basename(args.fasta_input).split('.')[:-1])
     if args.tool == "treesapp":
         ref_pkgs = ','.join(pkg_name_dict.keys())
         classification_table = os.sep.join([args.output, "TreeSAPP_output", "final_outputs", "marker_contig_map.tsv"])
@@ -512,12 +531,18 @@ def main():
         assignments = file_parsers.parse_assignments(classification_lines)
     else:
         # Since you are only able to analyze a single reference package at a time with GraftM, this is ran iteratively
-        for gpkg in glob.glob(args.gpkg_dir + "*gpkg"):
-            pkg_name = str(os.path.basename(gpkg).split('.')[0])
+        for gpkg in glob(args.gpkg_dir + "*gpkg"):
+            marker = str(os.path.basename(gpkg).split('.')[0])
+            if not marker:
+                logging.error("Unable to parse marker name from gpkg '" + gpkg + "'\n")
+                sys.exit(5)
+            pkg_name = fish_refpkg_from_build_params(marker, marker_build_dict).denominator
             if pkg_name not in pkg_name_dict:
                 logging.warning("'" + pkg_name + "' not in " + args.annot_map + " and will be skipped...\n")
                 continue
             output_dir = os.sep.join([args.output, "GraftM_output", pkg_name]) + os.sep
+            if not os.path.isdir(output_dir):
+                os.makedirs(output_dir)
             classification_table = output_dir + test_fa_prefix + os.sep + test_fa_prefix + "_read_tax.tsv"
             if not os.path.isfile(classification_table):
                 classify_call = ["graftM", "graft",
@@ -529,14 +554,14 @@ def main():
                                  "--force"]
                 launch_write_command(classify_call, False)
 
-            assignments[pkg_name] = file_parsers.read_graftm_classifications(classification_table)
+            assignments[marker] = file_parsers.read_graftm_classifications(classification_table)
 
     if len(assignments) == 0:
         logging.error("No sequences were classified by " + args.tool + ".\n")
         sys.exit(3)
 
     logging.info("Reading headers in " + args.fasta_input + "... ")
-    test_seq_names = get_headers(args.fasta_input)
+    test_seq_names = [seq_name[1:] if seq_name[0] == '>' else seq_name for seq_name in get_headers(args.fasta_input)]
     logging.info("done.\n")
     test_obj.num_total_queries = len(test_seq_names)
     eggnog_re = re.compile(r"^>?(COG[A-Z0-9]+|ENOG[A-Z0-9]+)_(\d+)\..*")
