@@ -118,6 +118,7 @@ def format_read_fastq(fastq_input, max_header_length=110, min_seq_length=10):
         else:
             if len(name) > max_header_length:
                 name = name[:max_header_length]
+            name = name.split(" ")[0]
             fastq_dict[name] = seq
     return fastq_dict
 
