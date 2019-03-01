@@ -60,3 +60,6 @@ P01157	P1157	prot	PROTGAMMALG	taxonomic	0.95	437	FastTree	-4.3297,6.9325	Phyla	1
 #norC	D0502	prot	PROTGAMMALG	functional	0.90	223	FastTree	-6.61551453189,6.60317398186	Classes	04_Dec_2018
 #p_amoA	N0102	prot	PROTGAMMALG	functional	0.97	80	FastTree	-2.83232814805,5.67790899421	Families	04_Dec_2018
 recA	P0001	dna	GTRGAMMA	taxonomic	0.70	713	FastTree	-8.68586056147,6.39248286582	Kingdoms	08_Feb_2019
+rL10P	P0002	dna	GTRGAMMA	taxonomic	0.8	1168	FastTree	-6.4291,6.5574	Phyla	28_Feb_2019	
+rpoB	P0003	dna	GTRGAMMA	taxonomic	0.8	642	FastTree	-3.5199,6.3569	Kingdoms	01_Mar_2019	
+pyrG	P0004	dna	GTRGAMMA	taxonomic	0.8	1859	FastTree	-4.2441,6.4407	Phyla	01_Mar_2019	

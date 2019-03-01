@@ -19,7 +19,7 @@ def generate_fasta_or_fastq(fp):  # this is a generator function
                     last = l[:-1]  # save this line
                     break
         if not last: break
-        name, seqs, last = last[1:].partition(" ")[0], [], None
+        name, seqs, last = last[1:], [], None
         for l in fp:  # read the sequence
             if l[0] in '@+>':
                 last = l[:-1]
@@ -135,7 +135,7 @@ def get_headers(fasta_file):
         sys.exit(5)
 
     n_headers = 0
-    for name, _ in generate_fasta(fasta):
+    for name, _, _ in generate_fasta_or_fastq(fasta):
         n_headers += 1
         original_headers.append('>' + str(name))
 

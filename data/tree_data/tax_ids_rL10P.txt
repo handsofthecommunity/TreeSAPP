@@ -1,0 +1,1168 @@
+1	Acidilobus | CP010515.1	Archaea; Crenarchaeota; Thermoprotei; Acidilobales; Acidilobaceae; Acidilobus
+2	environmental samples | AYMC01000010.1	Archaea; Crenarchaeota; Thermoprotei; Acidilobales; Acidilobaceae; Acidilobus; environmental samples
+3	environmental samples | AYMB01000008.1	Archaea; Crenarchaeota; Thermoprotei; Acidilobales; Acidilobaceae; Acidilobus; environmental samples
+4	Caldisphaera | PNHZ01000004.1	Archaea; Crenarchaeota; Thermoprotei; Acidilobales; Caldisphaeraceae; Caldisphaera
+5	Caldisphaera | PNJA01000077.1	Archaea; Crenarchaeota; Thermoprotei; Acidilobales; Caldisphaeraceae; Caldisphaera
+6	Aeropyrum camini | AP012489.1	Archaea; Crenarchaeota; Thermoprotei; Desulfurococcales; Desulfurococcaceae; Aeropyrum; Aeropyrum camini
+7	Desulfurococcus amylolyticus | CP003321.1	Archaea; Crenarchaeota; Thermoprotei; Desulfurococcales; Desulfurococcaceae; Desulfurococcus; Desulfurococcus amylolyticus
+8	Ignisphaera aggregans | CP002098.1	Archaea; Crenarchaeota; Thermoprotei; Desulfurococcales; Desulfurococcaceae; Ignisphaera; Ignisphaera aggregans
+9	Zestosphaera | NBVN01000002.1	Archaea; Crenarchaeota; Thermoprotei; Desulfurococcales; Desulfurococcaceae; Zestosphaera
+10	Fervidicoccus | POCB01000063.1	Archaea; Crenarchaeota; Thermoprotei; Fervidicoccales; Fervidicoccaceae; Fervidicoccus
+11	Fervidicoccus fontis | CP003423.1	Archaea; Crenarchaeota; Thermoprotei; Fervidicoccales; Fervidicoccaceae; Fervidicoccus; Fervidicoccus fontis
+12	Acidianus | CP020477.1	Archaea; Crenarchaeota; Thermoprotei; Sulfolobales; Sulfolobaceae; Acidianus
+13	Acidianus hospitalis | CP002535.1	Archaea; Crenarchaeota; Thermoprotei; Sulfolobales; Sulfolobaceae; Acidianus; Acidianus hospitalis
+14	Candidatus Aramenus | ASRH01000002.1	Archaea; Crenarchaeota; Thermoprotei; Sulfolobales; Sulfolobaceae; Candidatus Aramenus
+15	Metallosphaera yellowstonensis | JH597770.1	Archaea; Crenarchaeota; Thermoprotei; Sulfolobales; Sulfolobaceae; Metallosphaera; Metallosphaera yellowstonensis
+16	Saccharolobus | U85262.1	Archaea; Crenarchaeota; Thermoprotei; Sulfolobales; Sulfolobaceae; Saccharolobus
+17	Sulfolobus acidocaldarius | CP006977.1	Archaea; Crenarchaeota; Thermoprotei; Sulfolobales; Sulfolobaceae; Sulfolobus; Sulfolobus acidocaldarius
+18	Thermofilum | NJDK01000012.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermofilaceae; Thermofilum
+19	Thermofilum | NJDJ01000016.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermofilaceae; Thermofilum
+20	Thermofilum | NDWX01000009.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermofilaceae; Thermofilum
+21	Thermofilum | CP009961.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermofilaceae; Thermofilum
+22	Caldivirga | LOCB01000001.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Caldivirga
+23	Pyrobaculum | CP012158.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Pyrobaculum
+24	Pyrobaculum | CP003098.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Pyrobaculum
+25	Pyrobaculum arsenaticum | CP000660.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Pyrobaculum; Pyrobaculum arsenaticum
+26	Pyrobaculum calidifontis | CP000561.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Pyrobaculum; Pyrobaculum calidifontis
+27	Pyrobaculum neutrophilum | CP001014.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Pyrobaculum; Pyrobaculum neutrophilum
+28	Pyrobaculum oguniense | CP003316.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Pyrobaculum; Pyrobaculum oguniense
+29	Thermocladium | LOBW01000016.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Thermocladium
+30	Thermoproteus | LOCA01000056.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Thermoproteus
+31	Thermoproteus | JZWT01000009.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Thermoproteus
+32	Thermoproteus | LOBZ01000005.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Thermoproteus
+33	Vulcanisaeta | LOCE01000024.1	Archaea; Crenarchaeota; Thermoprotei; Thermoproteales; Thermoproteaceae; Vulcanisaeta
+34	Halobacterium | X15078.1	Archaea; Euryarchaeota; Halobacteria; Halobacteriales; Halobacteriaceae; Halobacterium
+35	Haloferax | X58924.1	Archaea; Euryarchaeota; Halobacteria; Haloferacales; Haloferacaceae; Haloferax
+36	Haloquadratum | KE356563.1	Archaea; Euryarchaeota; Halobacteria; Haloferacales; Haloferacaceae; Haloquadratum
+37	Haloquadratum walsbyi | KE356561.1	Archaea; Euryarchaeota; Halobacteria; Haloferacales; Haloferacaceae; Haloquadratum; Haloquadratum walsbyi
+38	Halonotius | KE356569.1	Archaea; Euryarchaeota; Halobacteria; Haloferacales; Halorubraceae; Halonotius
+39	Halonotius | KE356578.1	Archaea; Euryarchaeota; Halobacteria; Haloferacales; Halorubraceae; Halonotius
+40	Halorubrum | NHOB01001049.1	Archaea; Euryarchaeota; Halobacteria; Haloferacales; Halorubraceae; Halorubrum
+41	Halorubrum | KE356576.1	Archaea; Euryarchaeota; Halobacteria; Haloferacales; Halorubraceae; Halorubrum
+42	Halovivax ruber | CP003050.1	Archaea; Euryarchaeota; Halobacteria; Natrialbales; Natrialbaceae; Halovivax; Halovivax ruber
+43	Methanobacterium | AMGN01000004.1	Archaea; Euryarchaeota; Methanobacteria; Methanobacteriales; Methanobacteriaceae; Methanobacterium
+44	environmental samples | CBKP010000014.1	Archaea; Euryarchaeota; Methanobacteria; Methanobacteriales; Methanobacteriaceae; Methanobrevibacter; environmental samples
+45	Methanothermobacter | AP017647.1	Archaea; Euryarchaeota; Methanobacteria; Methanobacteriales; Methanobacteriaceae; Methanothermobacter
+46	Methanotorris formicicus | AGJL01000022.1	Archaea; Euryarchaeota; Methanococci; Methanococcales; Methanocaldococcaceae; Methanotorris; Methanotorris formicicus
+47	Methanocella paludicola | AP011532.1	Archaea; Euryarchaeota; Methanomicrobia; Methanocellales; Methanocellaceae; Methanocella; Methanocella paludicola
+48	Methanoculleus | LKUD01000038.1	Archaea; Euryarchaeota; Methanomicrobia; Methanomicrobiales; Methanomicrobiaceae; Methanoculleus
+49	Methanoculleus | LGGD01000029.1	Archaea; Euryarchaeota; Methanomicrobia; Methanomicrobiales; Methanomicrobiaceae; Methanoculleus
+50	Methanolinea | LKUF01000339.1	Archaea; Euryarchaeota; Methanomicrobia; Methanomicrobiales; Methanoregulaceae; Methanolinea
+51	Methanoregula | PIZH01000331.1	Archaea; Euryarchaeota; Methanomicrobia; Methanomicrobiales; Methanoregulaceae; Methanoregula
+52	Methanothrix | LKUG01000311.1	Archaea; Euryarchaeota; Methanomicrobia; Methanosarcinales; Methanosaetaceae; Methanothrix
+53	Methanothrix | NOLF01000011.1	Archaea; Euryarchaeota; Methanomicrobia; Methanosarcinales; Methanosaetaceae; Methanothrix
+54	Methanothrix thermoacetophila | CP000477.1	Archaea; Euryarchaeota; Methanomicrobia; Methanosarcinales; Methanosaetaceae; Methanothrix; Methanothrix thermoacetophila
+55	Methanohalophilus | LSRU01000096.1	Archaea; Euryarchaeota; Methanomicrobia; Methanosarcinales; Methanosarcinaceae; Methanohalophilus
+56	Methanohalophilus mahii | CP001994.1	Archaea; Euryarchaeota; Methanomicrobia; Methanosarcinales; Methanosarcinaceae; Methanohalophilus; Methanohalophilus mahii
+57	Methanolobus | FOUJ01000004.1	Archaea; Euryarchaeota; Methanomicrobia; Methanosarcinales; Methanosarcinaceae; Methanolobus
+58	Methanolobus | LSRV01000075.1	Archaea; Euryarchaeota; Methanomicrobia; Methanosarcinales; Methanosarcinaceae; Methanolobus
+59	Methanosalsum zhilinae | CP002101.1	Archaea; Euryarchaeota; Methanomicrobia; Methanosarcinales; Methanosarcinaceae; Methanosalsum; Methanosalsum zhilinae
+60	Methanosarcina siciliae | CP009507.1	Archaea; Euryarchaeota; Methanomicrobia; Methanosarcinales; Methanosarcinaceae; Methanosarcina; Methanosarcina siciliae
+61	Candidatus Syntrophoarchaeum | LYOS01000003.1	Archaea; Euryarchaeota; Methanomicrobia; Methanosarcinales; unclassified Methanosarcinales; Candidatus Syntrophoarchaeum
+62	Candidatus Methanohalarchaeum | MSDW01000001.1	Archaea; Euryarchaeota; Methanonatronarchaeia; Methanonatronarchaeales; Methanonatronarchaeaceae; Candidatus Methanohalarchaeum
+63	Methanopyrus kandleri | AE009439.1	Archaea; Euryarchaeota; Methanopyri; Methanopyrales; Methanopyraceae; Methanopyrus; Methanopyrus kandleri
+64	Thermococcus | FOIW01000002.1	Archaea; Euryarchaeota; Thermococci; Thermococcales; Thermococcaceae; Thermococcus
+65	environmental samples | ATDU01000181.1	Archaea; Euryarchaeota; Thermoplasmata; Thermoplasmatales; Ferroplasmaceae; Ferroplasma; environmental samples
+66	Nanoarchaeum equitans | AE017199.1	Archaea; Nanoarchaeota; Nanoarchaeales; Nanoarchaeaceae; Nanoarchaeum; Nanoarchaeum equitans
+67	Cenarchaeum symbiosum | DP000238.1	Archaea; Thaumarchaeota; Cenarchaeales; Cenarchaeaceae; Cenarchaeum; Cenarchaeum symbiosum
+68	Candidatus Nitrosoarchaeum limnia | AEGP01000063.1	Archaea; Thaumarchaeota; Nitrosopumilales; Nitrosopumilaceae; Nitrosoarchaeum; Candidatus Nitrosoarchaeum limnia
+69	Nitrosarchaeum koreense | AFPU01000001.1	Archaea; Thaumarchaeota; Nitrosopumilales; Nitrosopumilaceae; Nitrosoarchaeum; Nitrosarchaeum koreense
+70	Nitrosopumilus maritimus | CP000866.1	Archaea; Thaumarchaeota; Nitrosopumilales; Nitrosopumilaceae; Nitrosopumilus; Nitrosopumilus maritimus
+71	Candidatus Nitrosocosmicus | CP012850.1	Archaea; Thaumarchaeota; Nitrososphaeria; Nitrososphaerales; Nitrososphaeraceae; Candidatus Nitrosocosmicus
+72	Nitrososphaera | PNJF01000100.1	Archaea; Thaumarchaeota; Nitrososphaeria; Nitrososphaerales; Nitrososphaeraceae; Nitrososphaera
+73	Candidatus Nitrososphaera evergladensis | CP007174.1	Archaea; Thaumarchaeota; Nitrososphaeria; Nitrososphaerales; Nitrososphaeraceae; Nitrososphaera; Candidatus Nitrososphaera evergladensis
+74	Candidatus Nitrososphaera gargensis | CP002408.1	Archaea; Thaumarchaeota; Nitrososphaeria; Nitrososphaerales; Nitrososphaeraceae; Nitrososphaera; Candidatus Nitrososphaera gargensis
+75	Acidobacterium | NSIL01000002.1	Bacteria; Acidobacteria; Acidobacteriia; Acidobacteriales; Acidobacteriaceae; Acidobacterium
+76	Granulicella | MEFW01000103.1	Bacteria; Acidobacteria; Acidobacteriia; Acidobacteriales; Acidobacteriaceae; Granulicella
+77	Luteitalea | CP015136.1	Bacteria; Acidobacteria; unclassified Acidobacteria; Acidobacteria subdivision 6; Vicinamibacteraceae; Luteitalea
+78	Acidimicrobium | LIAP01000179.1	Bacteria; Actinobacteria; Acidimicrobiia; Acidimicrobiales; Acidimicrobiaceae; Acidimicrobium
+79	Acidimicrobium | NSIC01000028.1	Bacteria; Actinobacteria; Acidimicrobiia; Acidimicrobiales; Acidimicrobiaceae; Acidimicrobium
+80	Acidimicrobium | LIAQ01000083.1	Bacteria; Actinobacteria; Acidimicrobiia; Acidimicrobiales; Acidimicrobiaceae; Acidimicrobium
+81	Acidimicrobium | LIAO01000426.1	Bacteria; Actinobacteria; Acidimicrobiia; Acidimicrobiales; Acidimicrobiaceae; Acidimicrobium
+82	Ilumatobacter | PDSL01000016.1	Bacteria; Actinobacteria; Acidimicrobiia; Acidimicrobiales; Ilumatobacteraceae; Ilumatobacter
+83	Actinomyces coleocanis | ACFG01000004.1	Bacteria; Actinobacteria; Actinobacteria; Actinomycetales; Actinomycetaceae; Actinomyces; Actinomyces coleocanis
+84	Actinomyces sp. oral taxon 178 | AEUH01000216.1	Bacteria; Actinobacteria; Actinobacteria; Actinomycetales; Actinomycetaceae; Actinomyces; Actinomyces sp. oral taxon 178
+85	Actinomyces sp. oral taxon 877 | AWSG01000013.1	Bacteria; Actinobacteria; Actinobacteria; Actinomycetales; Actinomycetaceae; Actinomyces; Actinomyces sp. oral taxon 877
+86	Mobiluncus mulieris | ACKW01000001.1	Bacteria; Actinobacteria; Actinobacteria; Actinomycetales; Actinomycetaceae; Mobiluncus; Mobiluncus mulieris
+87	Varibaculum | LSDN01000028.1	Bacteria; Actinobacteria; Actinobacteria; Actinomycetales; Actinomycetaceae; Varibaculum
+88	Alloscardovia omnicolens | AWSI01000042.1	Bacteria; Actinobacteria; Actinobacteria; Bifidobacteriales; Bifidobacteriaceae; Alloscardovia; Alloscardovia omnicolens
+89	Bifidobacterium animalis subsp. animalis | CBUQ010000007.1	Bacteria; Actinobacteria; Actinobacteria; Bifidobacteriales; Bifidobacteriaceae; Bifidobacterium; Bifidobacterium animalis; Bifidobacterium animalis subsp. animalis
+90	Bifidobacterium gallicum | ABXB03000003.1	Bacteria; Actinobacteria; Actinobacteria; Bifidobacteriales; Bifidobacteriaceae; Bifidobacterium; Bifidobacterium gallicum
+91	Gardnerella | LRQA01000052.1	Bacteria; Actinobacteria; Actinobacteria; Bifidobacteriales; Bifidobacteriaceae; Gardnerella
+92	Catenulispora | MNJN01000335.1	Bacteria; Actinobacteria; Actinobacteria; Catenulisporales; Catenulisporaceae; Catenulispora
+93	Catenulispora | MNJN01000293.1	Bacteria; Actinobacteria; Actinobacteria; Catenulisporales; Catenulisporaceae; Catenulispora
+94	Corynebacterium | MKAX01000234.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Corynebacteriaceae; Corynebacterium
+95	Corynebacterium | FWFI01000029.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Corynebacteriaceae; Corynebacterium
+96	Corynebacterium | LSCY01000013.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Corynebacteriaceae; Corynebacterium
+97	Corynebacterium glucuronolyticum | ABYP01000003.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Corynebacteriaceae; Corynebacterium; Corynebacterium glucuronolyticum
+98	Corynebacterium kroppenstedtii | CP001620.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Corynebacteriaceae; Corynebacterium; Corynebacterium kroppenstedtii
+99	Corynebacterium pseudotuberculosis | CP002097.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Corynebacteriaceae; Corynebacterium; Corynebacterium pseudotuberculosis
+100	Corynebacterium variabile | CP002917.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Corynebacteriaceae; Corynebacterium; Corynebacterium variabile
+101	Mycobacterium | CVMX01000010.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacterium
+102	Mycobacterium | CPWZ01000029.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacterium
+103	Mycobacterium | BFCH01000036.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacterium
+104	Mycobacterium | PPEA01000478.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacterium
+105	Mycobacterium avium subsp. avium | JAOE01000002.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacterium; Mycobacterium avium; Mycobacterium avium subsp. avium
+106	Mycobacterium tuberculosis variant microti | AYXK01000057.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacterium; Mycobacterium tuberculosis; Mycobacterium tuberculosis variant microti
+107	Mycobacterium xenopi | JAOC01000002.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacterium; Mycobacterium xenopi
+108	environmental samples | FLQS01000021.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacterium; environmental samples
+109	Mycobacteroides abscessus | FVUK01000007.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacteroides; Mycobacteroides abscessus
+110	Mycobacteroides abscessus | FSNK01000016.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacteroides; Mycobacteroides abscessus
+111	Mycobacteroides abscessus | FSNK01000123.1	Bacteria; Actinobacteria; Actinobacteria; Corynebacteriales; Mycobacteriaceae; Mycobacteroides; Mycobacteroides abscessus
+112	Frankia | FLUV01002398.1	Bacteria; Actinobacteria; Actinobacteria; Frankiales; Frankiaceae; Frankia
+113	Blastococcus | FNAW01000001.1	Bacteria; Actinobacteria; Actinobacteria; Geodermatophilales; Geodermatophilaceae; Blastococcus
+114	Georgenia | JNFL01000093.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Bogoriellaceae; Georgenia
+115	Brevibacterium mcbrellneri | ADNU01000070.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Brevibacteriaceae; Brevibacterium; Brevibacterium mcbrellneri
+116	Actinotalea fermentans | AXCX01000010.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Cellulomonadaceae; Actinotalea; Actinotalea fermentans
+117	Cellulomonas | MKTH01000008.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Cellulomonadaceae; Cellulomonas
+118	Oerskovia | LRIE01000074.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Cellulomonadaceae; Oerskovia
+119	Branchiibius | LVCF01000001.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Dermacoccaceae; Branchiibius
+120	Dermacoccus | AEIQ01000088.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Dermacoccaceae; Dermacoccus
+121	Terrabacter | JYOE01000021.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Intrasporangiaceae; Terrabacter
+122	Jonesia denitrificans | CP001706.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Jonesiaceae; Jonesia; Jonesia denitrificans
+123	Candidatus Lumbricidophila | NAEP01000017.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Microbacteriaceae; Candidatus Lumbricidophila
+124	Clavibacter michiganensis | AM849034.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Microbacteriaceae; Clavibacter; Clavibacter michiganensis
+125	Frondihabitans | CP014619.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Microbacteriaceae; Frondihabitans
+126	Microbacterium | BDCY01000003.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Microbacteriaceae; Microbacterium
+127	Microbacterium | MEEL01000045.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Microbacteriaceae; Microbacterium
+128	Microbacterium | CP012697.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Microbacteriaceae; Microbacterium
+129	Microbacterium | MKTR01000016.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Microbacteriaceae; Microbacterium
+130	Arthrobacter | AP014718.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Micrococcaceae; Arthrobacter
+131	Arthrobacter | CP022462.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Micrococcaceae; Arthrobacter
+132	Arthrobacter | CP024915.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Micrococcaceae; Arthrobacter
+133	Micrococcus | JOKP01001432.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Micrococcaceae; Micrococcus
+134	Rothia mucilaginosa | AP011540.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Micrococcaceae; Rothia; Rothia mucilaginosa
+135	Sinomonas | CP022463.1	Bacteria; Actinobacteria; Actinobacteria; Micrococcales; Micrococcaceae; Sinomonas
+136	Nocardioides | LMSR01000016.1	Bacteria; Actinobacteria; Actinobacteria; Propionibacteriales; Nocardioidaceae; Nocardioides
+137	Cutibacterium | JNHS01000216.1	Bacteria; Actinobacteria; Actinobacteria; Propionibacteriales; Propionibacteriaceae; Cutibacterium
+138	Cutibacterium acnes | BAVO01000017.1	Bacteria; Actinobacteria; Actinobacteria; Propionibacteriales; Propionibacteriaceae; Cutibacterium; Cutibacterium acnes
+139	Pseudopropionibacterium | PDSD01000061.1	Bacteria; Actinobacteria; Actinobacteria; Propionibacteriales; Propionibacteriaceae; Pseudopropionibacterium
+140	Pseudopropionibacterium propionicum | CP002734.1	Bacteria; Actinobacteria; Actinobacteria; Propionibacteriales; Propionibacteriaceae; Pseudopropionibacterium; Pseudopropionibacterium propionicum
+141	Tessaracoccus | CP019229.1	Bacteria; Actinobacteria; Actinobacteria; Propionibacteriales; Propionibacteriaceae; Tessaracoccus
+142	Tessaracoccus | MBQD01000001.1	Bacteria; Actinobacteria; Actinobacteria; Propionibacteriales; Propionibacteriaceae; Tessaracoccus
+143	Amycolatopsis mediterranei | AF040570.3	Bacteria; Actinobacteria; Actinobacteria; Pseudonocardiales; Pseudonocardiaceae; Amycolatopsis; Amycolatopsis mediterranei
+144	Pseudonocardia | MKVV01000016.1	Bacteria; Actinobacteria; Actinobacteria; Pseudonocardiales; Pseudonocardiaceae; Pseudonocardia
+145	Streptomyces | LGEI01000213.1	Bacteria; Actinobacteria; Actinobacteria; Streptomycetales; Streptomycetaceae; Streptomyces
+146	Streptomyces | CM001165.1	Bacteria; Actinobacteria; Actinobacteria; Streptomycetales; Streptomycetaceae; Streptomyces
+147	Streptomyces | FMCD01000048.1	Bacteria; Actinobacteria; Actinobacteria; Streptomycetales; Streptomycetaceae; Streptomyces
+148	Thermobifida fusca | AOSG01000082.1	Bacteria; Actinobacteria; Actinobacteria; Streptosporangiales; Nocardiopsaceae; Thermobifida; Thermobifida fusca
+149	Nonomuraea | LT559118.1	Bacteria; Actinobacteria; Actinobacteria; Streptosporangiales; Streptosporangiaceae; Nonomuraea
+150	environmental samples | KT007023.1	Bacteria; Actinobacteria; Actinobacteria; unclassified Actinobacteria class; marine Actinobacteria clade; environmental samples
+151	Collinsella intestinalis | ABXH02000015.1	Bacteria; Actinobacteria; Coriobacteriia; Coriobacteriales; Coriobacteriaceae; Collinsella; Collinsella intestinalis
+152	environmental samples | CBHR010000169.1	Bacteria; Actinobacteria; Coriobacteriia; Eggerthellales; Eggerthellaceae; Cryptobacterium; environmental samples
+153	Eggerthella | MNQD01000007.1	Bacteria; Actinobacteria; Coriobacteriia; Eggerthellales; Eggerthellaceae; Eggerthella
+154	environmental samples | CBHI010000035.1	Bacteria; Actinobacteria; Coriobacteriia; Eggerthellales; Eggerthellaceae; Eggerthella; environmental samples
+155	environmental samples | CBHM010000087.1	Bacteria; Actinobacteria; Coriobacteriia; Eggerthellales; Eggerthellaceae; Eggerthella; environmental samples
+156	environmental samples | CAXM010000059.1	Bacteria; Actinobacteria; Coriobacteriia; Eggerthellales; Eggerthellaceae; Eggerthella; environmental samples
+157	Gaiella | LSTI01000071.1	Bacteria; Actinobacteria; Rubrobacteria; Gaiellales; Gaiellaceae; Gaiella
+158	Hydrogenivirga | ABHJ01000017.1	Bacteria; Aquificae; Aquificae; Aquificales; Aquificaceae; Hydrogenivirga
+159	Hydrogenobaculum | PNJC01000103.1	Bacteria; Aquificae; Aquificae; Aquificales; Aquificaceae; Hydrogenobaculum
+160	Sulfurihydrogenibium | PNID01000052.1	Bacteria; Aquificae; Aquificae; Aquificales; Hydrogenothermaceae; Sulfurihydrogenibium
+161	Sulfurihydrogenibium | PNIU01000085.1	Bacteria; Aquificae; Aquificae; Aquificales; Hydrogenothermaceae; Sulfurihydrogenibium
+162	Fimbriimonas ginsengisoli | CP007139.1	Bacteria; Armatimonadetes; Fimbriimonadia; Fimbriimonadales; Fimbriimonadaceae; Fimbriimonas; Fimbriimonas ginsengisoli
+163	Bacteroides | LJUQ01000054.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides
+164	Bacteroides | LJUP01000187.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides
+165	Bacteroides | LIIK01000011.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides
+166	Bacteroides | MNQT01000013.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides
+167	Bacteroides | MNQN01000012.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides
+168	Bacteroides | CYZS01000025.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides
+169	Bacteroides | MNQS01000008.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides
+170	environmental samples | CBAA010000068.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides; environmental samples
+171	environmental samples | CBCL010000002.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides; environmental samples
+172	environmental samples | CAWM010000081.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides; environmental samples
+173	environmental samples | CBBJ010000104.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides; environmental samples
+174	environmental samples | CBFR010000074.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Bacteroidaceae; Bacteroides; environmental samples
+175	Dysgonomonas | MKVC01000050.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Dysgonamonadaceae; Dysgonomonas
+176	environmental samples | FLUM01000003.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Dysgonamonadaceae; Dysgonomonas; environmental samples
+177	Proteiniphilum | LGHH01000034.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Dysgonamonadaceae; Proteiniphilum
+178	Paludibacter | MKVT01000018.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Paludibacteraceae; Paludibacter
+179	Petrimonas | AP018040.2	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Porphyromonadaceae; Petrimonas
+180	environmental samples | CAZH010000104.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Paraprevotella; environmental samples
+181	Prevotella | CZAM01000067.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella
+182	Prevotella | AP018049.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella
+183	environmental samples | CBJT010000224.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+184	environmental samples | CBJF010000109.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+185	environmental samples | CAYO010000333.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+186	environmental samples | CAXK010000140.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+187	environmental samples | CAZL010000170.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+188	environmental samples | CBCY010000137.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+189	environmental samples | CBIE010000082.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+190	environmental samples | CBCU010000006.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+191	environmental samples | CBKM010000047.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+192	environmental samples | CAWK010000149.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+193	environmental samples | CAWU010000051.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+194	environmental samples | CAXR010000159.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+195	environmental samples | CBIX010000164.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+196	environmental samples | CBCH010000187.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Prevotellaceae; Prevotella; environmental samples
+197	environmental samples | CBGN010000102.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Rikenellaceae; Alistipes; environmental samples
+198	environmental samples | CBGE010000121.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Rikenellaceae; Alistipes; environmental samples
+199	environmental samples | CAYB010000133.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Rikenellaceae; Alistipes; environmental samples
+200	environmental samples | CBJG010000463.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Tannerellaceae; Parabacteroides; environmental samples
+201	Tannerella | MIQB01000021.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Tannerellaceae; Tannerella
+202	Tannerella sp. oral taxon HOT-286 | AYYF01001546.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; Tannerellaceae; Tannerella; Tannerella sp. oral taxon HOT-286
+203	Candidatus Symbiothrix | BBRT01000233.1	Bacteria; Bacteroidetes; Bacteroidia; Bacteroidales; unclassified Bacteroidales; Candidatus Symbiothrix
+204	Geofilum rubicundum | BAZW01000010.1	Bacteria; Bacteroidetes; Bacteroidia; Marinilabiliales; Marinilabiliaceae; Geofilum; Geofilum rubicundum
+205	Draconibacterium | PDQI01000043.1	Bacteria; Bacteroidetes; Bacteroidia; Marinilabiliales; Prolixibacteraceae; Draconibacterium
+206	Draconibacterium | PDTA01000055.1	Bacteria; Bacteroidetes; Bacteroidia; Marinilabiliales; Prolixibacteraceae; Draconibacterium
+207	Flavihumibacter | LUKG01000060.1	Bacteria; Bacteroidetes; Chitinophagia; Chitinophagales; Chitinophagaceae; Flavihumibacter
+208	Niabella | CP015772.1	Bacteria; Bacteroidetes; Chitinophagia; Chitinophagales; Chitinophagaceae; Niabella
+209	Niastella | MEEN01000032.1	Bacteria; Bacteroidetes; Chitinophagia; Chitinophagales; Chitinophagaceae; Niastella
+210	Sediminibacterium | PGCO01000003.1	Bacteria; Bacteroidetes; Chitinophagia; Chitinophagales; Chitinophagaceae; Sediminibacterium
+211	Terrimonas | QCZJ01000013.1	Bacteria; Bacteroidetes; Chitinophagia; Chitinophagales; Chitinophagaceae; Terrimonas
+212	Candidatus Amoebophilus | MKUM01000066.1	Bacteria; Bacteroidetes; Cytophagia; Cytophagales; Amoebophilaceae; Candidatus Amoebophilus
+213	Cardinium endosymbiont of Encarsia pergandiella | HE983995.1	Bacteria; Bacteroidetes; Cytophagia; Cytophagales; Amoebophilaceae; Candidatus Cardinium; Cardinium endosymbiont of Encarsia pergandiella
+214	Algoriphagus | NCDM01000001.1	Bacteria; Bacteroidetes; Cytophagia; Cytophagales; Cyclobacteriaceae; Algoriphagus
+215	Candidatus Nephrothrix | PDHN01000439.1	Bacteria; Bacteroidetes; Cytophagia; Cytophagales; Cytophagaceae; Candidatus Nephrothrix
+216	Dyadobacter | MKSR01000019.1	Bacteria; Bacteroidetes; Cytophagia; Cytophagales; Cytophagaceae; Dyadobacter
+217	Flexibacter | PFKD01000420.1	Bacteria; Bacteroidetes; Cytophagia; Cytophagales; Cytophagaceae; Flexibacter
+218	Spirosoma linguale | CP001769.1	Bacteria; Bacteroidetes; Cytophagia; Cytophagales; Cytophagaceae; Spirosoma; Spirosoma linguale
+219	Fluviicola | NVXV01000003.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Crocinitomicaceae; Fluviicola
+220	Fluviicola | NVXU01000004.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Crocinitomicaceae; Fluviicola
+221	Fluviicola | NVXP01000021.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Crocinitomicaceae; Fluviicola
+222	Fluviicola | MGWM01000003.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Crocinitomicaceae; Fluviicola
+223	Owenweeksia | NHBT01000023.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Cryomorphaceae; Owenweeksia
+224	Aequorivita | NVXN01000010.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Aequorivita
+225	Algoriella | FOUZ01000005.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Algoriella
+226	Chishuiella | FRBH01000001.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Chishuiella
+227	Chryseobacterium | QAJA01000450.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Chryseobacterium
+228	Chryseobacterium | MKTK01000011.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Chryseobacterium
+229	Chryseobacterium | MEDR01000029.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Chryseobacterium
+230	Croceibacter atlanticus | AAMP01000001.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Croceibacter; Croceibacter atlanticus
+231	Flavobacterium | PGCN01000012.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Flavobacterium
+232	Flavobacterium | NKJE01000009.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Flavobacterium
+233	Flavobacterium | MKTM01000027.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Flavobacterium
+234	Flavobacterium | NKJD01000033.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Flavobacterium
+235	Flavobacterium | MPCW01000005.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Flavobacterium
+236	Flavobacterium | NVUT01000038.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Flavobacterium
+237	Flavobacterium | CP012586.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Flavobacterium
+238	Flavobacterium | MKVG01000014.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Flavobacterium
+239	Kordia | NVVR01000005.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Kordia
+240	Lutibacter | LOEY01000039.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Lutibacter
+241	Lutibacter | NVWM01000012.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Lutibacter
+242	Maribacter | PDPR01000018.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Maribacter
+243	Moheibacter | FWXS01000003.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Moheibacter
+244	Muricauda | NHBR01000022.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Muricauda
+245	Nonlabens | MAAX01000211.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Nonlabens
+246	Polaribacter | CP019336.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Polaribacter
+247	Polaribacter | LICK01000001.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Polaribacter
+248	Weeksella virosa | CP002455.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; Flavobacteriaceae; Weeksella; Weeksella virosa
+249	Candidatus Sulcia | CP010828.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; unclassified Flavobacteriales; Candidatus Sulcia
+250	Candidatus Sulcia muelleri | CP002163.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; unclassified Flavobacteriales; Candidatus Sulcia; Candidatus Sulcia muelleri
+251	Candidatus Sulcia muelleri | AANL01000004.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; unclassified Flavobacteriales; Candidatus Sulcia; Candidatus Sulcia muelleri
+252	Candidatus Sulcia muelleri | CP001605.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; unclassified Flavobacteriales; Candidatus Sulcia; Candidatus Sulcia muelleri
+253	Candidatus Uzinura diaspidicola | CP003263.1	Bacteria; Bacteroidetes; Flavobacteriia; Flavobacteriales; unclassified Flavobacteriales; Candidatus Uzinura; Candidatus Uzinura diaspidicola
+254	environmental samples | GU474939.1	Bacteria; Bacteroidetes; Sphingobacteriia; Sphingobacteriales; Sphingobacteriaceae; Sphingobacterium; environmental samples
+255	Caldisericum | PNIL01000030.1	Bacteria; Caldiserica; Caldisericia; Caldisericales; Caldisericaceae; Caldisericum
+256	Caldisericum | MNXV01000026.1	Bacteria; Caldiserica; Caldisericia; Caldisericales; Caldisericaceae; Caldisericum
+257	Caldithrix | MESS01000087.1	Bacteria; Calditrichaeota; Calditrichae; Calditrichales; Calditrichaceae; Caldithrix
+258	Candidatus Fermentibacter | LKHC01000110.1	Bacteria; Candidatus Fermentibacteria; Candidatus Fermentibacteria class; Candidatus Fermentibacterales; Candidatus Fermentibacteraceae; Candidatus Fermentibacter
+259	Candidatus Rubidus | CCSC01000001.1	Bacteria; Chlamydiae; Chlamydiia; Chlamydiales; Chlamydiaceae; Candidatus Rubidus
+260	Chlamydia | FPIG01000009.1	Bacteria; Chlamydiae; Chlamydiia; Chlamydiales; Chlamydiaceae; Chlamydia
+261	Chlamydia | LT993738.1	Bacteria; Chlamydiae; Chlamydiia; Chlamydiales; Chlamydiaceae; Chlamydia
+262	Chlamydia | CVOC01000031.1	Bacteria; Chlamydiae; Chlamydiia; Chlamydiales; Chlamydiaceae; Chlamydia
+263	Chlamydia | FPMT01000048.1	Bacteria; Chlamydiae; Chlamydiia; Chlamydiales; Chlamydiaceae; Chlamydia
+264	Chlamydia | CTBL01000237.1	Bacteria; Chlamydiae; Chlamydiia; Chlamydiales; Chlamydiaceae; Chlamydia
+265	Chlamydia | CVNZ01000922.1	Bacteria; Chlamydiae; Chlamydiia; Chlamydiales; Chlamydiaceae; Chlamydia
+266	Chlamydia | FQTM01000069.1	Bacteria; Chlamydiae; Chlamydiia; Chlamydiales; Chlamydiaceae; Chlamydia
+267	Chlamydia psittaci | CP003794.1	Bacteria; Chlamydiae; Chlamydiia; Chlamydiales; Chlamydiaceae; Chlamydia; Chlamydia psittaci
+268	Parachlamydia | PEQL01000001.1	Bacteria; Chlamydiae; Chlamydiia; Parachlamydiales; Parachlamydiaceae; Parachlamydia
+269	Chlorobium | NSLH01000004.1	Bacteria; Chlorobi; Chlorobia; Chlorobiales; Chlorobiaceae; Chlorobium
+270	Pelodictyon | LVWG01000021.1	Bacteria; Chlorobi; Chlorobia; Chlorobiales; Chlorobiaceae; Pelodictyon
+271	Anaerolinea | MZGP01000001.1	Bacteria; Chloroflexi; Anaerolineae; Anaerolineales; Anaerolineaceae; Anaerolinea
+272	Anaerolinea | LGFU01000076.1	Bacteria; Chloroflexi; Anaerolineae; Anaerolineales; Anaerolineaceae; Anaerolinea
+273	Bellilinea | DF967971.1	Bacteria; Chloroflexi; Anaerolineae; Anaerolineales; Anaerolineaceae; Bellilinea
+274	Brevefilum | LT859958.1	Bacteria; Chloroflexi; Anaerolineae; Anaerolineales; Anaerolineaceae; Brevefilum
+275	Levilinea | LGCM01000037.1	Bacteria; Chloroflexi; Anaerolineae; Anaerolineales; Anaerolineaceae; Levilinea
+276	Longilinea | DF967972.1	Bacteria; Chloroflexi; Anaerolineae; Anaerolineales; Anaerolineaceae; Longilinea
+277	Ornatilinea | LGCL01000043.1	Bacteria; Chloroflexi; Anaerolineae; Anaerolineales; Anaerolineaceae; Ornatilinea
+278	Ardenticatena | BBZA01000008.1	Bacteria; Chloroflexi; Ardenticatenia; Ardenticatenales; Ardenticatenaceae; Ardenticatena
+279	Ardenticatena | LGKN01000011.1	Bacteria; Chloroflexi; Ardenticatenia; Ardenticatenales; Ardenticatenaceae; Ardenticatena
+280	Caldilinea aerophila | AP012337.1	Bacteria; Chloroflexi; Caldilineae; Caldilineales; Caldilineaceae; Caldilinea; Caldilinea aerophila
+281	Litorilinea | JWSX01002336.1	Bacteria; Chloroflexi; Caldilineae; Caldilineales; Caldilineaceae; Litorilinea
+282	Chloroflexus | PNIQ01001118.1	Bacteria; Chloroflexi; Chloroflexia; Chloroflexales; Chloroflexineae; Chloroflexaceae; Chloroflexus
+283	Oscillochloris trichoides | ADVR01000139.1	Bacteria; Chloroflexi; Chloroflexia; Chloroflexales; Chloroflexineae; Oscillochloridaceae; Oscillochloris; Oscillochloris trichoides
+284	Kouleothrix | LJCR01000546.1	Bacteria; Chloroflexi; Chloroflexia; Chloroflexales; Roseiflexineae; Roseiflexaceae; Kouleothrix
+285	Dehalococcoides | PHFC01000309.1	Bacteria; Chloroflexi; Dehalococcoidia; Dehalococcoidales; Dehalococcoidaceae; Dehalococcoides
+286	Ktedonobacter | MNDA01000055.1	Bacteria; Chloroflexi; Ktedonobacteria; Ktedonobacterales; Ktedonobacteraceae; Ktedonobacter
+287	Thermoflexus | PDJQ01000001.1	Bacteria; Chloroflexi; Thermoflexia; Thermoflexales; Thermoflexaceae; Thermoflexus
+288	Desulfurispirillum indicum | CP002432.1	Bacteria; Chrysiogenetes; Chrysiogenetes; Chrysiogenales; Chrysiogenaceae; Desulfurispirillum; Desulfurispirillum indicum
+289	Aphanizomenon flos-aquae | LJOY01000022.1	Bacteria; Cyanobacteria; Nostocales; Aphanizomenonaceae; Aphanizomenon; Aphanizomenon flos-aquae
+290	Nodularia spumigena | CP007203.2	Bacteria; Cyanobacteria; Nostocales; Aphanizomenonaceae; Nodularia; Nodularia spumigena
+291	Nostoc commune | AP018326.1	Bacteria; Cyanobacteria; Nostocales; Nostocaceae; Nostoc; Nostoc commune
+292	Hassallia byssoidea | JTCM01000029.1	Bacteria; Cyanobacteria; Nostocales; Tolypothrichaceae; Hassallia; Hassallia byssoidea
+293	Candidatus Atelocyanobacterium thalassa | JPSP01000007.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Chroococcales; Aphanothecaceae; Candidatus Atelocyanobacterium; Candidatus Atelocyanobacterium thalassa
+294	Candidatus Atelocyanobacterium thalassa | CP001842.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Chroococcales; Aphanothecaceae; Candidatus Atelocyanobacterium; Candidatus Atelocyanobacterium thalassa
+295	Euhalothece | MDVL01000262.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Chroococcales; Aphanothecaceae; Euhalothece
+296	Geminocystis | AP014821.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Chroococcales; Chroococcaceae; Geminocystis
+297	Geminocystis | AP014815.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Chroococcales; Chroococcaceae; Geminocystis
+298	Cyanobacterium | CP024912.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Chroococcales; Cyanobacteriaceae; Cyanobacterium
+299	Cyanobacterium aponinum | CP003947.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Chroococcales; Cyanobacteriaceae; Cyanobacterium; Cyanobacterium aponinum
+300	Cyanobacterium stanieri | CP003940.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Chroococcales; Cyanobacteriaceae; Cyanobacterium; Cyanobacterium stanieri
+301	Microcystis | BDSM01000027.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Chroococcales; Microcystaceae; Microcystis
+302	Roseofilum reptotaenium | MLAW01000002.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Oscillatoriales; Coleofasciculaceae; Roseofilum; Roseofilum reptotaenium
+303	Planktothrix agardhii | CM002803.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Oscillatoriales; Microcoleaceae; Planktothrix; Planktothrix agardhii
+304	Phormidium | LJZT01000001.1	Bacteria; Cyanobacteria; Oscillatoriophycideae; Oscillatoriales; Oscillatoriaceae; Phormidium
+305	Phormidesmis priestleyi | LJZR01000006.1	Bacteria; Cyanobacteria; Synechococcales; Leptolyngbyaceae; Phormidesmis; Phormidesmis priestleyi
+306	Aphanocapsa montana | JTJD01000160.1	Bacteria; Cyanobacteria; Synechococcales; Merismopediaceae; Aphanocapsa; Aphanocapsa montana
+307	Prochlorococcus marinus | JNAI01000010.1	Bacteria; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus; Prochlorococcus marinus
+308	Prochlorococcus marinus | JNAZ01000008.1	Bacteria; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus; Prochlorococcus marinus
+309	Prochlorococcus marinus | JNAP01000006.1	Bacteria; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus; Prochlorococcus marinus
+310	Prochlorococcus marinus | KJ947870.1	Bacteria; Cyanobacteria; Synechococcales; Prochloraceae; Prochlorococcus; Prochlorococcus marinus
+311	Candidatus Synechococcus spongiarum | JXUO01000043.1	Bacteria; Cyanobacteria; Synechococcales; Synechococcaceae; Synechococcus; Candidatus Synechococcus spongiarum
+312	Candidatus Synechococcus spongiarum | JXQG01000034.1	Bacteria; Cyanobacteria; Synechococcales; Synechococcaceae; Synechococcus; Candidatus Synechococcus spongiarum
+313	Thermosynechococcus vulcanus | AP018202.2	Bacteria; Cyanobacteria; Synechococcales; Synechococcaceae; Thermosynechococcus; Thermosynechococcus vulcanus
+314	Denitrovibrio | PKTM01000013.1	Bacteria; Deferribacteres; Deferribacteres; Deferribacterales; Deferribacteraceae; Denitrovibrio
+315	Mucispirillum schaedleri | AYGZ01000009.1	Bacteria; Deferribacteres; Deferribacteres; Deferribacterales; Deferribacteraceae; Mucispirillum; Mucispirillum schaedleri
+316	Deinococcus | CP011387.1	Bacteria; Deinococcus-Thermus; Deinococci; Deinococcales; Deinococcaceae; Deinococcus
+317	Thermus | AP017920.1	Bacteria; Deinococcus-Thermus; Deinococci; Thermales; Thermaceae; Thermus
+318	Thermus | AJ419825.1	Bacteria; Deinococcus-Thermus; Deinococci; Thermales; Thermaceae; Thermus
+319	Dictyoglomus | NIRF01000001.1	Bacteria; Dictyoglomi; Dictyoglomia; Dictyoglomales; Dictyoglomaceae; Dictyoglomus
+320	Endomicrobium | LNVX01000213.1	Bacteria; Elusimicrobia; Endomicrobia; Endomicrobiales; Endomicrobiaceae; Endomicrobium
+321	Chitinispirillum | LDWW01000010.1	Bacteria; Fibrobacteres; Chitinispirillia; Chitinispirillales; Chitinispirillaceae; Chitinispirillum
+322	Alicyclobacillus | MELW01000290.1	Bacteria; Firmicutes; Bacilli; Bacillales; Alicyclobacillaceae; Alicyclobacillus
+323	Alicyclobacillus acidocaldarius subsp. acidocaldarius | CP002902.1	Bacteria; Firmicutes; Bacilli; Bacillales; Alicyclobacillaceae; Alicyclobacillus; Alicyclobacillus acidocaldarius; Alicyclobacillus acidocaldarius subsp. acidocaldarius
+324	Alicyclobacillus hesperidum | AKZN01000009.1	Bacteria; Firmicutes; Bacilli; Bacillales; Alicyclobacillaceae; Alicyclobacillus; Alicyclobacillus hesperidum
+325	Effusibacillus | BDUF01000019.1	Bacteria; Firmicutes; Bacilli; Bacillales; Alicyclobacillaceae; Effusibacillus
+326	Anoxybacillus flavithermus | CP000922.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Anoxybacillus; Anoxybacillus flavithermus
+327	Bacillus | LZRT01000052.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Bacillus
+328	Bacillus | MKZN01000018.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Bacillus
+329	Bacillus | BAWC01000020.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Bacillus
+330	Bacillus | MLKN02000111.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Bacillus
+331	Bacillus | LFJO01000007.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Bacillus
+332	Bacillus | PRKV01000026.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Bacillus
+333	Bacillus | FOBW01000019.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Bacillus
+334	Bacillus | LRPN01000002.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Bacillus
+335	environmental samples | CBIF010000032.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Bacillus; environmental samples
+336	Caldibacillus | LZRR01000073.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Caldibacillus
+337	Geobacillus | ATCO01000051.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Geobacillus
+338	Geobacillus | LQYX01000012.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Geobacillus
+339	Hydrogenibacillus | PEBV01000021.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Hydrogenibacillus
+340	Lysinibacillus | CP029002.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Lysinibacillus
+341	Lysinibacillus | LN483073.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Lysinibacillus
+342	Salinibacillus | FOHJ01000014.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Salinibacillus
+343	Tenuibacillus | FNIG01000011.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillaceae; Tenuibacillus
+344	Gemella haemolysans | ACDZ02000014.1	Bacteria; Firmicutes; Bacilli; Bacillales; Bacillales incertae sedis; Bacillales Family XI. Incertae Sedis; Gemella; Gemella haemolysans
+345	Brochothrix | MDLP01000019.1	Bacteria; Firmicutes; Bacilli; Bacillales; Listeriaceae; Brochothrix
+346	Listeria monocytogenes | CM001159.1	Bacteria; Firmicutes; Bacilli; Bacillales; Listeriaceae; Listeria; Listeria monocytogenes
+347	Paenibacillus | JRNV01000030.1	Bacteria; Firmicutes; Bacilli; Bacillales; Paenibacillaceae; Paenibacillus
+348	Paenibacillus | MHHN01000239.1	Bacteria; Firmicutes; Bacilli; Bacillales; Paenibacillaceae; Paenibacillus
+349	Paenibacillus | CBRA020000002.1	Bacteria; Firmicutes; Bacilli; Bacillales; Paenibacillaceae; Paenibacillus
+350	Paenibacillus | BDQX01000053.1	Bacteria; Firmicutes; Bacilli; Bacillales; Paenibacillaceae; Paenibacillus
+351	Paenibacillus uliginis | LT840184.1	Bacteria; Firmicutes; Bacilli; Bacillales; Paenibacillaceae; Paenibacillus; Paenibacillus uliginis
+352	Thermobacillus | LZRU01000023.1	Bacteria; Firmicutes; Bacilli; Bacillales; Paenibacillaceae; Thermobacillus
+353	Macrococcus | CP017156.1	Bacteria; Firmicutes; Bacilli; Bacillales; Staphylococcaceae; Macrococcus
+354	Staphylococcus | CP020377.1	Bacteria; Firmicutes; Bacilli; Bacillales; Staphylococcaceae; Staphylococcus
+355	Staphylococcus | PHHQ01000015.1	Bacteria; Firmicutes; Bacilli; Bacillales; Staphylococcaceae; Staphylococcus
+356	Staphylococcus aureus subsp. aureus | AYXU01000079.1	Bacteria; Firmicutes; Bacilli; Bacillales; Staphylococcaceae; Staphylococcus; Staphylococcus aureus; Staphylococcus aureus subsp. aureus
+357	environmental samples | CBFU010000002.1	Bacteria; Firmicutes; Bacilli; Bacillales; Staphylococcaceae; Staphylococcus; environmental samples
+358	Candidatus Carbobacillus | PEBX01000015.1	Bacteria; Firmicutes; Bacilli; Bacillales; unclassified Bacillales; Candidatus Carbobacillus
+359	Geomicrobium | BAXA01000014.1	Bacteria; Firmicutes; Bacilli; Bacillales; unclassified Bacillales; Geomicrobium
+360	Aerococcus | NCDD01000261.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Aerococcaceae; Aerococcus
+361	Atopostipes suicloacalis | FQUF01000014.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Carnobacteriaceae; Atopostipes; Atopostipes suicloacalis
+362	Carnobacterium maltaromaticum | HE999757.2	Bacteria; Firmicutes; Bacilli; Lactobacillales; Carnobacteriaceae; Carnobacterium; Carnobacterium maltaromaticum
+363	Trichococcus | FJNB01000009.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Carnobacteriaceae; Trichococcus
+364	Enterococcus | JXKE01000010.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Enterococcaceae; Enterococcus
+365	Enterococcus | CP013655.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Enterococcaceae; Enterococcus
+366	Enterococcus | JXKH01000003.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Enterococcaceae; Enterococcus
+367	Enterococcus | JXLA01000060.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Enterococcaceae; Enterococcus
+368	Lactobacillus | JHAJ01000084.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus
+369	Lactobacillus | JQBA01000017.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus
+370	Lactobacillus | JTJV01000007.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus
+371	Lactobacillus | CP018906.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus
+372	Lactobacillus | JQAR01000015.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus
+373	Lactobacillus acidipiscis | AZFI01000105.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus acidipiscis
+374	Lactobacillus brantae | AYZQ01000004.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus brantae
+375	Lactobacillus brevis | AWVK01000114.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus brevis
+376	Lactobacillus brevis | AP012167.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus brevis
+377	Lactobacillus camelliae | AYZJ01000029.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus camelliae
+378	Lactobacillus casei | HE970764.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus casei
+379	Lactobacillus ceti | JQBZ01000025.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus ceti
+380	Lactobacillus equi | AWWH01000048.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus equi
+381	Lactobacillus equicursoris | AZDU01000015.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus equicursoris
+382	Lactobacillus farraginis | BAKI01000013.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus farraginis
+383	Lactobacillus floricola | AYZL01000016.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus floricola
+384	Lactobacillus florum | AYZI01000001.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus florum
+385	Lactobacillus gasseri | AKFQ01000002.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus gasseri
+386	Lactobacillus graminis | AYZB01000001.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus graminis
+387	Lactobacillus harbinensis | AZFW01000052.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus harbinensis
+388	Lactobacillus hordei | AZDX01000019.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus hordei
+389	Lactobacillus iners | ACLN01000004.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus iners
+390	Lactobacillus jensenii | ACGQ02000001.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus jensenii
+391	Lactobacillus jensenii | AYYU01000011.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus jensenii
+392	Lactobacillus johnsonii | FN298497.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus johnsonii
+393	Lactobacillus kisonensis | AGRJ01000265.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus kisonensis
+394	Lactobacillus manihotivorans | AZEU01000292.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus manihotivorans
+395	Lactobacillus murinus | AYYN01000022.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus murinus
+396	Lactobacillus panis | AZGM01000022.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus panis
+397	Lactobacillus paracollinoides | AZFD01000137.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus paracollinoides
+398	Lactobacillus pentosus | FR871807.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus pentosus
+399	Lactobacillus plantarum subsp. plantarum | ACGZ02000036.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus plantarum; Lactobacillus plantarum subsp. plantarum
+400	Lactobacillus pobuzihii | AZCL01000054.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus pobuzihii
+401	Lactobacillus pobuzihii | AZCL01000009.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus pobuzihii
+402	Lactobacillus rapi | AZEI01000025.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus rapi
+403	Lactobacillus saniviri | JQCE01000006.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus saniviri
+404	Lactobacillus shenzhenensis | KI271583.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus shenzhenensis
+405	Lactobacillus vini | AYYX01000020.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus vini
+406	Lactobacillus zeae | AZCT01000018.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Lactobacillaceae; Lactobacillus; Lactobacillus zeae
+407	Oenococcus | LCTO01000002.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Leuconostocaceae; Oenococcus
+408	Weissella | CP017326.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Leuconostocaceae; Weissella
+409	Weissella thailandensis | HE575158.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Leuconostocaceae; Weissella; Weissella thailandensis
+410	Lactococcus | OGVB01000011.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Lactococcus
+411	Lactococcus | JXJW01000020.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Lactococcus
+412	Lactococcus fujiensis | JXJU01000002.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Lactococcus; Lactococcus fujiensis
+413	Streptococcus | AP018400.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Streptococcus
+414	Streptococcus | CRRL01000189.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Streptococcus
+415	Streptococcus | LQRG01000002.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Streptococcus
+416	Streptococcus | CKYH01000089.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Streptococcus
+417	Streptococcus parasanguinis | CP003122.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Streptococcus; Streptococcus parasanguinis
+418	Streptococcus pyogenes serotype M6 | CP000003.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Streptococcus; Streptococcus pyogenes; Streptococcus pyogenes serotype M6
+419	Streptococcus salivarius | AJFW01000051.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Streptococcus; Streptococcus salivarius
+420	Streptococcus suis | CP000407.1	Bacteria; Firmicutes; Bacilli; Lactobacillales; Streptococcaceae; Streptococcus; Streptococcus suis
+421	Alkaliphilus | NVVX01000016.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Alkaliphilus
+422	environmental samples | FMGF01000002.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Butyricicoccus; environmental samples
+423	Caloramator australicus | CAKP01000112.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Caloramator; Caloramator australicus
+424	Candidatus Arthromitus sp. SFB-mouse | AP012209.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Candidatus Arthromitus; Candidatus Arthromitus sp. SFB-mouse
+425	Clostridium | LGVB01000015.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium
+426	Clostridium | AWTA01000190.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium
+427	Clostridium | MNRU01000060.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium
+428	Clostridium | MZGV01000029.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium
+429	Clostridium | AQFU01000019.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium
+430	Clostridium | MNRQ01000022.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium
+431	Clostridium | MNRL01000017.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium
+432	Clostridium | MNRT01000006.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium
+433	Clostridium | CYYT01000027.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium
+434	Clostridium | JMFY01000051.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium
+435	Clostridium acetobutylicum | CP002118.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; Clostridium acetobutylicum
+436	Clostridium argentinense | AYSO01000004.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; Clostridium argentinense
+437	Clostridium botulinum | AQPV01000119.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; Clostridium botulinum
+438	Clostridium botulinum | CP002410.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; Clostridium botulinum
+439	Clostridium butyricum | AZLX01000223.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; Clostridium butyricum
+440	Clostridium homopropionicum | LHUR01000022.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; Clostridium homopropionicum
+441	Clostridium kluyveri | ABAJ01000001.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; Clostridium kluyveri
+442	environmental samples | FMEV01000017.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+443	environmental samples | CBAV010000068.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+444	environmental samples | FMDP01000003.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+445	environmental samples | CBDG010000072.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+446	environmental samples | CBGV010000030.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+447	environmental samples | CAWF010000074.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+448	environmental samples | CBEJ010000046.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+449	environmental samples | CAWJ010000310.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+450	environmental samples | CBGK010000060.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+451	environmental samples | CAWN010000255.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+452	environmental samples | CBCI010000132.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+453	environmental samples | CAXF010000243.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+454	environmental samples | FMGS01000010.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+455	environmental samples | CBGT010000018.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+456	environmental samples | CBEQ010000043.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+457	environmental samples | CBJN010000005.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+458	environmental samples | CBHJ010000203.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+459	environmental samples | CAYP010000046.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+460	environmental samples | CAYE010000201.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+461	environmental samples | CAXB010000041.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+462	environmental samples | CBCE010000069.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+463	environmental samples | CBFP010000276.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+464	environmental samples | CAZJ010000097.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+465	environmental samples | CBCD010000016.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+466	environmental samples | CBFQ010000024.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+467	environmental samples | CBBS010000076.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+468	environmental samples | FMEJ01000032.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+469	environmental samples | FMGE01000004.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+470	environmental samples | CBAJ010000036.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+471	environmental samples | CBKB010000048.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+472	environmental samples | CBAH010000066.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+473	environmental samples | CBES010000063.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+474	environmental samples | CAZG010000035.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+475	environmental samples | FMEK01000003.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+476	environmental samples | CBJY010000019.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+477	environmental samples | FMGC01000020.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+478	environmental samples | FMDV01000009.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+479	environmental samples | CBCQ010000185.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+480	environmental samples | CBIZ010000005.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+481	environmental samples | CBBO010000019.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+482	environmental samples | CAYL010000237.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+483	environmental samples | CAWE010000014.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+484	environmental samples | CBCF010000280.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+485	environmental samples | CBFY010000058.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+486	environmental samples | FMGM01000014.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+487	environmental samples | FMDQ01000015.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+488	environmental samples | CBDL010000046.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+489	environmental samples | CAXP010000113.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+490	environmental samples | CBKA010000259.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+491	environmental samples | CBJR010000207.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+492	environmental samples | CBAG010000006.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+493	environmental samples | FMGA01000011.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+494	environmental samples | CBGO010000012.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+495	environmental samples | CBDU010000037.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+496	environmental samples | CBEW010000150.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+497	environmental samples | FMGP01000006.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+498	environmental samples | CBCA010000003.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+499	environmental samples | FMDS01000015.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+500	environmental samples | CBIO010000074.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+501	environmental samples | CAYF010000101.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+502	environmental samples | CBIY010000177.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+503	environmental samples | CBCN010000073.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+504	environmental samples | CBIG010000079.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+505	environmental samples | FMER01000006.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+506	environmental samples | CAYR010000211.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+507	environmental samples | CBJZ010000068.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+508	environmental samples | FMDR01000011.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+509	environmental samples | FMGB01000050.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+510	environmental samples | CBFZ010000097.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+511	environmental samples | CBBG010000025.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+512	environmental samples | CBIJ010000017.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+513	environmental samples | CBBZ010000021.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Clostridium; environmental samples
+514	Geosporobacter subterraneus | FQZV01000068.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Geosporobacter; Geosporobacter subterraneus
+515	Paramaledivibacter caminithermalis | FRAG01000063.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiaceae; Paramaledivibacter; Paramaledivibacter caminithermalis
+516	Eubacterium minutum | CP016202.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiales incertae sedis; Clostridiales Family XIII. Incertae Sedis; Eubacterium minutum
+517	Sulfobacillus | PXYT01000009.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiales incertae sedis; Clostridiales Family XVII. Incertae Sedis; Sulfobacillus
+518	Sulfobacillus | PXYW01000087.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiales incertae sedis; Clostridiales Family XVII. Incertae Sedis; Sulfobacillus
+519	Sulfobacillus | PXYV01000035.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiales incertae sedis; Clostridiales Family XVII. Incertae Sedis; Sulfobacillus
+520	Sulfobacillus acidophilus | CP002901.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Clostridiales incertae sedis; Clostridiales Family XVII. Incertae Sedis; Sulfobacillus; Sulfobacillus acidophilus
+521	Acetobacterium | MJUY01000022.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Acetobacterium
+522	Alkalibacter saccharofermentans | FQTU01000023.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Alkalibacter; Alkalibacter saccharofermentans
+523	Eubacterium | MNSK01000039.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium
+524	environmental samples | FMHH01000015.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+525	environmental samples | CAYS010000048.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+526	environmental samples | CAYQ010000091.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+527	environmental samples | FMDZ01000004.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+528	environmental samples | CBIL010000061.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+529	environmental samples | CBEX010000061.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+530	environmental samples | CBEO010000121.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+531	environmental samples | CAXS010000147.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+532	environmental samples | CAXQ010000098.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+533	environmental samples | CBFD010000075.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+534	environmental samples | CBKI010000245.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+535	environmental samples | CBBN010000031.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+536	environmental samples | CAZC010000044.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+537	environmental samples | FMFW01000038.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+538	environmental samples | CAXC010000142.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+539	environmental samples | CBBU010000136.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Eubacteriaceae; Eubacterium; environmental samples
+540	Gracilibacter | LOEZ01000092.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Gracilibacteraceae; Gracilibacter
+541	Hungateiclostridium straminisolvens | BAVR01000006.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Hungateiclostridiaceae; Hungateiclostridium; Hungateiclostridium straminisolvens
+542	Thermoclostridium stercorarium subsp. thermolacticum | CP014672.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Hungateiclostridiaceae; Thermoclostridium; Thermoclostridium stercorarium; Thermoclostridium stercorarium subsp. thermolacticum
+543	Ruminococcus torques | AAVP02000004.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Blautia; Ruminococcus torques
+544	environmental samples | FMFN01000459.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Blautia; environmental samples
+545	environmental samples | CAWR010000126.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Blautia; environmental samples
+546	environmental samples | CBJJ010000202.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Blautia; environmental samples
+547	environmental samples | FMFA01000025.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Blautia; environmental samples
+548	environmental samples | FMFE01000017.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Blautia; environmental samples
+549	Butyrivibrio crossotus | ABWN01000019.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Butyrivibrio; Butyrivibrio crossotus
+550	Coprococcus catus | FP929038.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Coprococcus; Coprococcus catus
+551	Coprococcus comes | ABVR01000033.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Coprococcus; Coprococcus comes
+552	Coprococcus eutactus | ABEY02000001.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Coprococcus; Coprococcus eutactus
+553	environmental samples | CAYJ010000080.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Coprococcus; environmental samples
+554	Dorea | CZAC01000926.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Dorea
+555	environmental samples | CBGJ010000048.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Dorea; environmental samples
+556	Oribacterium sinus | ACKX01000124.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Oribacterium; Oribacterium sinus
+557	environmental samples | CBAK010000279.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Roseburia; environmental samples
+558	environmental samples | CBBL010000103.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Roseburia; environmental samples
+559	environmental samples | CBJD010000062.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Roseburia; environmental samples
+560	environmental samples | CBET010000139.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Roseburia; environmental samples
+561	environmental samples | CBKT010000250.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Roseburia; environmental samples
+562	environmental samples | CBGX010000322.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Roseburia; environmental samples
+563	environmental samples | CBKV010000087.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Roseburia; environmental samples
+564	environmental samples | CBIB010000071.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Lachnospiraceae; Roseburia; environmental samples
+565	Oscillibacter | MNTF01000010.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Oscillospiraceae; Oscillibacter
+566	Oscillibacter | MNTE01000022.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Oscillospiraceae; Oscillibacter
+567	environmental samples | CBFT010000209.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Oscillospiraceae; Oscillibacter; environmental samples
+568	Desulfitibacter | LOER01000015.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptococcaceae; Desulfitibacter
+569	Desulfofundulus kuznetsovii | CP002770.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptococcaceae; Desulfofundulus; Desulfofundulus kuznetsovii
+570	Desulfosporosinus | JQID01000197.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptococcaceae; Desulfosporosinus
+571	Desulfosporosinus | LOEW01000093.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptococcaceae; Desulfosporosinus
+572	Desulfotomaculum | LGFZ01000005.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptococcaceae; Desulfotomaculum
+573	Desulfotomaculum | LGGF01000027.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptococcaceae; Desulfotomaculum
+574	Desulfotomaculum reducens | CP000612.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptococcaceae; Desulfotomaculum; Desulfotomaculum reducens
+575	Pelotomaculum | LGGS01000012.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptococcaceae; Pelotomaculum
+576	Peptococcus | FNAF01000002.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptococcaceae; Peptococcus
+577	Clostridioides difficile | AVLV01000002.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptostreptococcaceae; Clostridioides; Clostridioides difficile
+578	Clostridioides difficile | AVKQ01000143.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Peptostreptococcaceae; Clostridioides; Clostridioides difficile
+579	environmental samples | CBBE010000012.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Anaerotruncus; environmental samples
+580	environmental samples | CBID010000115.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Anaerotruncus; environmental samples
+581	Faecalibacterium prausnitzii | FP929045.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Faecalibacterium; Faecalibacterium prausnitzii
+582	environmental samples | CBJB010000092.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Faecalibacterium; environmental samples
+583	environmental samples | CAXL010000039.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Faecalibacterium; environmental samples
+584	environmental samples | FMGH01000015.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Flavonifractor; environmental samples
+585	environmental samples | FMGL01000003.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Flavonifractor; environmental samples
+586	environmental samples | FMGI01000002.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Flavonifractor; environmental samples
+587	environmental samples | FMFR01000001.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Flavonifractor; environmental samples
+588	Ruminococcus lactaris | ABOU02000055.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; Ruminococcus lactaris
+589	environmental samples | CBIH010000035.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+590	environmental samples | CBCK010000023.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+591	environmental samples | FMEE01000003.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+592	environmental samples | CBKC010000293.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+593	environmental samples | FMFL01000001.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+594	environmental samples | CBBI010000016.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+595	environmental samples | CAZP010000185.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+596	environmental samples | CBDQ010000036.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+597	environmental samples | CBJQ010000077.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+598	environmental samples | CBGH010000316.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+599	environmental samples | CBCR010000006.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+600	environmental samples | FMGJ01000003.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+601	environmental samples | CBAR010000167.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+602	environmental samples | FMHD01000015.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Ruminococcus; environmental samples
+603	environmental samples | CBJL010000036.1	Bacteria; Firmicutes; Clostridia; Clostridiales; Ruminococcaceae; Subdoligranulum; environmental samples
+604	Epulopiscium | LJHC01000145.1	Bacteria; Firmicutes; Clostridia; Clostridiales; unclassified Clostridiales; Epulopiscium
+605	Epulopiscium | LNZR01000006.1	Bacteria; Firmicutes; Clostridia; Clostridiales; unclassified Clostridiales; Epulopiscium
+606	Epulopiscium | MDJM01000007.1	Bacteria; Firmicutes; Clostridia; Clostridiales; unclassified Clostridiales; Epulopiscium
+607	Epulopiscium | LJHG01000274.1	Bacteria; Firmicutes; Clostridia; Clostridiales; unclassified Clostridiales; Epulopiscium
+608	Epulopiscium | MDJN01000054.1	Bacteria; Firmicutes; Clostridia; Clostridiales; unclassified Clostridiales; Epulopiscium
+609	Epulopiscium | LNZM01000104.1	Bacteria; Firmicutes; Clostridia; Clostridiales; unclassified Clostridiales; Epulopiscium
+610	Epulopiscium | LJHD01000244.1	Bacteria; Firmicutes; Clostridia; Clostridiales; unclassified Clostridiales; Epulopiscium
+611	Monoglobus | CP020991.1	Bacteria; Firmicutes; Clostridia; Clostridiales; unclassified Clostridiales; Monoglobus
+612	Halanaerobium | LSBN01000068.1	Bacteria; Firmicutes; Clostridia; Halanaerobiales; Halanaerobiaceae; Halanaerobium
+613	Selenihalanaerobacter | FUWM01000035.1	Bacteria; Firmicutes; Clostridia; Halanaerobiales; Halobacteroidaceae; Selenihalanaerobacter
+614	Brockia | PEBW01000006.1	Bacteria; Firmicutes; Clostridia; Thermoanaerobacterales; Thermoanaerobacteraceae; Brockia
+615	Caldanaerobacter | LGEY01000103.1	Bacteria; Firmicutes; Clostridia; Thermoanaerobacterales; Thermoanaerobacteraceae; Caldanaerobacter
+616	Moorella | LGFA01000047.1	Bacteria; Firmicutes; Clostridia; Thermoanaerobacterales; Thermoanaerobacteraceae; Moorella
+617	Thermacetogenium | LGFO01000132.1	Bacteria; Firmicutes; Clostridia; Thermoanaerobacterales; Thermoanaerobacteraceae; Thermacetogenium
+618	Caldicellulosiruptor obsidiansis | CP002164.1	Bacteria; Firmicutes; Clostridia; Thermoanaerobacterales; Thermoanaerobacterales Family III. Incertae Sedis; Caldicellulosiruptor; Caldicellulosiruptor obsidiansis
+619	Caldicellulosiruptor owensensis | CP002216.1	Bacteria; Firmicutes; Clostridia; Thermoanaerobacterales; Thermoanaerobacterales Family III. Incertae Sedis; Caldicellulosiruptor; Caldicellulosiruptor owensensis
+620	Thermoanaerobacterium | LT906662.1	Bacteria; Firmicutes; Clostridia; Thermoanaerobacterales; Thermoanaerobacterales Family III. Incertae Sedis; Thermoanaerobacterium
+621	Thermovenabulum | LOHZ01000013.1	Bacteria; Firmicutes; Clostridia; Thermoanaerobacterales; Thermoanaerobacterales Family III. Incertae Sedis; Thermovenabulum
+622	Catenibacterium mitsuokai | ACCK01000107.1	Bacteria; Firmicutes; Erysipelotrichia; Erysipelotrichales; Erysipelotrichaceae; Catenibacterium; Catenibacterium mitsuokai
+623	environmental samples | CBIQ010000125.1	Bacteria; Firmicutes; Erysipelotrichia; Erysipelotrichales; Erysipelotrichaceae; Catenibacterium; environmental samples
+624	environmental samples | CBAU010000036.1	Bacteria; Firmicutes; Erysipelotrichia; Erysipelotrichales; Erysipelotrichaceae; Coprobacillus; environmental samples
+625	environmental samples | CAXN010000049.1	Bacteria; Firmicutes; Erysipelotrichia; Erysipelotrichales; Erysipelotrichaceae; Coprobacillus; environmental samples
+626	environmental samples | CBHZ010000036.1	Bacteria; Firmicutes; Erysipelotrichia; Erysipelotrichales; Erysipelotrichaceae; Coprobacillus; environmental samples
+627	Erysipelothrix | CP013213.1	Bacteria; Firmicutes; Erysipelotrichia; Erysipelotrichales; Erysipelotrichaceae; Erysipelothrix
+628	Erysipelothrix rhusiopathiae | ACLK02000003.1	Bacteria; Firmicutes; Erysipelotrichia; Erysipelotrichales; Erysipelotrichaceae; Erysipelothrix; Erysipelothrix rhusiopathiae
+629	Holdemanella biformis | ABYT01000133.1	Bacteria; Firmicutes; Erysipelotrichia; Erysipelotrichales; Erysipelotrichaceae; Holdemanella; Holdemanella biformis
+630	Holdemania filiformis | ACCF01000005.1	Bacteria; Firmicutes; Erysipelotrichia; Erysipelotrichales; Erysipelotrichaceae; Holdemania; Holdemania filiformis
+631	Kandleria vitulina | JQBL01000031.1	Bacteria; Firmicutes; Erysipelotrichia; Erysipelotrichales; Erysipelotrichaceae; Kandleria; Kandleria vitulina
+632	Acidaminococcus | ACGB01000068.1	Bacteria; Firmicutes; Negativicutes; Acidaminococcales; Acidaminococcaceae; Acidaminococcus
+633	environmental samples | CBJM010000036.1	Bacteria; Firmicutes; Negativicutes; Acidaminococcales; Acidaminococcaceae; Acidaminococcus; environmental samples
+634	environmental samples | CBJX010000032.1	Bacteria; Firmicutes; Negativicutes; Acidaminococcales; Acidaminococcaceae; Acidaminococcus; environmental samples
+635	Phascolarctobacterium | CBDS010000007.1	Bacteria; Firmicutes; Negativicutes; Acidaminococcales; Acidaminococcaceae; Phascolarctobacterium
+636	Phascolarctobacterium succinatutens | CBGL010000044.1	Bacteria; Firmicutes; Negativicutes; Acidaminococcales; Acidaminococcaceae; Phascolarctobacterium; Phascolarctobacterium succinatutens
+637	Megamonas hypermegale | FP929048.1	Bacteria; Firmicutes; Negativicutes; Selenomonadales; Selenomonadaceae; Megamonas; Megamonas hypermegale
+638	Mitsuokella sp. oral taxon 131 | AWVT01000028.1	Bacteria; Firmicutes; Negativicutes; Selenomonadales; Selenomonadaceae; Mitsuokella; Mitsuokella sp. oral taxon 131
+639	Selenomonas ruminantium subsp. lactilytica | AP012292.1	Bacteria; Firmicutes; Negativicutes; Selenomonadales; Selenomonadaceae; Selenomonas; Selenomonas ruminantium; Selenomonas ruminantium subsp. lactilytica
+640	environmental samples | CBAF010000086.1	Bacteria; Firmicutes; Negativicutes; Veillonellales; Veillonellaceae; Dialister; environmental samples
+641	environmental samples | CBBY010000180.1	Bacteria; Firmicutes; Negativicutes; Veillonellales; Veillonellaceae; Dialister; environmental samples
+642	Veillonella | CP020566.1	Bacteria; Firmicutes; Negativicutes; Veillonellales; Veillonellaceae; Veillonella
+643	Veillonella dispar | ACIK02000004.1	Bacteria; Firmicutes; Negativicutes; Veillonellales; Veillonellaceae; Veillonella; Veillonella dispar
+644	Anaerococcus tetradius | ACGC01000017.1	Bacteria; Firmicutes; Tissierellia; Tissierellales; Peptoniphilaceae; Anaerococcus; Anaerococcus tetradius
+645	Parvimonas | LSDF01000017.1	Bacteria; Firmicutes; Tissierellia; Tissierellales; Peptoniphilaceae; Parvimonas
+646	Parvimonas micra | ABEE02000017.1	Bacteria; Firmicutes; Tissierellia; Tissierellales; Peptoniphilaceae; Parvimonas; Parvimonas micra
+647	Peptoniphilus | LRQE01000006.1	Bacteria; Firmicutes; Tissierellia; Tissierellales; Peptoniphilaceae; Peptoniphilus
+648	Peptoniphilus asaccharolyticus | FWWR01000009.1	Bacteria; Firmicutes; Tissierellia; Tissierellales; Peptoniphilaceae; Peptoniphilus; Peptoniphilus asaccharolyticus
+649	Peptoniphilus duerdenii | AEEH01000053.1	Bacteria; Firmicutes; Tissierellia; Tissierellales; Peptoniphilaceae; Peptoniphilus; Peptoniphilus duerdenii
+650	Peptoniphilus indolicus | AGBB01000006.1	Bacteria; Firmicutes; Tissierellia; Tissierellales; Peptoniphilaceae; Peptoniphilus; Peptoniphilus indolicus
+651	Sporanaerobacter acetigenes | FQXR01000024.1	Bacteria; Firmicutes; Tissierellia; Tissierellales; Sporanaerobacter; Sporanaerobacter acetigenes
+652	Clostridium ultunense | CARA01000045.1	Bacteria; Firmicutes; Tissierellia; Tissierellales; Tissierellaceae; Clostridium ultunense
+653	Fusobacterium necrophorum subsp. funduliforme | ADLZ01000010.1	Bacteria; Fusobacteria; Fusobacteriia; Fusobacteriales; Fusobacteriaceae; Fusobacterium; Fusobacterium necrophorum; Fusobacterium necrophorum subsp. funduliforme
+654	Fusobacterium nucleatum | NJGJ01000001.1	Bacteria; Fusobacteria; Fusobacteriia; Fusobacteriales; Fusobacteriaceae; Fusobacterium; Fusobacterium nucleatum
+655	environmental samples | CBJW010000003.1	Bacteria; Fusobacteria; Fusobacteriia; Fusobacteriales; Fusobacteriaceae; Fusobacterium; environmental samples
+656	Leptotrichia sp. oral taxon 215 | AWVR01000007.1	Bacteria; Fusobacteria; Fusobacteriia; Fusobacteriales; Leptotrichiaceae; Leptotrichia; Leptotrichia sp. oral taxon 215
+657	Gemmatimonas | LJNO01000196.1	Bacteria; Gemmatimonadetes; Gemmatimonadetes; Gemmatimonadales; Gemmatimonadaceae; Gemmatimonas
+658	Gemmatimonas | LJNO01000103.1	Bacteria; Gemmatimonadetes; Gemmatimonadetes; Gemmatimonadales; Gemmatimonadaceae; Gemmatimonas
+659	Gemmatimonas | LJUM01000156.1	Bacteria; Gemmatimonadetes; Gemmatimonadetes; Gemmatimonadales; Gemmatimonadaceae; Gemmatimonas
+660	Gemmatimonas | MNJI01000146.1	Bacteria; Gemmatimonadetes; Gemmatimonadetes; Gemmatimonadales; Gemmatimonadaceae; Gemmatimonas
+661	Candidatus Magnetobacterium | LACI01001160.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Candidatus Magnetobacterium
+662	Leptospirillum | AURA01000272.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Leptospirillum
+663	Leptospirillum | DS995260.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Leptospirillum
+664	Leptospirillum | JPGK01000016.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Leptospirillum
+665	Leptospirillum | GG693867.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Leptospirillum
+666	Nitrospira | NEWP01000016.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Nitrospira
+667	Nitrospira | NEWS01000020.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Nitrospira
+668	Nitrospira | NEWQ01000092.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Nitrospira
+669	Nitrospira | MSXM01000023.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Nitrospira
+670	Nitrospira | NIUU01000015.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Nitrospira
+671	Nitrospira | MSXN01000025.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Nitrospira
+672	Nitrospira | NIUT01000091.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Nitrospira
+673	Nitrospira | NEWT01000007.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Nitrospira
+674	Thermodesulfovibrio | BCNO01000001.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Thermodesulfovibrio
+675	Thermodesulfovibrio | MAVV01000028.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Thermodesulfovibrio
+676	Thermodesulfovibrio | PNIO01000024.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Thermodesulfovibrio
+677	Thermodesulfovibrio | MIDH01000061.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Thermodesulfovibrio
+678	Thermodesulfovibrio | MIDI01000128.1	Bacteria; Nitrospirae; Nitrospira; Nitrospirales; Nitrospiraceae; Thermodesulfovibrio
+679	Candidatus Brocadia | AYTS01000184.1	Bacteria; Planctomycetes; Candidatus Brocadiae; Candidatus Brocadiales; Candidatus Brocadiaceae; Candidatus Brocadia
+680	Candidatus Brocadia | LAQJ01000224.1	Bacteria; Planctomycetes; Candidatus Brocadiae; Candidatus Brocadiales; Candidatus Brocadiaceae; Candidatus Brocadia
+681	Candidatus Brocadia | JZEK01000034.1	Bacteria; Planctomycetes; Candidatus Brocadiae; Candidatus Brocadiales; Candidatus Brocadiaceae; Candidatus Brocadia
+682	Candidatus Brocadia | MWTE01000090.1	Bacteria; Planctomycetes; Candidatus Brocadiae; Candidatus Brocadiales; Candidatus Brocadiaceae; Candidatus Brocadia
+683	Candidatus Scalindua | JRYO01000135.1	Bacteria; Planctomycetes; Candidatus Brocadiae; Candidatus Brocadiales; Candidatus Brocadiaceae; Candidatus Scalindua
+684	Phycisphaera | NHBO01000063.1	Bacteria; Planctomycetes; Phycisphaerae; Phycisphaerales; Phycisphaeraceae; Phycisphaera
+685	Phycisphaera | NVSP01000042.1	Bacteria; Planctomycetes; Phycisphaerae; Phycisphaerales; Phycisphaeraceae; Phycisphaera
+686	Blastopirellula | NVWB01000261.1	Bacteria; Planctomycetes; Planctomycetia; Planctomycetales; Planctomycetaceae; Blastopirellula
+687	Pirellula | CP011272.1	Bacteria; Planctomycetes; Planctomycetia; Planctomycetales; Planctomycetaceae; Pirellula
+688	Rhodopirellula | NHBQ01000125.1	Bacteria; Planctomycetes; Planctomycetia; Planctomycetales; Planctomycetaceae; Rhodopirellula
+689	Rhodopirellula | NHMC01000016.1	Bacteria; Planctomycetes; Planctomycetia; Planctomycetales; Planctomycetaceae; Rhodopirellula
+690	Rhodopirellula | ANOQ01000091.1	Bacteria; Planctomycetes; Planctomycetia; Planctomycetales; Planctomycetaceae; Rhodopirellula
+691	Rhodopirellula sallentina | ANOH01000223.1	Bacteria; Planctomycetes; Planctomycetia; Planctomycetales; Planctomycetaceae; Rhodopirellula; Rhodopirellula sallentina
+692	Thermogutta | CP018477.1	Bacteria; Planctomycetes; Planctomycetia; Planctomycetales; Planctomycetaceae; Thermogutta
+693	Acidithiobacillus | NCBC01000862.1	Bacteria; Proteobacteria; Acidithiobacillia; Acidithiobacillales; Acidithiobacillaceae; Acidithiobacillus
+694	Acidithiobacillus | NVVQ01000024.1	Bacteria; Proteobacteria; Acidithiobacillia; Acidithiobacillales; Acidithiobacillaceae; Acidithiobacillus
+695	Brevundimonas | NCEB01000051.1	Bacteria; Proteobacteria; Alphaproteobacteria; Caulobacterales; Caulobacteraceae; Brevundimonas
+696	Brevundimonas | NCEQ01000019.1	Bacteria; Proteobacteria; Alphaproteobacteria; Caulobacterales; Caulobacteraceae; Brevundimonas
+697	Caulobacter | LMHD01000026.1	Bacteria; Proteobacteria; Alphaproteobacteria; Caulobacterales; Caulobacteraceae; Caulobacter
+698	Caulobacter | NCDQ01000077.1	Bacteria; Proteobacteria; Alphaproteobacteria; Caulobacterales; Caulobacteraceae; Caulobacter
+699	Phenylobacterium | MHXO01000363.1	Bacteria; Proteobacteria; Alphaproteobacteria; Caulobacterales; Caulobacteraceae; Phenylobacterium
+700	Phenylobacterium | MEEX01000052.1	Bacteria; Proteobacteria; Alphaproteobacteria; Caulobacterales; Caulobacteraceae; Phenylobacterium
+701	Candidatus Paracaedimonas | CP008936.1	Bacteria; Proteobacteria; Alphaproteobacteria; Holosporales; Caedimonadaceae; Candidatus Paracaedimonas
+702	Holospora undulata | ARPM03000161.1	Bacteria; Proteobacteria; Alphaproteobacteria; Holosporales; Holosporaceae; Holospora; Holospora undulata
+703	Kordiimonas | FNAK01000011.1	Bacteria; Proteobacteria; Alphaproteobacteria; Kordiimonadales; Kordiimonadaceae; Kordiimonas
+704	Candidatus Pelagibacter | NHLS01000023.1	Bacteria; Proteobacteria; Alphaproteobacteria; Pelagibacterales; Pelagibacteraceae; Candidatus Pelagibacter
+705	Candidatus Pelagibacter | NHHP01000002.1	Bacteria; Proteobacteria; Alphaproteobacteria; Pelagibacterales; Pelagibacteraceae; Candidatus Pelagibacter
+706	Candidatus Pelagibacter | NHDR01000015.1	Bacteria; Proteobacteria; Alphaproteobacteria; Pelagibacterales; Pelagibacteraceae; Candidatus Pelagibacter
+707	Candidatus Pelagibacter | NHGD01000009.1	Bacteria; Proteobacteria; Alphaproteobacteria; Pelagibacterales; Pelagibacteraceae; Candidatus Pelagibacter
+708	Candidatus Pelagibacter | NVSV01000039.1	Bacteria; Proteobacteria; Alphaproteobacteria; Pelagibacterales; Pelagibacteraceae; Candidatus Pelagibacter
+709	Candidatus Pelagibacter | LT840186.1	Bacteria; Proteobacteria; Alphaproteobacteria; Pelagibacterales; Pelagibacteraceae; Candidatus Pelagibacter
+710	Candidatus Pelagibacter | NHIT01000008.1	Bacteria; Proteobacteria; Alphaproteobacteria; Pelagibacterales; Pelagibacteraceae; Candidatus Pelagibacter
+711	Candidatus Pelagibacter | NHLR01000010.1	Bacteria; Proteobacteria; Alphaproteobacteria; Pelagibacterales; Pelagibacteraceae; Candidatus Pelagibacter
+712	Candidatus Pelagibacter ubique | AZAL01000001.1	Bacteria; Proteobacteria; Alphaproteobacteria; Pelagibacterales; Pelagibacteraceae; Candidatus Pelagibacter; Candidatus Pelagibacter ubique
+713	Bartonella | CP015820.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Bartonellaceae; Bartonella
+714	Bartonella bacilliformis | ASIV01000004.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Bartonellaceae; Bartonella; Bartonella bacilliformis
+715	Bartonella washoeensis | AILX01000007.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Bartonellaceae; Bartonella; Bartonella washoeensis
+716	Bosea | NCDO01000164.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Bradyrhizobiaceae; Bosea
+717	Nitrobacter | AAMY01000007.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Bradyrhizobiaceae; Nitrobacter
+718	Nitrobacter winogradskyi | CP000115.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Bradyrhizobiaceae; Nitrobacter; Nitrobacter winogradskyi
+719	Brucella ceti | ACJD01000003.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Brucellaceae; Brucella; Brucella ceti
+720	Brucella melitensis bv. 1 | AE008917.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Brucellaceae; Brucella; Brucella melitensis; Brucella melitensis bv. 1
+721	Blastochloris | LN907867.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Hyphomicrobiaceae; Blastochloris
+722	Devosia | FXWK01000001.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Hyphomicrobiaceae; Devosia
+723	Devosia | MKVB01000001.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Hyphomicrobiaceae; Devosia
+724	Devosia | MKVA01000005.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Hyphomicrobiaceae; Devosia
+725	Hyphomicrobium | NCCZ01000037.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Hyphomicrobiaceae; Hyphomicrobium
+726	Hyphomicrobium | MEEB01000024.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Hyphomicrobiaceae; Hyphomicrobium
+727	Pelagibacterium | MEEV01000028.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Hyphomicrobiaceae; Pelagibacterium
+728	Pelagibacterium | MEEV01000037.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Hyphomicrobiaceae; Pelagibacterium
+729	Methylobacterium | PERO01000014.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Methylobacteriaceae; Methylobacterium
+730	Microvirga | QDAH01000080.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Methylobacteriaceae; Microvirga
+731	Methylocystis | PERY01000004.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Methylocystaceae; Methylocystis
+732	Hoeflea | NVXQ01000011.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Phyllobacteriaceae; Hoeflea
+733	Nitratireductor | FNSL01000001.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Phyllobacteriaceae; Nitratireductor
+734	Nitratireductor | FOXZ01000022.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Phyllobacteriaceae; Nitratireductor
+735	Agrobacterium | CP016499.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Rhizobiaceae; Agrobacterium
+736	Kaistia | MEDI01000136.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Rhizobiaceae; Kaistia
+737	Kaistia | MEDI01000974.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Rhizobiaceae; Kaistia
+738	Liberibacter | FJ914618.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Rhizobiaceae; Liberibacter
+739	Liberibacter | PSQJ01000002.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Rhizobiaceae; Liberibacter
+740	Liberibacter | DQ852665.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Rhizobiaceae; Liberibacter
+741	Candidatus Liberibacter africanus | KJ197227.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Rhizobiaceae; Liberibacter; Candidatus Liberibacter africanus
+742	Candidatus Liberibacter americanus | CP006604.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Rhizobiaceae; Liberibacter; Candidatus Liberibacter americanus
+743	Liberibacter crescens | CP003789.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Rhizobiaceae; Liberibacter; Liberibacter crescens
+744	Sinorhizobium meliloti | CP002740.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Rhizobiaceae; Sinorhizobium; Sinorhizobium meliloti
+745	Pseudoxanthobacter soli | FRXO01000005.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; Xanthobacteraceae; Pseudoxanthobacter; Pseudoxanthobacter soli
+746	Candidatus Hodgkinia | CP025313.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; unclassified Rhizobiales; Candidatus Hodgkinia
+747	Candidatus Hodgkinia cicadicola | CP001226.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; unclassified Rhizobiales; Candidatus Hodgkinia; Candidatus Hodgkinia cicadicola
+748	Methylobrevis | MCRJ01000122.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales; unclassified Rhizobiales; Methylobrevis
+749	Henriciella | NVWP01000068.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Henriciella
+750	Hyphomonas | NHBW01000005.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Hyphomonas
+751	Hyphomonas | LADU01000102.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Hyphomonas
+752	Hyphomonas | NCJT01000103.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Hyphomonas
+753	Robiginitomaculum | NVWK01000006.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Robiginitomaculum
+754	Robiginitomaculum | NVXG01000096.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Robiginitomaculum
+755	Robiginitomaculum | NVXK01000011.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Robiginitomaculum
+756	Robiginitomaculum | NVXG01000068.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Robiginitomaculum
+757	Robiginitomaculum | NVVU01000069.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Robiginitomaculum
+758	Robiginitomaculum | NVRH01000016.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Robiginitomaculum
+759	Robiginitomaculum | NVTC01000012.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Robiginitomaculum
+760	Robiginitomaculum | NVWT01000027.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Hyphomonadaceae; Robiginitomaculum
+761	Amaricoccus | PHNO01001205.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Amaricoccus
+762	Ascidiaceihabitans | OMOR01000001.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Ascidiaceihabitans
+763	Celeribacter | QAOH01000003.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Celeribacter
+764	Citreicella | GG704598.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Citreicella
+765	Defluviimonas | OMOQ01000009.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Defluviimonas
+766	Gemmobacter | FOCE01000022.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Gemmobacter
+767	Ketogulonicigenium | CP016592.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Ketogulonicigenium
+768	Labrenzia | QCYM01000013.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Labrenzia
+769	Marinosulfonomonas | NVTR01000069.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Marinosulfonomonas
+770	Marinosulfonomonas | NVTS01000007.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Marinosulfonomonas
+771	Marinovum | FNYY01000034.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Marinovum
+772	Maritimibacter alkaliphilus | AAMT01000006.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Maritimibacter; Maritimibacter alkaliphilus
+773	Oceanicella | FOHL01000009.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Oceanicella
+774	Oceaniovalibus guishaninsula | AMGO01000007.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Oceaniovalibus; Oceaniovalibus guishaninsula
+775	Palleronia | ONZF01000006.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Palleronia
+776	Paracoccus | NVRN01000088.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Paracoccus
+777	Phaeobacter inhibens | CP002976.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Phaeobacter; Phaeobacter inhibens
+778	Pontivivens | OMKW01000001.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Pontivivens
+779	Pseudovibrio | DS996806.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Pseudovibrio
+780	Rhodobacter | LFTY01000001.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Rhodobacter
+781	Roseobacter litoralis | CP002623.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Roseobacter; Roseobacter litoralis
+782	Roseovarius | FWXB01000015.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Roseovarius
+783	Rubellimicrobium thermophilum | AOLV01000032.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Rubellimicrobium; Rubellimicrobium thermophilum
+784	Ruegeria | FMZV01000014.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Ruegeria
+785	Stappia | AQRB01000001.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Stappia
+786	Yoonia | PGTY01000003.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Yoonia
+787	environmental samples | CAZQ010000059.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Acetobacter; environmental samples
+788	environmental samples | CBBH010000020.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Acetobacter; environmental samples
+789	Acidiphilium | AFPR01000475.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Acidiphilium
+790	Acidiphilium multivorum | AP012035.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Acidiphilium; Acidiphilium multivorum
+791	Acidocella | NCAK01000181.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Acidocella
+792	Asaia bogorensis | AP014690.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Asaia; Asaia bogorensis
+793	Gluconobacter oxydans | CP004373.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Gluconobacter; Gluconobacter oxydans
+794	Granulibacter | CP018191.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Granulibacter
+795	Komagataeibacter | POTC01000008.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Komagataeibacter
+796	Roseomonas | BDLP01000056.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Roseomonas
+797	Roseomonas cervicalis | ADVL01000321.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Acetobacteraceae; Roseomonas; Roseomonas cervicalis
+798	Azospirillum | MNTV01000032.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Rhodospirillaceae; Azospirillum
+799	environmental samples | CBDV010000155.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Rhodospirillaceae; Azospirillum; environmental samples
+800	environmental samples | CBDP010000028.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Rhodospirillaceae; Azospirillum; environmental samples
+801	Candidatus Endolissoclinum | NHDI01000054.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Rhodospirillaceae; Candidatus Endolissoclinum
+802	Candidatus Endolissoclinum | NHCF01000051.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Rhodospirillaceae; Candidatus Endolissoclinum
+803	Ferrovibrio | PEKV01000023.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Rhodospirillaceae; Ferrovibrio
+804	Magnetospirillum | LN997848.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Rhodospirillaceae; Magnetospirillum
+805	Magnetospirillum | MKVK01000010.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Rhodospirillaceae; Magnetospirillum
+806	Tistlia consotensis | FWZX01000054.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rhodospirillales; Rhodospirillaceae; Tistlia; Tistlia consotensis
+807	Anaplasma marginale | CP001079.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rickettsiales; Anaplasmataceae; Anaplasma; Anaplasma marginale
+808	Anaplasma phagocytophilum | LANW01000001.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rickettsiales; Anaplasmataceae; Anaplasma; Anaplasma phagocytophilum
+809	Candidatus Xenolissoclinum pacificiensis | AXCJ01000008.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rickettsiales; Anaplasmataceae; Candidatus Xenolissoclinum; Candidatus Xenolissoclinum pacificiensis
+810	Wolbachia | LYUU01002088.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rickettsiales; Anaplasmataceae; Wolbachieae; Wolbachia
+811	Candidatus Jidaibacter | JSWE01000092.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rickettsiales; Candidatus Midichloriaceae; Candidatus Jidaibacter
+812	Candidatus Phycorickettsia | CP027845.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rickettsiales; Rickettsiaceae; Candidatus Phycorickettsia
+813	Orientia | OOHR01000012.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rickettsiales; Rickettsiaceae; Rickettsieae; Orientia
+814	Rickettsia hoogstraalii | LAOB01000001.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rickettsiales; Rickettsiaceae; Rickettsieae; Rickettsia; Rickettsia hoogstraalii
+815	Candidatus Arcanobacter | JYHA01000030.1	Bacteria; Proteobacteria; Alphaproteobacteria; Rickettsiales; unclassified Rickettsiales; Candidatus Arcanobacter
+816	Sneathiella | NVRR01000193.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sneathiellales; Sneathiellaceae; Sneathiella
+817	Erythrobacter | LWEV01000462.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Erythrobacteraceae; Erythrobacter
+818	Erythrobacter | AAMW01000002.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Erythrobacteraceae; Erythrobacter
+819	Erythrobacter | CP011310.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Erythrobacteraceae; Erythrobacter
+820	Novosphingobium | NCCU01000004.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Novosphingobium
+821	Novosphingobium | NCCP01000018.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Novosphingobium
+822	Novosphingobium | MEGC01000066.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Novosphingobium
+823	Novosphingobium | NKIS01000002.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Novosphingobium
+824	Pacificimonas | AMRV01000003.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Pacificimonas
+825	Sphingobium | MKWI01000028.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingobium
+826	Sphingobium | AYOY01000164.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingobium
+827	Sphingobium | NCDI01000657.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingobium
+828	Sphingobium quisquiliarum | ATHO01000105.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingobium; Sphingobium quisquiliarum
+829	Sphingomonas | MEFG01000018.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingomonas
+830	Sphingomonas | NCEF01000010.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingomonas
+831	Sphingomonas | FNZZ01000003.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingomonas
+832	Sphingomonas | QAIS01000462.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingomonas
+833	Sphingomonas | NCGD01000002.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingomonas
+834	Sphingopyxis | MIAM01000026.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingopyxis
+835	Sphingopyxis | NVXM01000030.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingopyxis
+836	environmental samples | LT598653.1	Bacteria; Proteobacteria; Alphaproteobacteria; Sphingomonadales; Sphingomonadaceae; Sphingopyxis; environmental samples
+837	Candidatus Puniceispirillum marinum | CP001751.1	Bacteria; Proteobacteria; Alphaproteobacteria; unclassified Alphaproteobacteria; Candidatus Puniceispirillum; Candidatus Puniceispirillum marinum
+838	Bordetella avium | AM167904.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Alcaligenaceae; Bordetella; Bordetella avium
+839	Candidimonas | FQXE01000028.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Alcaligenaceae; Candidimonas
+840	Taylorella asinigenitalis | HE681424.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Alcaligenaceae; Taylorella; Taylorella asinigenitalis
+841	Burkholderia ambifaria | CP000440.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Burkholderiaceae; Burkholderia; Burkholderia ambifaria
+842	Burkholderia pseudomallei | CP000572.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Burkholderiaceae; Burkholderia; Burkholderia pseudomallei
+843	Lautropia | MEED01000062.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Burkholderiaceae; Lautropia
+844	Limnobacter | LUJK01000064.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Burkholderiaceae; Limnobacter
+845	Pandoraea | CP014839.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Burkholderiaceae; Pandoraea
+846	Polynucleobacter | NCHC01000030.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Burkholderiaceae; Polynucleobacter
+847	Polynucleobacter | MHZG01000013.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Burkholderiaceae; Polynucleobacter
+848	Ralstonia | CP016914.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Burkholderiaceae; Ralstonia
+849	Ralstonia solanacearum | AAKL01000063.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Burkholderiaceae; Ralstonia; Ralstonia solanacearum
+850	Acidovorax | NCFM01000032.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Comamonadaceae; Acidovorax
+851	Candidatus Symbiobacter mobilis | CP004885.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Comamonadaceae; Candidatus Symbiobacter; Candidatus Symbiobacter mobilis
+852	Hydrogenophaga | AZSO01000069.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Comamonadaceae; Hydrogenophaga
+853	Pelomonas | QAJF01000420.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Comamonadaceae; Pelomonas
+854	Polaromonas | CCJP01000005.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Comamonadaceae; Polaromonas
+855	Polaromonas | NCFW01000098.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Comamonadaceae; Polaromonas
+856	Polaromonas | NCJH01000028.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Comamonadaceae; Polaromonas
+857	Serpentinomonas | AP014568.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Comamonadaceae; Serpentinomonas
+858	Variovorax | MEFM01000056.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Comamonadaceae; Variovorax
+859	Candidatus Zinderia insecticola | CP002161.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Oxalobacteraceae; Candidatus Zinderia; Candidatus Zinderia insecticola
+860	Herbaspirillum | PKOI01000018.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Oxalobacteraceae; Herbaspirillum
+861	Massilia | JPXI01000022.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Oxalobacteraceae; Massilia
+862	Oxalobacter formigenes | GG658170.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Oxalobacteraceae; Oxalobacter; Oxalobacter formigenes
+863	Sutterella parvirubra | AFBQ01000022.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Sutterellaceae; Sutterella; Sutterella parvirubra
+864	environmental samples | CAZN010000279.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Sutterellaceae; Sutterella; environmental samples
+865	environmental samples | CBJP010000147.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; Sutterellaceae; Sutterella; environmental samples
+866	Methylibium | LGRD01000032.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; unclassified Burkholderiales; Burkholderiales Genera incertae sedis; Methylibium
+867	Mitsuaria | NIOE01000026.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; unclassified Burkholderiales; Burkholderiales Genera incertae sedis; Mitsuaria
+868	Rhizobacter | FRCQ01000051.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; unclassified Burkholderiales; Burkholderiales Genera incertae sedis; Rhizobacter
+869	Rubrivivax | MEGM01000164.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; unclassified Burkholderiales; Burkholderiales Genera incertae sedis; Rubrivivax
+870	Thiomonas | MEGQ01000063.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; unclassified Burkholderiales; Burkholderiales Genera incertae sedis; Thiomonas
+871	Thiomonas | FMBP01000011.1	Bacteria; Proteobacteria; Betaproteobacteria; Burkholderiales; unclassified Burkholderiales; Burkholderiales Genera incertae sedis; Thiomonas
+872	Eikenella corrodens | ACEA01000031.1	Bacteria; Proteobacteria; Betaproteobacteria; Neisseriales; Neisseriaceae; Eikenella; Eikenella corrodens
+873	Neisseria | LAEK01000027.1	Bacteria; Proteobacteria; Betaproteobacteria; Neisseriales; Neisseriaceae; Neisseria
+874	Neisseria | LAEH01000033.1	Bacteria; Proteobacteria; Betaproteobacteria; Neisseriales; Neisseriaceae; Neisseria
+875	Snodgrassella alvi | JAIL01000224.1	Bacteria; Proteobacteria; Betaproteobacteria; Neisseriales; Neisseriaceae; Snodgrassella; Snodgrassella alvi
+876	Ferriphaselus | BBTH01000001.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Gallionellaceae; Ferriphaselus
+877	Gallionella | LSLI01000074.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Gallionellaceae; Gallionella
+878	Sideroxydans | MIAE01000328.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Gallionellaceae; Sideroxydans
+879	Sideroxydans | MIAD01000010.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Gallionellaceae; Sideroxydans
+880	Methylophilus | FNFX01000008.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Methylophilaceae; Methylophilus
+881	Methylotenera | MHBU01000026.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Methylophilaceae; Methylotenera
+882	Methylotenera | PESD01000098.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Methylophilaceae; Methylotenera
+883	Methylotenera | PERZ01000047.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Methylophilaceae; Methylotenera
+884	Novimethylophilus | BDOQ01000026.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Methylophilaceae; Novimethylophilus
+885	Nitrosomonas | FMWO01000074.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Nitrosomonadaceae; Nitrosomonas
+886	Nitrosomonas | PZZT01000045.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Nitrosomonadaceae; Nitrosomonas
+887	Nitrosospira | FMWY01000009.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Nitrosomonadaceae; Nitrosospira
+888	Nitrosospira | MKVR01000046.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Nitrosomonadaceae; Nitrosospira
+889	Nitrosovibrio | FODX01000005.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Nitrosomonadaceae; Nitrosovibrio
+890	Nitrosovibrio | OCMZ01000001.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Nitrosomonadaceae; Nitrosovibrio
+891	Methyloversatilis | NCCD01000074.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Sterolibacteriaceae; Methyloversatilis
+892	Sterolibacterium | LT837803.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Sterolibacteriaceae; Sterolibacterium
+893	Thiobacillus | MKUE01000064.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Thiobacillaceae; Thiobacillus
+894	Thiobacillus | MEGP01000049.1	Bacteria; Proteobacteria; Betaproteobacteria; Nitrosomonadales; Thiobacillaceae; Thiobacillus
+895	Azospira | BFBP01000021.1	Bacteria; Proteobacteria; Betaproteobacteria; Rhodocyclales; Rhodocyclaceae; Azospira
+896	Rugosibacter | CP010554.1	Bacteria; Proteobacteria; Betaproteobacteria; Rhodocyclales; Rhodocyclaceae; Rugosibacter
+897	Azoarcus | PKTS01000137.1	Bacteria; Proteobacteria; Betaproteobacteria; Rhodocyclales; Zoogloeaceae; Azoarcus
+898	Candidatus Kinetoplastibacterium crithidii | CP003978.1	Bacteria; Proteobacteria; Betaproteobacteria; unclassified Betaproteobacteria; Candidatus Kinetoplastibacterium; Candidatus Kinetoplastibacterium crithidii
+899	Candidatus Tremblaya phenacola | CP003982.1	Bacteria; Proteobacteria; Betaproteobacteria; unclassified Betaproteobacteria; Candidatus Tremblaya; Candidatus Tremblaya phenacola
+900	Candidatus Magnetoglobus multicellularis | ATBP01000006.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Candidatus Magnetoglobus; Candidatus Magnetoglobus multicellularis
+901	Candidatus Magnetomorum | JPDT01002518.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Candidatus Magnetomorum
+902	Desulfatitalea | LADR01000015.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Desulfatitalea
+903	Desulfobacterium | NBLT01000025.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Desulfobacterium
+904	Desulfobacterium vacuolatum | FWXY01000001.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Desulfobacterium; Desulfobacterium vacuolatum
+905	environmental samples | FR695872.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Desulfobacterium; environmental samples
+906	Desulfobacula | MGTK01000288.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Desulfobacula
+907	Desulfococcus | MZGR01000092.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Desulfococcus
+908	Desulfococcus | MZGQ01000029.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Desulfococcus
+909	Desulfococcus | PDQJ01000004.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Desulfococcus
+910	Desulfococcus oleovorans | CP000859.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobacteraceae; Desulfococcus; Desulfococcus oleovorans
+911	Desulfobulbus | PDQK01000041.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobulbaceae; Desulfobulbus
+912	Desulfobulbus | PDTD01000015.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobulbaceae; Desulfobulbus
+913	Desulfobulbus | PDTE01000031.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobulbaceae; Desulfobulbus
+914	Desulfobulbus | PDTC01000023.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobulbaceae; Desulfobulbus
+915	Desulfobulbus | JROS01000170.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobulbaceae; Desulfobulbus
+916	Desulfobulbus propionicus | CP002364.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobulbaceae; Desulfobulbus; Desulfobulbus propionicus
+917	environmental samples | AVFQ01000385.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobulbaceae; Desulfofustis; environmental samples
+918	Desulfotalea | NVXR01000020.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfobacterales; Desulfobulbaceae; Desulfotalea
+919	Desulfonauticus | LGER01000062.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfovibrionales; Desulfohalobiaceae; Desulfonauticus
+920	Desulfovibrio | MAXI01000117.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfovibrionales; Desulfovibrionaceae; Desulfovibrio
+921	Desulfovibrio | AP017378.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfovibrionales; Desulfovibrionaceae; Desulfovibrio
+922	Desulfovibrio | MAXI01000151.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfovibrionales; Desulfovibrionaceae; Desulfovibrio
+923	Desulfovibrio magneticus | AP010904.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfovibrionales; Desulfovibrionaceae; Desulfovibrio; Desulfovibrio magneticus
+924	Desulfovibrio vulgaris | CP000527.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfovibrionales; Desulfovibrionaceae; Desulfovibrio; Desulfovibrio vulgaris
+925	environmental samples | FMJC01000002.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfovibrionales; Desulfovibrionaceae; Desulfovibrio; environmental samples
+926	environmental samples | FLUP01000001.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfovibrionales; Desulfovibrionaceae; Desulfovibrio; environmental samples
+927	Desulfurella | PNII01000050.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfurellales; Desulfurellaceae; Desulfurella
+928	Desulfurella | MDSU01000018.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfurellales; Desulfurellaceae; Desulfurella
+929	Hippea maritima | CP002606.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfurellales; Desulfurellaceae; Hippea; Hippea maritima
+930	Desulfuromonas | PKUD01000193.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfuromonadales; Desulfuromonadaceae; Desulfuromonas
+931	Desulfuromonas | PKUA01000069.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfuromonadales; Desulfuromonadaceae; Desulfuromonas
+932	Desulfuromonas | PKTZ01000055.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfuromonadales; Desulfuromonadaceae; Desulfuromonas
+933	Desulfuromonas | PKUC01000067.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfuromonadales; Desulfuromonadaceae; Desulfuromonas
+934	Desulfuromonas | PKUF01000020.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfuromonadales; Desulfuromonadaceae; Desulfuromonas
+935	Desulfuromonas | PKUB01000050.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfuromonadales; Desulfuromonadaceae; Desulfuromonas
+936	Desulfuromonas | PKTY01000390.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfuromonadales; Desulfuromonadaceae; Desulfuromonas
+937	Desulfuromonas | PKUH01000067.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfuromonadales; Desulfuromonadaceae; Desulfuromonas
+938	Desulfuromonas | LKUE01000296.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfuromonadales; Desulfuromonadaceae; Desulfuromonas
+939	Geobacter | AP017912.1	Bacteria; Proteobacteria; Deltaproteobacteria; Desulfuromonadales; Geobacteraceae; Geobacter
+940	Stigmatella aurantiaca | AAMD01000155.1	Bacteria; Proteobacteria; Deltaproteobacteria; Myxococcales; Cystobacterineae; Archangiaceae; Stigmatella; Stigmatella aurantiaca
+941	environmental samples | CBAX010000021.1	Bacteria; Proteobacteria; Deltaproteobacteria; Myxococcales; Cystobacterineae; Myxococcaceae; Corallococcus; environmental samples
+942	Vulgatibacter | CP012332.1	Bacteria; Proteobacteria; Deltaproteobacteria; Myxococcales; Cystobacterineae; Vulgatibacteraceae; Vulgatibacter
+943	Labilithrix | CP012333.1	Bacteria; Proteobacteria; Deltaproteobacteria; Myxococcales; Sorangiineae; Labilitrichaceae; Labilithrix
+944	Sorangium | JEMC01003559.1	Bacteria; Proteobacteria; Deltaproteobacteria; Myxococcales; Sorangiineae; Polyangiaceae; Sorangium
+945	Sorangium | PDRV01000048.1	Bacteria; Proteobacteria; Deltaproteobacteria; Myxococcales; Sorangiineae; Polyangiaceae; Sorangium
+946	Sorangium | JEME01001212.1	Bacteria; Proteobacteria; Deltaproteobacteria; Myxococcales; Sorangiineae; Polyangiaceae; Sorangium
+947	Enhygromyxa | JMCC02000048.1	Bacteria; Proteobacteria; Deltaproteobacteria; Myxococcales; unclassified Myxococcales; Enhygromyxa
+948	Desulfobacca | MUKC01000075.1	Bacteria; Proteobacteria; Deltaproteobacteria; Syntrophobacterales; Syntrophaceae; Desulfobacca
+949	Desulfobacca | MGTG01000180.1	Bacteria; Proteobacteria; Deltaproteobacteria; Syntrophobacterales; Syntrophaceae; Desulfobacca
+950	Desulfomonile tiedjei | CP003360.1	Bacteria; Proteobacteria; Deltaproteobacteria; Syntrophobacterales; Syntrophaceae; Desulfomonile; Desulfomonile tiedjei
+951	Smithella | LKUC01000078.1	Bacteria; Proteobacteria; Deltaproteobacteria; Syntrophobacterales; Syntrophaceae; Smithella
+952	Smithella | JQOA01000079.1	Bacteria; Proteobacteria; Deltaproteobacteria; Syntrophobacterales; Syntrophaceae; Smithella
+953	Smithella | JQIE01000219.1	Bacteria; Proteobacteria; Deltaproteobacteria; Syntrophobacterales; Syntrophaceae; Smithella
+954	Syntrophus | MICN01000089.1	Bacteria; Proteobacteria; Deltaproteobacteria; Syntrophobacterales; Syntrophaceae; Syntrophus
+955	Syntrophobacter | LJNA01000015.1	Bacteria; Proteobacteria; Deltaproteobacteria; Syntrophobacterales; Syntrophobacteraceae; Syntrophobacter
+956	Thermodesulforhabdus | FOUU01000017.1	Bacteria; Proteobacteria; Deltaproteobacteria; Syntrophobacterales; Syntrophobacteraceae; Thermodesulforhabdus
+957	Arcobacter | NVXJ01000003.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Campylobacteraceae; Arcobacter
+958	Arcobacter | PKUK01000003.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Campylobacteraceae; Arcobacter
+959	Arcobacter | NVWN01000007.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Campylobacteraceae; Arcobacter
+960	Arcobacter | PKUJ01000002.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Campylobacteraceae; Arcobacter
+961	Campylobacter | JHQQ01000002.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Campylobacteraceae; Campylobacter
+962	Campylobacter jejuni subsp. jejuni | ADGM01000008.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Campylobacteraceae; Campylobacter; Campylobacter jejuni; Campylobacter jejuni subsp. jejuni
+963	Campylobacter jejuni subsp. jejuni | AASY01000002.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Campylobacteraceae; Campylobacter; Campylobacter jejuni; Campylobacter jejuni subsp. jejuni
+964	Sulfurospirillum | DLUF01000116.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Campylobacteraceae; Sulfurospirillum
+965	Sulfurospirillum | JQGK01000004.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Campylobacteraceae; Sulfurospirillum
+966	Helicobacter | JRPA01000012.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Helicobacter
+967	Helicobacter | JRPA01002380.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Helicobacter
+968	Helicobacter | MBGR01000002.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Helicobacter
+969	Helicobacter pylori | CP003419.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Helicobacter; Helicobacter pylori
+970	Helicobacter suis | ADGY01000092.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Helicobacter; Helicobacter suis
+971	Sulfuricurvum | NSIU01000002.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Sulfuricurvum
+972	Sulfuricurvum | NCHH01000202.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Sulfuricurvum
+973	Sulfuricurvum | MIBO01000112.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Sulfuricurvum
+974	Sulfuricurvum | JQGL01000015.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Sulfuricurvum
+975	Sulfurimonas | NVRL01000021.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Sulfurimonas
+976	Sulfurimonas | PPDH01000016.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Sulfurimonas
+977	Sulfurimonas | MIBW01000036.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Sulfurimonas
+978	Sulfurimonas | MICC01000109.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Sulfurimonas
+979	Sulfurimonas | NVTP01000020.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Sulfurimonas
+980	Sulfurimonas | NVXO01000002.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Sulfurimonas
+981	Thiovulum | AKKQ01000050.1	Bacteria; Proteobacteria; Epsilonproteobacteria; Campylobacterales; Helicobacteraceae; Thiovulum
+982	environmental samples | FAXN01000013.1	Bacteria; Proteobacteria; Epsilonproteobacteria; unclassified Epsilonproteobacteria; Sulfurovum; environmental samples
+983	Aeromonas | CP024198.1	Bacteria; Proteobacteria; Gammaproteobacteria; Aeromonadales; Aeromonadaceae; Aeromonas
+984	Aeromonas media | CP007567.1	Bacteria; Proteobacteria; Gammaproteobacteria; Aeromonadales; Aeromonadaceae; Aeromonas; Aeromonas media
+985	Succinatimonas hippei | AEVO01000094.1	Bacteria; Proteobacteria; Gammaproteobacteria; Aeromonadales; Succinivibrionaceae; Succinatimonas; Succinatimonas hippei
+986	environmental samples | CAXH010000049.1	Bacteria; Proteobacteria; Gammaproteobacteria; Aeromonadales; Succinivibrionaceae; Succinatimonas; environmental samples
+987	Alishewanella | NCDK01000002.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Alteromonadaceae; Alishewanella
+988	Alteromonas | CP018023.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Alteromonadaceae; Alteromonas
+989	Marinobacter | LT897781.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Alteromonadaceae; Marinobacter
+990	Marinobacter | FONF01000037.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Alteromonadaceae; Marinobacter
+991	Colwellia | MAAF01000116.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Colwelliaceae; Colwellia
+992	Colwellia | MAAE01000071.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Colwelliaceae; Colwellia
+993	Idiomarina | PYVN01000153.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Idiomarinaceae; Idiomarina
+994	Idiomarina | LOPZ01000046.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Idiomarinaceae; Idiomarina
+995	Idiomarina | NVXC01000020.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Idiomarinaceae; Idiomarina
+996	Moritella | NVUE01000045.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Moritellaceae; Moritella
+997	Pseudoalteromonas | NHCW01000078.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Pseudoalteromonadaceae; Pseudoalteromonas
+998	Pseudoalteromonas luteoviolacea | CAPN01000049.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Pseudoalteromonadaceae; Pseudoalteromonas; Pseudoalteromonas luteoviolacea
+999	Psychromonas | JPUQ01000136.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Psychromonadaceae; Psychromonas
+1000	Shewanella | NVSK01000045.1	Bacteria; Proteobacteria; Gammaproteobacteria; Alteromonadales; Shewanellaceae; Shewanella
+1001	Candidatus Endobugula | MDLC01000064.1	Bacteria; Proteobacteria; Gammaproteobacteria; Cellvibrionales; Cellvibrionaceae; Candidatus Endobugula
+1002	Allochromatium | FNOW01000005.1	Bacteria; Proteobacteria; Gammaproteobacteria; Chromatiales; Chromatiaceae; Allochromatium
+1003	Candidatus Tenderia | CP013099.1	Bacteria; Proteobacteria; Gammaproteobacteria; Chromatiales; Chromatiaceae; Candidatus Tenderia
+1004	Nitrosococcus halophilus | CP001798.1	Bacteria; Proteobacteria; Gammaproteobacteria; Chromatiales; Chromatiaceae; Nitrosococcus; Nitrosococcus halophilus
+1005	Nitrosococcus oceani | DS995300.1	Bacteria; Proteobacteria; Gammaproteobacteria; Chromatiales; Chromatiaceae; Nitrosococcus; Nitrosococcus oceani
+1006	environmental samples | AVFR01000109.1	Bacteria; Proteobacteria; Gammaproteobacteria; Chromatiales; Chromatiaceae; Thiohalocapsa; environmental samples
+1007	Ectothiorhodospira | CP007268.1	Bacteria; Proteobacteria; Gammaproteobacteria; Chromatiales; Ectothiorhodospiraceae; Ectothiorhodospira
+1008	Spiribacter | CP005990.1	Bacteria; Proteobacteria; Gammaproteobacteria; Chromatiales; Ectothiorhodospiraceae; Spiribacter
+1009	Thioalkalivibrio | CP001905.1	Bacteria; Proteobacteria; Gammaproteobacteria; Chromatiales; Ectothiorhodospiraceae; Thioalkalivibrio
+1010	Halothiobacillus | NCAR01000079.1	Bacteria; Proteobacteria; Gammaproteobacteria; Chromatiales; Halothiobacillaceae; Halothiobacillus
+1011	Halothiobacillus | NCKC01000039.1	Bacteria; Proteobacteria; Gammaproteobacteria; Chromatiales; Halothiobacillaceae; Halothiobacillus
+1012	Candidatus Riesia | CP012849.1	Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales; Enterobacteriaceae; Candidatus Riesia
+1013	Salmonella enterica subsp. enterica serovar Infantis | AFYI01000006.1	Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales; Enterobacteriaceae; Salmonella; Salmonella enterica; Salmonella enterica subsp. enterica; Salmonella enterica subsp. enterica serovar Infantis
+1014	Buchnera aphidicola Myzus persicae | CP002697.1	Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales; Erwiniaceae; Buchnera; Buchnera aphidicola; Buchnera aphidicola Myzus persicae
+1015	Pantoea | PDKT01000001.1	Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales; Erwiniaceae; Pantoea
+1016	Pantoea | PDKS01000001.1	Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales; Erwiniaceae; Pantoea
+1017	Hafnia alvei | AGCI01000006.1	Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales; Hafniaceae; Hafnia; Hafnia alvei
+1018	Providencia | CVRF01000003.1	Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales; Morganellaceae; Providencia
+1019	Serratia | LN890288.1	Bacteria; Proteobacteria; Gammaproteobacteria; Enterobacterales; Yersiniaceae; Serratia
+1020	Coxiella | LIZW01000012.1	Bacteria; Proteobacteria; Gammaproteobacteria; Legionellales; Coxiellaceae; Coxiella
+1021	Coxiella | MGPA01000044.1	Bacteria; Proteobacteria; Gammaproteobacteria; Legionellales; Coxiellaceae; Coxiella
+1022	Coxiella | MGOZ01000043.1	Bacteria; Proteobacteria; Gammaproteobacteria; Legionellales; Coxiellaceae; Coxiella
+1023	Coxiella | NVSS01000186.1	Bacteria; Proteobacteria; Gammaproteobacteria; Legionellales; Coxiellaceae; Coxiella
+1024	Legionella | MKVI01000394.1	Bacteria; Proteobacteria; Gammaproteobacteria; Legionellales; Legionellaceae; Legionella
+1025	Crenothrix | MBQZ01000014.1	Bacteria; Proteobacteria; Gammaproteobacteria; Methylococcales; Crenotrichaceae; Crenothrix
+1026	Methylobacter | PERF01000064.1	Bacteria; Proteobacteria; Gammaproteobacteria; Methylococcales; Methylococcaceae; Methylobacter
+1027	Methylocaldum | AP017928.1	Bacteria; Proteobacteria; Gammaproteobacteria; Methylococcales; Methylococcaceae; Methylocaldum
+1028	Methylomonas | PERU01000053.1	Bacteria; Proteobacteria; Gammaproteobacteria; Methylococcales; Methylococcaceae; Methylomonas
+1029	Methylomonas | PERW01000056.1	Bacteria; Proteobacteria; Gammaproteobacteria; Methylococcales; Methylococcaceae; Methylomonas
+1030	Alcanivorax | LWEL01001951.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Alcanivoracaceae; Alcanivorax
+1031	Endozoicomonas | MDLD01000253.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Endozoicomonadaceae; Endozoicomonas
+1032	Aidingimonas | FNNI01000012.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Halomonadaceae; Aidingimonas
+1033	Halomonas | FOPY01000005.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Halomonadaceae; Halomonas
+1034	Halomonas | FNGH01000014.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Halomonadaceae; Halomonas
+1035	Halomonas titanicae | AOPO01000014.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Halomonadaceae; Halomonas; Halomonas titanicae
+1036	Kushneria | ONZI01000003.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Halomonadaceae; Kushneria
+1037	Candidatus Portiera | LN734649.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Halomonadaceae; whitefly endosymbionts; Candidatus Portiera
+1038	Kangiella | NVVT01000011.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Kangiellaceae; Kangiella
+1039	Bermanella | MAAD01000290.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Oceanospirillaceae; Bermanella
+1040	Marinomonas | MAAH01000220.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Oceanospirillaceae; Marinomonas
+1041	Thalassolituus | LWGC01002039.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Oceanospirillaceae; Thalassolituus
+1042	Oleiphilus | LWFN01001906.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Oleiphilaceae; Oleiphilus
+1043	Oleiphilus | LWFB01001475.1	Bacteria; Proteobacteria; Gammaproteobacteria; Oceanospirillales; Oleiphilaceae; Oleiphilus
+1044	Gilliamella apicola | JAIN01000040.1	Bacteria; Proteobacteria; Gammaproteobacteria; Orbales; Orbaceae; Gilliamella; Gilliamella apicola
+1045	Actinobacillus ureae | AEVG01000010.1	Bacteria; Proteobacteria; Gammaproteobacteria; Pasteurellales; Pasteurellaceae; Actinobacillus; Actinobacillus ureae
+1046	Mannheimia varigena | CP006943.1	Bacteria; Proteobacteria; Gammaproteobacteria; Pasteurellales; Pasteurellaceae; Mannheimia; Mannheimia varigena
+1047	Acinetobacter | ABYN01000048.1	Bacteria; Proteobacteria; Gammaproteobacteria; Pseudomonadales; Moraxellaceae; Acinetobacter
+1048	Acinetobacter baumannii | JEZC01000043.1	Bacteria; Proteobacteria; Gammaproteobacteria; Pseudomonadales; Moraxellaceae; Acinetobacter; Acinetobacter baumannii
+1049	environmental samples | CBAD010000011.1	Bacteria; Proteobacteria; Gammaproteobacteria; Pseudomonadales; Moraxellaceae; Acinetobacter; environmental samples
+1050	Psychrobacter | BAWH01000021.1	Bacteria; Proteobacteria; Gammaproteobacteria; Pseudomonadales; Moraxellaceae; Psychrobacter
+1051	Pseudomonas | CP017073.1	Bacteria; Proteobacteria; Gammaproteobacteria; Pseudomonadales; Pseudomonadaceae; Pseudomonas
+1052	Pseudomonas | QAIY01003215.1	Bacteria; Proteobacteria; Gammaproteobacteria; Pseudomonadales; Pseudomonadaceae; Pseudomonas
+1053	Pseudomonas taiwanensis | AXUP01000453.1	Bacteria; Proteobacteria; Gammaproteobacteria; Pseudomonadales; Pseudomonadaceae; Pseudomonas; Pseudomonas taiwanensis
+1054	Salinisphaera shabanensis | AFNV02000024.1	Bacteria; Proteobacteria; Gammaproteobacteria; Salinisphaerales; Salinisphaeraceae; Salinisphaera; Salinisphaera shabanensis
+1055	Francisella tularensis subsp. tularensis | DS264117.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Francisellaceae; Francisella; Francisella tularensis; Francisella tularensis subsp. tularensis
+1056	Cycloclasticus | LWTN01000230.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Piscirickettsiaceae; Cycloclasticus
+1057	Cycloclasticus | MAAM01000008.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Piscirickettsiaceae; Cycloclasticus
+1058	Methylophaga | MAAJ01000015.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Piscirickettsiaceae; Methylophaga
+1059	Methylophaga | NVUI01000018.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Piscirickettsiaceae; Methylophaga
+1060	Thiomicrospira | MNZS01000066.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Piscirickettsiaceae; Thiomicrospira
+1061	Achromatium | JXSN01000392.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Thiotrichaceae; Achromatium
+1062	Beggiatoa | MTEL01000047.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Thiotrichaceae; Beggiatoa
+1063	Beggiatoa | MTEL01000552.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Thiotrichaceae; Beggiatoa
+1064	Beggiatoa | ABBZ01000406.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Thiotrichaceae; Beggiatoa
+1065	Beggiatoa | ABBY01000234.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Thiotrichaceae; Beggiatoa
+1066	Beggiatoa | MTEL01000264.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Thiotrichaceae; Beggiatoa
+1067	Beggiatoa | NBMI01000115.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Thiotrichaceae; Beggiatoa
+1068	Thiomargarita | LUTY01002473.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Thiotrichaceae; Thiomargarita
+1069	Thiothrix | PDRT01000051.1	Bacteria; Proteobacteria; Gammaproteobacteria; Thiotrichales; Thiotrichaceae; Thiothrix
+1070	Enterovibrio | CP020660.1	Bacteria; Proteobacteria; Gammaproteobacteria; Vibrionales; Vibrionaceae; Enterovibrio
+1071	Photobacterium profundum | CR378674.1	Bacteria; Proteobacteria; Gammaproteobacteria; Vibrionales; Vibrionaceae; Photobacterium; Photobacterium profundum
+1072	Vibrio | BBMS01000003.1	Bacteria; Proteobacteria; Gammaproteobacteria; Vibrionales; Vibrionaceae; Vibrio
+1073	Rhodanobacter | MEGL01000246.1	Bacteria; Proteobacteria; Gammaproteobacteria; Xanthomonadales; Rhodanobacteraceae; Rhodanobacter
+1074	Rhodanobacter | MEGK01000026.1	Bacteria; Proteobacteria; Gammaproteobacteria; Xanthomonadales; Rhodanobacteraceae; Rhodanobacter
+1075	Stenotrophomonas | QAJC01001243.1	Bacteria; Proteobacteria; Gammaproteobacteria; Xanthomonadales; Xanthomonadaceae; Stenotrophomonas
+1076	Xanthomonas | MIGX01000089.1	Bacteria; Proteobacteria; Gammaproteobacteria; Xanthomonadales; Xanthomonadaceae; Xanthomonas
+1077	Xanthomonas axonopodis subcluster 9.3 | JPHD02000040.1	Bacteria; Proteobacteria; Gammaproteobacteria; Xanthomonadales; Xanthomonadaceae; Xanthomonas; Xanthomonas axonopodis; Xanthomonas axonopodis subcluster 9.3
+1078	Xylella fastidiosa | AE003849.1	Bacteria; Proteobacteria; Gammaproteobacteria; Xanthomonadales; Xanthomonadaceae; Xylella; Xylella fastidiosa
+1079	Candidatus Contendobacter | PDTV01000014.1	Bacteria; Proteobacteria; Gammaproteobacteria; unclassified Gammaproteobacteria; Candidatus Competibacteraceae; Candidatus Contendobacter
+1080	Candidatus Nardonella dryophthoridicola | AP018161.1	Bacteria; Proteobacteria; Gammaproteobacteria; unclassified Gammaproteobacteria; Candidatus Nardonella; Candidatus Nardonella dryophthoridicola
+1081	environmental samples | GG729965.1	Bacteria; Proteobacteria; Gammaproteobacteria; unclassified Gammaproteobacteria; Candidatus Thioglobus; environmental samples
+1082	Candidatus Endoriftia persephone | DQ780235.1	Bacteria; Proteobacteria; Gammaproteobacteria; unclassified Gammaproteobacteria; sulfur-oxidizing symbionts; Candidatus Endoriftia; Candidatus Endoriftia persephone
+1083	Bacteriovorax | MPCU01000015.1	Bacteria; Proteobacteria; Oligoflexia; Bacteriovoracales; Bacteriovoracaceae; Bacteriovorax
+1084	Halobacteriovorax | NJER01000003.1	Bacteria; Proteobacteria; Oligoflexia; Bacteriovoracales; Halobacteriovoraceae; Halobacteriovorax
+1085	Halobacteriovorax | MAAO01000013.1	Bacteria; Proteobacteria; Oligoflexia; Bacteriovoracales; Halobacteriovoraceae; Halobacteriovorax
+1086	Bdellovibrio | NCGL01000016.1	Bacteria; Proteobacteria; Oligoflexia; Bdellovibrionales; Bdellovibrionaceae; Bdellovibrio
+1087	Bdellovibrio | JTEV01000044.1	Bacteria; Proteobacteria; Oligoflexia; Bdellovibrionales; Bdellovibrionaceae; Bdellovibrio
+1088	Bdellovibrio | CP007656.1	Bacteria; Proteobacteria; Oligoflexia; Bdellovibrionales; Bdellovibrionaceae; Bdellovibrio
+1089	Bdellovibrio | PFTX01000020.1	Bacteria; Proteobacteria; Oligoflexia; Bdellovibrionales; Bdellovibrionaceae; Bdellovibrio
+1090	Bdellovibrio | PEZR01000187.1	Bacteria; Proteobacteria; Oligoflexia; Bdellovibrionales; Bdellovibrionaceae; Bdellovibrio
+1091	Pseudobacteriovorax | FWZT01000001.1	Bacteria; Proteobacteria; Oligoflexia; Oligoflexales; Pseudobacteriovoracaceae; Pseudobacteriovorax
+1092	Silvanigrella | CP017834.1	Bacteria; Proteobacteria; Oligoflexia; Silvanigrellales; Silvanigrellaceae; Silvanigrella
+1093	Mariprofundus | LIGC01000026.1	Bacteria; Proteobacteria; Zetaproteobacteria; Mariprofundales; Mariprofundaceae; Mariprofundus
+1094	Brachyspira hyodysenteriae | CP001357.1	Bacteria; Spirochaetes; Spirochaetia; Brachyspirales; Brachyspiraceae; Brachyspira; Brachyspira hyodysenteriae
+1095	Brachyspira intermedia | CP002874.1	Bacteria; Spirochaetes; Spirochaetia; Brachyspirales; Brachyspiraceae; Brachyspira; Brachyspira intermedia
+1096	Leptospira | PEQN01000017.1	Bacteria; Spirochaetes; Spirochaetia; Leptospirales; Leptospiraceae; Leptospira
+1097	Leptospira | BFBA01000006.1	Bacteria; Spirochaetes; Spirochaetia; Leptospirales; Leptospiraceae; Leptospira
+1098	Leptospira | BFAZ01000003.1	Bacteria; Spirochaetes; Spirochaetia; Leptospirales; Leptospiraceae; Leptospira
+1099	Leptospira | CP022887.1	Bacteria; Spirochaetes; Spirochaetia; Leptospirales; Leptospiraceae; Leptospira
+1100	Leptospira | BFBB01000002.1	Bacteria; Spirochaetes; Spirochaetia; Leptospirales; Leptospiraceae; Leptospira
+1101	Leptospira | CP022538.1	Bacteria; Spirochaetes; Spirochaetia; Leptospirales; Leptospiraceae; Leptospira
+1102	Borrelia miyamotoi | CP004217.2	Bacteria; Spirochaetes; Spirochaetia; Spirochaetales; Borreliaceae; Borrelia; Borrelia miyamotoi
+1103	Borreliella | CP009910.1	Bacteria; Spirochaetes; Spirochaetia; Spirochaetales; Borreliaceae; Borreliella
+1104	Spirochaeta | MUIB01000119.1	Bacteria; Spirochaetes; Spirochaetia; Spirochaetales; Spirochaetaceae; Spirochaeta
+1105	Treponema | MIDN01000027.1	Bacteria; Spirochaetes; Spirochaetia; Spirochaetales; Spirochaetaceae; Treponema
+1106	Treponema | MLPZ01000011.1	Bacteria; Spirochaetes; Spirochaetia; Spirochaetales; Spirochaetaceae; Treponema
+1107	Treponema | MIDK01000292.1	Bacteria; Spirochaetes; Spirochaetia; Spirochaetales; Spirochaetaceae; Treponema
+1108	Treponema | PDOP01000038.1	Bacteria; Spirochaetes; Spirochaetia; Spirochaetales; Spirochaetaceae; Treponema
+1109	Acetomicrobium thermoterrenum | FNPD01000012.1	Bacteria; Synergistetes; Synergistia; Synergistales; Synergistaceae; Acetomicrobium; Acetomicrobium thermoterrenum
+1110	Dethiosulfovibrio | PDTB01000020.1	Bacteria; Synergistetes; Synergistia; Synergistales; Synergistaceae; Dethiosulfovibrio
+1111	Fretibacterium | FP929056.1	Bacteria; Synergistetes; Synergistia; Synergistales; Synergistaceae; Fretibacterium
+1112	Thermanaerovibrio velox | CM001377.1	Bacteria; Synergistetes; Synergistia; Synergistales; Synergistaceae; Thermanaerovibrio; Thermanaerovibrio velox
+1113	Thermovirga | LGFS01000032.1	Bacteria; Synergistetes; Synergistia; Synergistales; Synergistaceae; Thermovirga
+1114	Acholeplasma | LK028559.1	Bacteria; Tenericutes; Mollicutes; Acholeplasmatales; Acholeplasmataceae; Acholeplasma
+1115	environmental samples | CAXX010000050.1	Bacteria; Tenericutes; Mollicutes; Acholeplasmatales; Acholeplasmataceae; Acholeplasma; environmental samples
+1116	Candidatus Phytoplasma | FO393427.1	Bacteria; Tenericutes; Mollicutes; Acholeplasmatales; Acholeplasmataceae; Candidatus Phytoplasma
+1117	Candidatus Phytoplasma | PUUG01000010.1	Bacteria; Tenericutes; Mollicutes; Acholeplasmatales; Acholeplasmataceae; Candidatus Phytoplasma
+1118	Candidatus Phytoplasma | LHCF01000002.1	Bacteria; Tenericutes; Mollicutes; Acholeplasmatales; Acholeplasmataceae; Candidatus Phytoplasma
+1119	Aster yellows witches'-broom phytoplasma | CP000061.1	Bacteria; Tenericutes; Mollicutes; Acholeplasmatales; Acholeplasmataceae; Candidatus Phytoplasma; Candidatus Phytoplasma asteris; Aster yellows witches'-broom phytoplasma
+1120	Spiroplasma | CP015819.1	Bacteria; Tenericutes; Mollicutes; Entomoplasmatales; Spiroplasmataceae; Spiroplasma
+1121	Spiroplasma | AM285301.1	Bacteria; Tenericutes; Mollicutes; Entomoplasmatales; Spiroplasmataceae; Spiroplasma
+1122	Spiroplasma sabaudiense | CP006934.1	Bacteria; Tenericutes; Mollicutes; Entomoplasmatales; Spiroplasmataceae; Spiroplasma; Spiroplasma sabaudiense
+1123	Candidatus Hepatoplasma crinochetorum | CP006932.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Candidatus Hepatoplasma; Candidatus Hepatoplasma crinochetorum
+1124	Mycoplasma | LWUJ01000011.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma
+1125	Mycoplasma | LT578418.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma
+1126	Mycoplasma | KP704286.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma
+1127	Mycoplasma | AP014657.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma
+1128	Mycoplasma | AL445564.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma
+1129	Mycoplasma | CP020122.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma
+1130	Mycoplasma | MNUA01000022.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma
+1131	Mycoplasma | AP017902.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma
+1132	Mycoplasma | AP014631.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma
+1133	Mycoplasma | AP018135.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma
+1134	Candidatus Mycoplasma haemolamae | CP003731.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; Candidatus Mycoplasma haemolamae
+1135	Mycoplasma amphoriforme | HG937516.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; Mycoplasma amphoriforme
+1136	Mycoplasma californicum | AP013353.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; Mycoplasma californicum
+1137	Mycoplasma fermentans | AP009608.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; Mycoplasma fermentans
+1138	Mycoplasma gallisepticum | CP006916.3	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; Mycoplasma gallisepticum
+1139	Mycoplasma hominis | AF443616.3	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; Mycoplasma hominis
+1140	Mycoplasma hyorhinis | CP002170.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; Mycoplasma hyorhinis
+1141	Mycoplasma iowae | AWQU01000083.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; Mycoplasma iowae
+1142	Mycoplasma ovipneumoniae | JFAD01000016.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; Mycoplasma ovipneumoniae
+1143	Mycoplasma penetrans | BA000026.2	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; Mycoplasma penetrans
+1144	environmental samples | CBIV010000010.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; environmental samples
+1145	environmental samples | CAYV010000043.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; environmental samples
+1146	environmental samples | CBKH010000038.1	Bacteria; Tenericutes; Mollicutes; Mycoplasmatales; Mycoplasmataceae; Mycoplasma; environmental samples
+1147	Caldimicrobium | PNIE01000020.1	Bacteria; Thermodesulfobacteria; Thermodesulfobacteria; Thermodesulfobacteriales; Thermodesulfobacteriaceae; Caldimicrobium
+1148	Caldimicrobium | AP014945.1	Bacteria; Thermodesulfobacteria; Thermodesulfobacteria; Thermodesulfobacteriales; Thermodesulfobacteriaceae; Caldimicrobium
+1149	Thermodesulfobacterium | PNIK01000039.1	Bacteria; Thermodesulfobacteria; Thermodesulfobacteria; Thermodesulfobacteriales; Thermodesulfobacteriaceae; Thermodesulfobacterium
+1150	Thermodesulfobacterium commune | CP008796.1	Bacteria; Thermodesulfobacteria; Thermodesulfobacteria; Thermodesulfobacteriales; Thermodesulfobacteriaceae; Thermodesulfobacterium; Thermodesulfobacterium commune
+1151	Mesotoga | LGGW01000076.1	Bacteria; Thermotogae; Thermotogae; Kosmotogales; Kosmotogaceae; Mesotoga
+1152	Mesoaciditoga | PNIP01000002.1	Bacteria; Thermotogae; Thermotogae; Mesoaciditogales; Mesoaciditogaceae; Mesoaciditoga
+1153	Petrotoga | LGGR01000095.1	Bacteria; Thermotogae; Thermotogae; Petrotogales; Petrotogaceae; Petrotoga
+1154	Petrotoga | AZRK01000006.1	Bacteria; Thermotogae; Thermotogae; Petrotogales; Petrotogaceae; Petrotoga
+1155	Fervidobacterium gondwanense | FRDJ01000001.1	Bacteria; Thermotogae; Thermotogae; Thermotogales; Fervidobacteriaceae; Fervidobacterium; Fervidobacterium gondwanense
+1156	Thermotoga | LGEV01000002.1	Bacteria; Thermotogae; Thermotogae; Thermotogales; Thermotogaceae; Thermotoga
+1157	Thermotoga | MZGO01000007.1	Bacteria; Thermotogae; Thermotogae; Thermotogales; Thermotogaceae; Thermotoga
+1158	Thermotoga | LGFG01000042.1	Bacteria; Thermotogae; Thermotogae; Thermotogales; Thermotogaceae; Thermotoga
+1159	Coraliomargarita | NHEA01000028.1	Bacteria; Verrucomicrobia; Opitutae; Puniceicoccales; Puniceicoccaceae; Coraliomargarita
+1160	environmental samples | CBJS010000073.1	Bacteria; Verrucomicrobia; Opitutae; Puniceicoccales; Puniceicoccaceae; Coraliomargarita; environmental samples
+1161	Chthoniobacter | NCCH01000299.1	Bacteria; Verrucomicrobia; Spartobacteria; Chthoniobacterales; Chthoniobacteraceae; Chthoniobacter
+1162	Rubritalea squalenifaciens | FQYR01000002.1	Bacteria; Verrucomicrobia; Verrucomicrobiae; Verrucomicrobiales; Rubritaleaceae; Rubritalea; Rubritalea squalenifaciens
+1163	Pedosphaera | NSHY01000004.1	Bacteria; Verrucomicrobia; Verrucomicrobiae; Verrucomicrobiales; Verrucomicrobia subdivision 3; Pedosphaera
+1164	Pedosphaera | NEUT01000030.1	Bacteria; Verrucomicrobia; Verrucomicrobiae; Verrucomicrobiales; Verrucomicrobia subdivision 3; Pedosphaera
+1165	Pedosphaera | NEUT01000021.1	Bacteria; Verrucomicrobia; Verrucomicrobiae; Verrucomicrobiales; Verrucomicrobia subdivision 3; Pedosphaera
+1166	Roseibacillus | NHBX01000086.1	Bacteria; Verrucomicrobia; Verrucomicrobiae; Verrucomicrobiales; Verrucomicrobiaceae; Roseibacillus
+1167	Vermiphilus pyriformis | ARQD01000002.1	Bacteria; unclassified Bacteria; Bacteria candidate phyla; Candidatus Dependentiae; Vermiphilus; Vermiphilus pyriformis
+1168	Candidatus Peribacter | CP013062.1	Bacteria; unclassified Bacteria; Bacteria candidate phyla; Candidatus Peregrinibacteria; Candidatus Peribacteria; Candidatus Peribacterales; Candidatus Peribacteraceae; Candidatus Peribacter

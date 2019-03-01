@@ -122,3 +122,6 @@ P00410	P0410	Ribosomal protein S8
 P01866	P1866	Putative diphthamide synthesis protein
 P00900	P0900	Ribosomal family S4e
 P01157	P1157	Ribosomal protein L21e
+rL10P	P0002	Ribosomal protein L10
+rpoB	P0003	Beta subunit of bacterial RNA polymerase
+pyrG	P0004	CTP synthase
