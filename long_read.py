@@ -71,8 +71,8 @@ def write_minimap_orfs(args, formatted_input_dict, minimap_match_dict):
 
     for marker_gene_list in minimap_match_dict.values():
         for paf_obj in marker_gene_list:
-            header = paf_obj.qname
-            extracted_seq = formatted_input_dict[header][paf_obj.qstart:paf_obj.qend+1]
+            header = "{}_{}_{}".format(paf_obj.qname, paf_obj.qstart, paf_obj.qend)
+            extracted_seq = formatted_input_dict[paf_obj.qname][paf_obj.qstart:paf_obj.qend+1]
             outfile.write(">{0}\n{1}\n".format(header, extracted_seq))
 
     outfile.close()
