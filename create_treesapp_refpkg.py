@@ -1036,9 +1036,8 @@ def update_build_parameters(param_file, marker_package: MarkerBuild):
 
 
 def terminal_commands(final_output_folder, code_name):
-    logging.info("\nTo integrate these data for use in TreeSAPP, the following steps must be performed:\n" +
-                 "1. Include properly formatted 'denominator' codes " +
-                 "in data/tree_data/cog_list.tsv and data/tree_data/ref_build_parameters.tsv\n" +
+    logging.info("\nTo integrate this package for use in TreeSAPP the following steps must be performed:\n" +
+                 "1. Write a properly formatted reference package 'code' in data/tree_data/ref_build_parameters.tsv\n" +
                  "2. $ cp " + final_output_folder + os.sep + "tax_ids_%s.txt" % code_name + " data/tree_data/\n" +
                  "3. $ cp " + final_output_folder + os.sep + code_name + "_tree.txt data/tree_data/\n" +
                  "4. $ cp " + final_output_folder + os.sep + code_name + ".hmm data/hmm_data/\n" +
@@ -1618,7 +1617,7 @@ def main():
         logging.info("done.\n")
 
         unique_ref_headers = set([re.sub('_' + re.escape(ref_pkg.prefix), '', x) for x in ref_aligned_fasta_dict.keys()])
-        msa_dict, summary_str = validate_alignment_trimming([trimmed_msa_file], unique_ref_headers)
+        msa_dict, failed_trimmed_msa, summary_str = validate_alignment_trimming([trimmed_msa_file], unique_ref_headers)
         logging.debug("Number of sequences discarded: " + summary_str + "\n")
         if trimmed_msa_file not in msa_dict.keys():
             # At least one of the reference sequences were discarded and therefore this package is invalid.

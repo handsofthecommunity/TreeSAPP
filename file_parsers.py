@@ -23,10 +23,9 @@ def parse_ref_build_params(args):
         logging.error("\tUnable to open " + ref_build_parameters + " for reading.\n")
         sys.exit(5)
 
-    header_re = re.compile("\t".join(["name", "code",
-                                      "molecule", "sub_model", "marker_info", "cluster_identity", "ref_sequences",
-                                      "tree_tool", "poly-params", "lowest_reliable_rank",
-                                      "last_updated", "description"]))
+    header_fields = ["name", "code", "molecule", "sub_model", "marker_info", "cluster_identity", "ref_sequences",
+                     "tree_tool", "poly-params", "lowest_reliable_rank", "last_updated", "description"]
+    header_re = re.compile("\t".join(header_fields))
     if not header_re.match(param_handler.readline().strip()):
         logging.error("Header of '" + ref_build_parameters + "' is unexpected!")
         sys.exit(5)
@@ -38,12 +37,11 @@ def parse_ref_build_params(args):
     for line in param_handler:
         if header_re.match(line):
             continue
-        line = line.strip()
         if line[0] == '#':
             skipped_lines.append(line)
             continue
         marker_build = MarkerBuild()
-        marker_build.load_build_params(line)
+        marker_build.load_build_params(line, len(header_fields))
         if args.targets != ["ALL"] and marker_build.denominator not in args.targets:
             skipped_lines.append(line)
         else:
@@ -63,55 +61,12 @@ def parse_ref_build_params(args):
                       "\n\t".join([mb.cog + '-' + mb.denominator for mb in missing_info]) + "\n")
     if skipped_lines:
         logging.debug("Skipped the following lines:\n\t" +
-                      "\n\t".join(skipped_lines) + "\n")
+                      "\n\t".join([line.strip() for line in skipped_lines]) + "\n")
 
     if len(marker_build_dict) == 0:
         logging.error("No reference package information was parsed.\n" +
                       "Is your target '" + ','.join(args.targets) + "' in " + ref_build_parameters + "?\n")
         sys.exit(3)
-    return marker_build_dict
-
-
-def parse_cog_list(args, marker_build_dict):
-    """
-    Loads the TreeSAPP COG list file into marker_build_dict and check that the args.reftree exists
-    :param args: The command-line and default arguments object
-    :param marker_build_dict: A dictionary (indexed by marker 5-character 'denominator's) mapping MarkerBuild objects
-    :return: marker_build_dict with updated information
-    """
-    cog_list_file = args.treesapp + os.sep + 'data' + os.sep + 'tree_data' + os.sep + 'cog_list.tsv'
-    cog_input_list = open(cog_list_file, 'r', encoding="latin1")
-    # Load lines from the COG list file and close
-    cog_list_lines = [x.strip() for x in cog_input_list.readlines()]
-    # Close the COG list file
-    cog_input_list.close()
-
-    for marker_input in cog_list_lines:
-        if re.match(r'\A#', marker_input):
-            continue
-
-        if not re.match(r'\w+\t[A-Z][0-9]{4}\t\w+', marker_input):
-            message = "Entry in cog_lit.tsv is incorrectly formatted! Violating line:\n" + str(marker_input)
-            logging.error(message)
-            sys.exit(5)
-
-        marker, denominator, description = marker_input.split("\t")
-        if args.targets != ["ALL"] and denominator not in args.targets:
-            continue
-
-        for ref_code in marker_build_dict:
-            if denominator == ref_code:
-                marker_build_dict[denominator].description = description
-                if description == "phylogenetic_cogs":
-                    marker_build_dict[denominator].kind = "phylogenetic"
-                elif description == "rRNA_marker":
-                    marker_build_dict[denominator].kind = "phylogenetic_rRNA"
-                else:
-                    marker_build_dict[denominator].kind = "functional"
-
-    if args.reftree not in ['i', 'g', 'p'] and args.reftree not in marker_build_dict.keys():
-        logging.error(args.reftree + " not found in " + cog_list_file + "! Please use a valid reference tree ID!\n")
-        sys.exit(5)
     return marker_build_dict
 
 
@@ -125,7 +80,11 @@ def read_graftm_classifications(assignment_file):
     :return: Dictionary indexed by taxonomic lineage whose values are headers of classified sequences
     """
     assignments = dict()
-    assignments_handle = open(assignment_file, 'r')
+    try:
+        assignments_handle = open(assignment_file, 'r')
+    except IOError:
+        logging.error("Unable to open classification file '" + assignment_file + "' for reading.\n")
+        sys.exit(21)
     tax_lines = assignments_handle.readlines()
     assignments_handle.close()
 
@@ -167,6 +126,10 @@ def parse_assignments(classified_lines: list):
             if rob_class not in assignments[marker]:
                 assignments[marker][rob_class] = list()
             assignments[marker][rob_class].append(header)
+        else:
+            logging.error("Bad line in classification table - no robust taxonomic classification:\n" +
+                          '\t'.join(fields) + "\n")
+            sys.exit(21)
     return assignments
 
 
@@ -182,7 +145,11 @@ def read_marker_classification_table(assignment_file):
     classified_lines = list()
     header = "Sample\tQuery\tMarker\tLength\tTaxonomy\tConfident_Taxonomy\tAbundance\tiNode\tLWR\tEvoDist\tDistances\n"
 
-    assignments_handle = open(assignment_file, 'r')
+    try:
+        assignments_handle = open(assignment_file, 'r')
+    except IOError:
+        logging.error("Unable to open classification file '" + assignment_file + "' for reading.\n")
+        sys.exit(21)
     # This is the header line
     if assignments_handle.readline() != header:
         logging.error("Header of assignments file is unexpected!\n")
@@ -228,13 +195,17 @@ def best_match(matches):
 def parse_domain_tables(args, hmm_domtbl_files, single=True):
     # Check if the HMM filtering thresholds have been set
     if not hasattr(args, "min_e"):
-        args.min_e = 0.01
+        args.min_e = 1E-4
+        args.min_ie = 0.01
         args.min_acc = 0.6
+        args.min_score = 20
         args.perc_aligned = 80
     # Print some stuff to inform the user what they're running and what thresholds are being used.
     info_string = "Filtering HMM alignments using the following thresholds:\n"
     info_string += "\tMinimum E-value = " + str(args.min_e) + "\n"
+    info_string += "\tMinimum i-Evalue = " + str(args.min_ie) + "\n"
     info_string += "\tMinimum acc = " + str(args.min_acc) + "\n"
+    info_string += "\tMinimum score = " + str(args.min_score) + "\n"
     info_string += "\tMinimum percentage of the HMM covered = " + str(args.perc_aligned) + "%\n"
     logging.debug(info_string)
 
@@ -709,16 +680,22 @@ def validate_alignment_trimming(msa_files: list, unique_ref_headers: set, querie
     """
     discarded_seqs_string = ""
     successful_multiple_alignments = dict()
+    failed_multiple_alignments = list()
+    n_refs = len(unique_ref_headers)
     for multi_align_file in msa_files:
         filtered_multi_align = dict()
         discarded_seqs = list()
         num_queries_retained = 0
+        n_retained_refs = 0
+        n_msa_refs = 0
         f_ext = multi_align_file.split('.')[-1]
 
         # Read the multiple alignment file
         if re.search("phy", f_ext):  # File is in Phylip format
             seq_dict = read_phylip_to_dict(multi_align_file)
         elif re.match("^f", f_ext):  # This is meant to match all fasta extensions
+            seq_dict = read_fasta_to_dict(multi_align_file)
+        elif f_ext == "mfa":  # This is meant to match a multiple alignment in FASTA format
             seq_dict = read_fasta_to_dict(multi_align_file)
         else:
             logging.error("Unable to detect file format of " + multi_align_file + ".\n")
@@ -729,7 +706,8 @@ def validate_alignment_trimming(msa_files: list, unique_ref_headers: set, querie
         for seq_name in seq_dict:
             seq = seq_dict[seq_name]
             try:
-                int(seq_name)
+                if int(seq_name) > 0:
+                    n_msa_refs += 1
             except ValueError:
                 if re.match("^_\d+", seq_name):
                     seq_name = re.sub("^_", '-', seq_name)
@@ -740,10 +718,13 @@ def validate_alignment_trimming(msa_files: list, unique_ref_headers: set, querie
                     logging.error("Unexpected sequence name " + seq_name +
                                   " detected in " + multi_align_file + ".\n")
                     sys.exit(13)
+                n_msa_refs += 1
             multi_align[seq_name] = seq
         if len(multi_align) == 0:
-            logging.error("No sequences were read from " + multi_align_file + ".\n")
-            sys.exit(3)
+            logging.warning("No sequences were read from " + multi_align_file + ".\n" +
+                            "The untrimmed alignment will be used instead.\n")
+            failed_multiple_alignments.append(multi_align_file)
+            continue
         # The numeric identifiers make it easy to maintain order in the Phylip file by a numerical sort
         for seq_name in sorted(multi_align, key=int):
             seq_dummy = re.sub('-', '', multi_align[seq_name])
@@ -754,29 +735,30 @@ def validate_alignment_trimming(msa_files: list, unique_ref_headers: set, querie
                 # The negative integers indicate this is a query sequence
                 if seq_name[0] == '-':
                     num_queries_retained += 1
-
+                else:
+                    n_retained_refs += 1
         discarded_seqs_string += "\n\t\t" + multi_align_file + " = " + str(len(discarded_seqs))
-        multi_align_seq_names = set(multi_align.keys())
-        filtered_multi_align_seq_names = set(filtered_multi_align.keys())
         if len(discarded_seqs) == len(multi_align.keys()):
             # Throw an error if the final trimmed alignment is shorter than min_seq_length, and therefore empty
             logging.warning("Multiple sequence alignment in " + multi_align_file +
                             " is shorter than minimum sequence length threshold (" + str(min_seq_length) +
-                            ").\nThese sequences will not be analyzed.\n")
-        elif not unique_ref_headers.issubset(multi_align_seq_names):
+                            ").\nThe untrimmed alignment will be used instead.\n")
+            failed_multiple_alignments.append(multi_align_file)
+        elif n_refs > n_msa_refs:
             # Testing whether there were more sequences in the untrimmed alignment than the trimmed one
-            logging.error("Reference sequences in " + multi_align_file + " were removed during alignment trimming.\n" +
-                          "This suggests either truncated sequences or the initial reference alignment was terrible.\n")
-            sys.exit(3)
-        # Calculate the number of reference sequences removed
-        elif not unique_ref_headers.issubset(filtered_multi_align_seq_names):
+            logging.warning("Reference sequences in " + multi_align_file + " were removed during alignment trimming " +
+                            "suggesting either truncated sequences or the initial reference alignment was terrible.\n" +
+                            "The untrimmed alignment will be used instead.\n")
+            failed_multiple_alignments.append(multi_align_file)
+        elif n_refs > n_retained_refs:
             logging.warning("Reference sequences shorter than the minimum character length (" +
                             str(min_seq_length) + ") in " + multi_align_file +
                             " were removed after alignment trimming.\n" +
-                            "These sequences will not be analyzed.\n")
+                            "The untrimmed alignment will be used instead.\n")
+            failed_multiple_alignments.append(multi_align_file)
         # Ensure that there is at least 1 query sequence retained after trimming the multiple alignment
         elif queries_mapped and num_queries_retained == 0:
-            logging.debug("No query sequences in " + multi_align_file + " were retained after trimming.\n")
+            logging.warning("No query sequences in " + multi_align_file + " were retained after trimming.\n")
         else:
             successful_multiple_alignments[multi_align_file] = filtered_multi_align
 
@@ -785,7 +767,7 @@ def validate_alignment_trimming(msa_files: list, unique_ref_headers: set, querie
         else:
             discarded_seqs_string += " (removed)"
 
-    return successful_multiple_alignments, discarded_seqs_string
+    return successful_multiple_alignments, failed_multiple_alignments, discarded_seqs_string
 
 
 def multiple_alignment_dimensions(seq_dict, mfa_file):

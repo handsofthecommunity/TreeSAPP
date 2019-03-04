@@ -24,6 +24,7 @@ class ReferencePackage:
         self.tree = ""
         self.boot_tree = ""
         self.lineage_ids = ""
+        self.taxa_trie = ""
         self.sub_model = ""
         self.core_ref_files = list()
         self.num_seqs = 0
@@ -97,9 +98,9 @@ class MarkerBuild:
         self.num_reps = 0
         self.pfit = []
 
-    def load_build_params(self, build_param_line):
+    def load_build_params(self, build_param_line, n_fields):
         build_param_fields = build_param_line.split('\t')
-        if len(build_param_fields) != 11:
+        if len(build_param_fields) != n_fields:
             logging.error("Incorrect number of values (" + str(len(build_param_fields)) +
                           ") in ref_build_parameters.tsv. Line:\n" + build_param_line)
             sys.exit(17)
@@ -109,12 +110,12 @@ class MarkerBuild:
         self.molecule = build_param_fields[2]
         self.model = build_param_fields[3]
         self.kind = build_param_fields[4]
-        self.pid = build_param_fields[5]
-        self.num_reps = build_param_fields[6]
+        self.pid = float(build_param_fields[5])
+        self.num_reps = int(build_param_fields[6])
         self.tree_tool = build_param_fields[7]
         self.lowest_confident_rank = build_param_fields[9]
         self.update = build_param_fields[10]
-        self.description = build_param_fields[-1]
+        self.description = build_param_fields[-1].strip()
 
     def load_pfit_params(self, build_param_line):
         build_param_fields = build_param_line.split("\t")

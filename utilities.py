@@ -213,7 +213,7 @@ def executable_dependency_versions(exe_dict):
     version_param = ["trimal", "mafft"]
     no_params = ["usearch", "papara"]
     help_param = ["hmmbuild", "hmmalign", "hmmsearch", "OD-seq"]
-    version_re = re.compile(r"[Vv]\d+.\d|version \d+.\d|\d\.\d\.\d")
+    version_re = re.compile(r"[Vv]\d+.\d|version \d+.\d|\d\.\d\.\d|HMMER")
 
     for exe in exe_dict:
         ##
@@ -938,3 +938,24 @@ def complement_nucs(nuc_str: str):
 
 def reverse_complement(nuc_sequence: str):
     return complement_nucs(nuc_sequence[::-1])
+
+
+def fish_refpkg_from_build_params(bait: str, marker_build_dict: dict):
+    """
+    Using a marker gene name (first column in ref_build_parameters.tsv, e.g. RecA, McrA) as bait,
+    find and return the reference package for that marker gene name by matching the 'cog' elements.
+
+    :param bait: A marker gene name
+    :param marker_build_dict: A dictionary of refpkg name keys mapping to MarkerBuild instances
+    :return: MarkerBuild object
+    """
+    refpkg = None
+    for denominator in marker_build_dict:
+        if bait == marker_build_dict[denominator].cog:
+            refpkg = marker_build_dict[denominator]
+            break
+    if refpkg is None:
+        logging.error("Unable to find '" + bait + "' in marker_build_dict!\n")
+        sys.exit(13)
+    else:
+        return refpkg
