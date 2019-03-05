@@ -2954,7 +2954,7 @@ def main(argv):
             input_multi_fasta = args.fasta_input
         args.formatted_input_file = args.output_dir_var + input_multi_fasta + "_formatted.fasta"
         logging.debug("Writing formatted FASTA file to " + args.formatted_input_file + "... ")
-        formatted_fasta_files = write_new_fasta(formatted_fasta_dict, args.formatted_input_file)
+        formatted_fasta_files = write_new_fasta(formatted_input_dict, args.formatted_input_file)
         logging.debug("done.\n")
         ref_alignment_dimensions = get_alignment_dims(args, marker_build_dict)
 
@@ -2970,7 +2970,7 @@ def main(argv):
         else:
             hmm_domtbl_files = hmmsearch_orfs(args, marker_build_dict)
             hmm_matches = parse_domain_tables(args, hmm_domtbl_files)
-            extracted_seq_dict, numeric_contig_index = extract_hmm_matches(hmm_matches, formatted_fasta_dict)
+            extracted_seq_dict, numeric_contig_index = extract_hmm_matches(hmm_matches, formatted_input_dict)
             homolog_seq_files = write_grouped_fastas(extracted_seq_dict, numeric_contig_index,
                                                      marker_build_dict, args.output_dir_var)
 
