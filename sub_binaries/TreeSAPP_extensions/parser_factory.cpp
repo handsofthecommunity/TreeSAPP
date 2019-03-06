@@ -1,7 +1,7 @@
-#include <Python.h>
 #include "parser_factory.h"
 
-static PyObject *read_file(vector<string> accession_list, const char * file) {
+
+static PyObject *read_file(unordered_set<string> accession_list, const char * file) {
 	try {
 		string line;
 		ifstream acc_file(file);
@@ -14,23 +14,29 @@ static PyObject *read_file(vector<string> accession_list, const char * file) {
 
 		vector<vector<string>> allLists = {};
 
+		int count = 0;
 		int check = 0;
+		int size = accession_list.size();
 
 		while (getline(acc_file, line)) {
 			std::istringstream iss(line);
 			while (getline(iss, tmp, '\t')) {
 				data.push_back(tmp);
 
-				if (std::find(accession_list.begin(), accession_list.end(), data[0]) == accession_list.end()) {
+				if (accession_list.find(data[0]) == accession_list.end()) {
 					check = 1;
 					break;
 				}
 			}
 
-			if (std::find(accession_list.begin(), accession_list.end(), data[0]) != accession_list.end() && check == 0) {
+			if (accession_list.find(data[0]) == accession_list.end() && check == 0) {
+				count++;
 				accession_ids.push_back(data[0]);
 				version.push_back(data[1]);
 				taxid.push_back(data[2]);
+			}
+			if (count == size) {
+				break;
 			}
 			check = 0;
 			data.clear();
@@ -61,15 +67,15 @@ static PyObject *read_file(vector<string> accession_list, const char * file) {
 	return NULL;
 }
 
-// PyObject -> vector
-vector<string> listToVector_Str(PyObject* incoming) {
-	vector<string> accession_list;
+// PyObject -> unordered HashSet
+unordered_set<string> listtoSet(PyObject* incoming) {
+	unordered_set<string> accession_list;
 	int numLines = PyList_Size(incoming);
 	for (Py_ssize_t i = 0; i < numLines; i++) {
 		PyObject *strObj = PyList_GetItem(incoming, i);
 		PyObject *str = PyUnicode_AsEncodedString(strObj, "utf-8", "~E~"); 
 		string accession_id = PyBytes_AsString(str);
-		accession_list.push_back(accession_id);
+		accession_list.insert(accession_id);
 	}
 	return accession_list;
 }
@@ -96,7 +102,7 @@ PyObject* parse_file(PyObject *module, PyObject* args) {
 		fprintf(stderr, "ERROR: Argument types are incorrect...\n");
 		return NULL;
 	}
-	vector<string> accession_list = listToVector_Str(accList);
+	unordered_set<string> accession_list = listtoSet(accList);
 
 	PyObject *retLists = read_file(accession_list, fileName);
 

@@ -1,21 +1,19 @@
 #pragma once
 #include <Python.h>
 
-#include <Windows.h>
 #include <iostream>
 #include <vector>
 #include <sstream>
 #include <fstream>
 #include <string>
-#include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
-static PyObject *read_file(vector<string> accession_list, char * file);
-vector<string> listToVector_Str(PyObject* incoming);
+static PyObject *read_file(unordered_set<string> accession_list, const char * file);
+unordered_set<string> listtoSet(PyObject* incoming);
 PyObject* vectorToList_Str(const vector<string> &data);
 static PyObject *parse_file(PyObject *module, PyObject *args);
-PyObject* tanh_impl(PyObject *, PyObject* o);
 
 static PyMethodDef parsers_methods[] = {
 	{"parsefile", (PyCFunction)parse_file, METH_VARARGS, nullptr },
