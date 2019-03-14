@@ -4,6 +4,7 @@ import sys
 import os
 import re
 import logging
+from collections import defaultdict
 from classy import TreeLeafReference, MarkerBuild, Cluster, PAFObj
 from HMMER_domainTblParser import DomainTableParser, format_split_alignments, filter_incomplete_hits, filter_poor_hits
 from fasta import read_fasta_to_dict
@@ -196,15 +197,15 @@ def best_match(matches):
 def parse_domain_tables(args, hmm_domtbl_files, single=True):
     # Check if the HMM filtering thresholds have been set
     if not hasattr(args, "min_e"):
-        args.min_e = 1E-5
-        args.min_ie = 1E-3
-        args.min_acc = 0.7
+        args.min_e = 1E-4
+        args.min_ie = 0.01
+        args.min_acc = 0.6
         args.min_score = 20
         args.perc_aligned = 80
     # Print some stuff to inform the user what they're running and what thresholds are being used.
     info_string = "Filtering HMM alignments using the following thresholds:\n"
-    info_string += "\tMaximum E-value = " + str(args.min_e) + "\n"
-    info_string += "\tMaximum i-Evalue = " + str(args.min_ie) + "\n"
+    info_string += "\tMinimum E-value = " + str(args.min_e) + "\n"
+    info_string += "\tMinimum i-Evalue = " + str(args.min_ie) + "\n"
     info_string += "\tMinimum acc = " + str(args.min_acc) + "\n"
     info_string += "\tMinimum score = " + str(args.min_score) + "\n"
     info_string += "\tMinimum percentage of the HMM covered = " + str(args.perc_aligned) + "%\n"
@@ -669,30 +670,47 @@ def parse_paf(paf_file):
     for reads that were mapped. Filters reads by maximum observed mapping quality. Assumes alignments
     are sorted by read name (hence multiple alignments for a single read are successive).
     :param paf_file: Path to a PAF file
-    :return: A dictionary mapping reference packages a list of PAF objects
+    :return: A dictionary of reference package names mapping to read names, mapping to a list of PAF objects
     """
-    refpkg_name_paf_map = dict()
+    refpkg_name_paf_map = defaultdict(lambda: defaultdict(list))
+    missing_mapq_value = 255
+    unmapped_mapq_value = 0
     with open(paf_file, "r") as infile:
         prev_qname = ""
         for line in infile:
-            data = line.split("\t")
-            paf_obj = PAFObj(data[0], int(data[1]), int(data[2]), int(data[3]), data[5], int(data[6]), int(data[7]),
-                             int(data[8]), int(data[9]), int(data[10]), int(data[11]))
+            data = line.strip().split("\t")
+            qname, qlen, qstart, qend, strand, tname, tlen, tstart, tend, n_match_bases, n_total_bases, mapq = data[:12]
+            qlen = int(qlen)
+            qstart = int(qstart)
+            qend = int(qend)
+            tlen = int(tlen)
+            tstart = int(tstart)
+            tend = int(tend)
+            n_match_bases = int(n_match_bases)
+            n_total_bases = int(n_total_bases)
+            mapq = int(mapq)
 
-            refpkg_name = data[5].split("_")[1]  # reference header is always guaranteed to include gene name
-            if refpkg_name not in refpkg_name_paf_map:
-                refpkg_name_paf_map[refpkg_name] = list()
+            # upfront filter for unacceptable mapping qualities
+            if mapq == missing_mapq_value or mapq == unmapped_mapq_value:
+                continue
             else:
-                if prev_qname != data[0]:
-                    if 0 < int(data[11]) < 255:
-                        refpkg_name_paf_map[refpkg_name].append(paf_obj)
+                paf_obj = PAFObj(qname, qlen, qstart, qend, strand, tname, tlen, tstart, tend, n_match_bases, n_total_bases,
+                                 mapq)
+                refpkg_name = data[5].split("_")[1]  # reference header is always guaranteed to include gene name
+                if prev_qname != qname:
+                    refpkg_name_paf_map[refpkg_name][qname].append(paf_obj)
                 else:
-                    # filter reads by maximum mapping quality
-                    if len(refpkg_name_paf_map[refpkg_name]) > 0:
-                        stored_mapq = refpkg_name_paf_map[refpkg_name][-1].mapq
-                        if int(data[11]) > stored_mapq:
-                            refpkg_name_paf_map[refpkg_name][-1] = paf_obj
-            prev_qname = data[0]
+                    # filter reads by maximum mapping quality if they overlap
+                    num_regions_read_aligned = len(refpkg_name_paf_map[refpkg_name][qname])
+                    if num_regions_read_aligned > 0:
+                        for i in range(num_regions_read_aligned):
+                            stored_paf_obj = refpkg_name_paf_map[refpkg_name][qname][i]
+                            if stored_paf_obj.is_overlapping(qstart, qend):
+                                stored_mapq = stored_paf_obj.mapq
+                                if mapq > stored_mapq:
+                                    refpkg_name_paf_map[refpkg_name][qname][i] = paf_obj
+                prev_qname = qname
+    print(refpkg_name_paf_map)
     return refpkg_name_paf_map
 
 
