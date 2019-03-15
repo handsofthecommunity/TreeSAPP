@@ -1010,5 +1010,5 @@ class PAFObj:
 
     def is_overlapping(self, other_qstart, other_qend):
         self_l = (self.qstart < other_qend) and (self.qend > other_qstart)
-        self_r = (other_qstart < self.qend) and (other_qstart > self.qend)
+        self_r = (other_qstart < self.qend) and (other_qend > self.qstart)
         return self_l or self_r

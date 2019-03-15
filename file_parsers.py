@@ -670,9 +670,10 @@ def parse_paf(paf_file):
     for reads that were mapped. Filters reads by maximum observed mapping quality. Assumes alignments
     are sorted by read name (hence multiple alignments for a single read are successive).
     :param paf_file: Path to a PAF file
-    :return: A dictionary of reference package names mapping to read names, mapping to a list of PAF objects
+    :return: A dictionary of reference package names mapping to a list of PAF objects
     """
-    refpkg_name_paf_map = defaultdict(lambda: defaultdict(list))
+    refpkg_name_paf_map = defaultdict(list)
+    parser_dict = defaultdict(set)
     missing_mapq_value = 255
     unmapped_mapq_value = 0
     with open(paf_file, "r") as infile:
@@ -694,23 +695,30 @@ def parse_paf(paf_file):
             if mapq == missing_mapq_value or mapq == unmapped_mapq_value:
                 continue
             else:
-                paf_obj = PAFObj(qname, qlen, qstart, qend, strand, tname, tlen, tstart, tend, n_match_bases, n_total_bases,
-                                 mapq)
-                refpkg_name = data[5].split("_")[1]  # reference header is always guaranteed to include gene name
+                refpkg_name = tname.split("_")[1]  # reference header is always guaranteed to include gene name
+                paf_obj = PAFObj(qname, qlen, qstart, qend, strand, refpkg_name, tlen, tstart, tend, n_match_bases,
+                                 n_total_bases, mapq)
                 if prev_qname != qname:
-                    refpkg_name_paf_map[refpkg_name][qname].append(paf_obj)
+                    parser_dict[qname].add(paf_obj)
                 else:
                     # filter reads by maximum mapping quality if they overlap
-                    num_regions_read_aligned = len(refpkg_name_paf_map[refpkg_name][qname])
-                    if num_regions_read_aligned > 0:
-                        for i in range(num_regions_read_aligned):
-                            stored_paf_obj = refpkg_name_paf_map[refpkg_name][qname][i]
-                            if stored_paf_obj.is_overlapping(qstart, qend):
-                                stored_mapq = stored_paf_obj.mapq
-                                if mapq > stored_mapq:
-                                    refpkg_name_paf_map[refpkg_name][qname][i] = paf_obj
+                    is_curr_overlapping = False
+                    for stored_paf_obj in parser_dict[qname].copy():
+                        if stored_paf_obj.is_overlapping(qstart, qend):
+                            is_curr_overlapping = True
+                            stored_mapq = stored_paf_obj.mapq
+                            if mapq > stored_mapq:
+                                parser_dict[qname].remove(stored_paf_obj)
+                                parser_dict[qname].add(paf_obj)
+
+                    if not is_curr_overlapping:
+                        parser_dict[qname].add(paf_obj)
+
                 prev_qname = qname
-    print(refpkg_name_paf_map)
+
+    for s in parser_dict.values():
+        for paf_obj in s:
+            refpkg_name_paf_map[paf_obj.tname].append(paf_obj)
     return refpkg_name_paf_map
 
 
