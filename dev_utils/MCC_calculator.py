@@ -89,6 +89,23 @@ class ConfusionTest:
         summary_string += "\tTrue negatives\t\t" + str(self.get_true_negatives(refpkg_name)) + "\n"
         return summary_string
 
+    def populate_tax_lineage_map(self, classified_seq_list, records_list, group=1):
+        for seq_name in classified_seq_list:  # type: str
+            try:
+                tax_id = self.header_regex.search(seq_name).group(group)
+            except (KeyError, TypeError):
+                logging.error("Header '" + str(seq_name) + "' in test FASTA doesn't match the supported format.\n")
+                sys.exit(5)
+
+            # Only make Entrez records for new NCBI taxonomy IDs
+            if tax_id not in self.tax_lineage_map:
+                e_record = EntrezRecord(seq_name, "")
+                e_record.ncbi_tax = tax_id
+                e_record.bitflag = 3
+                records_list.append(e_record)
+                self.tax_lineage_map[e_record.ncbi_tax] = "Root; "
+        return records_list
+
     def retrieve_lineages(self, group=1):
         if not self.header_regex:
             logging.error("Unable to parse taxonomic identifiers from header without a regular expression.\n")
@@ -97,26 +114,20 @@ class ConfusionTest:
         # Gather the unique taxonomy IDs and store in EntrezRecord instances
         entrez_records = list()
         for marker in self.tp:
-            for tp_seq in self.tp[marker]:  # type: ClassifiedSequence
-                header = tp_seq.name
-                try:
-                    tax_id = self.header_regex.search(header).group(group)
-                except (KeyError, TypeError):
-                    logging.error("Header '" + str(header) + "' in test FASTA doesn't match the supported format.\n")
-                    sys.exit(5)
-
-                # Only make Entrez records for new NCBI taxonomy IDs
-                if tax_id not in self.tax_lineage_map:
-                    e_record = EntrezRecord(header, "")
-                    e_record.ncbi_tax = tax_id
-                    e_record.bitflag = 3
-                    entrez_records.append(e_record)
+            entrez_records = self.populate_tax_lineage_map([tp_inst.name for tp_inst in self.tp[marker]],
+                                                           entrez_records, group)
+        for marker in self.fn:
+            entrez_records = self.populate_tax_lineage_map(self.fn[marker], entrez_records, group)
 
         # Query the Entrez database for these unique taxonomy IDs
         fetch_lineages_from_taxids(entrez_records)
 
         for e_record in entrez_records:  # type: EntrezRecord
-            self.tax_lineage_map[e_record.ncbi_tax] = clean_lineage_string(e_record.lineage)
+            if not e_record.lineage:
+                logging.warning("Lineage information unavailable for taxonomy ID '" + e_record.ncbi_tax + "'\n")
+                self.tax_lineage_map[e_record.ncbi_tax] = ''
+            else:
+                self.tax_lineage_map[e_record.ncbi_tax] += clean_lineage_string(e_record.lineage)
         return
 
     def bin_true_positives_by_taxdist(self):
@@ -134,11 +145,15 @@ class ConfusionTest:
                 # Find the optimal taxonomic assignment
                 optimal_taxon = optimal_taxonomic_assignment(self.ref_packages[marker].taxa_trie,
                                                              self.tax_lineage_map[tp_inst.ncbi_tax])
+                if not optimal_taxon:
+                    logging.debug("Optimal taxonomic assignment '" + self.tax_lineage_map[tp_inst.ncbi_tax] + "' for " +
+                                  tp_inst.name + " not found in reference hierarchy.\n")
+                    continue
                 tp_inst.tax_dist, status = compute_taxonomic_distance(tp_inst.assigned_lineage, optimal_taxon)
                 if status > 0:
-                    logging.debug("Lineages didn't converge between:\n" +
-                                  tp_inst.assigned_lineage + "\n" +
-                                  self.tax_lineage_map[tp_inst.ncbi_tax] + "\n")
+                    logging.debug("Lineages didn't converge between:\n'" +
+                                  tp_inst.assigned_lineage + "' and '" + optimal_taxon +
+                                  "' (taxid: " + tp_inst.ncbi_tax + ")\n")
                 try:
                     self.dist_wise_tp[marker][tp_inst.tax_dist].append(tp_inst.name)
                 except KeyError:
@@ -365,6 +380,30 @@ class ConfusionTest:
             self.fn[marker] = set(self.fn[marker]).difference(homologous_tps)
         return
 
+    def summarize_type_two_taxa(self, rank_depth=3):
+        lineage_count_dict = dict()
+        summary_string = ""
+        for marker in self.fn:
+            if len(self.fn[marker]) == 0:
+                continue
+            summary_string += "Number of false negatives for '" + marker + "':\n"
+            for seq_name in self.fn[marker]:
+                ref_g, tax_id = self.header_regex.match(seq_name).groups()
+                try:
+                    summary_lineage = "; ".join(self.tax_lineage_map[tax_id].split("; ")[:rank_depth])
+                except KeyError:
+                    continue
+                try:
+                    lineage_count_dict[summary_lineage] += 1
+                except KeyError:
+                    lineage_count_dict[summary_lineage] = 1
+
+            for summary_lineage in sorted(lineage_count_dict):
+                summary_string += "\t'" + summary_lineage + "'\t" + str(lineage_count_dict[summary_lineage]) + "\n"
+            lineage_count_dict.clear()
+
+        return summary_string
+
 
 def get_arguments():
     parser = argparse.ArgumentParser(add_help=False,
@@ -508,7 +547,7 @@ def main():
             if pkg_name in pkg_name_dict:
                 try:
                     tax_ids_file = glob(os.sep.join([gpkg, marker + ".gpkg.refpkg", marker + "*_taxonomy.csv"])).pop()
-                    test_obj.ref_packages[pkg_name].taxonomic_tree = grab_graftm_taxa(tax_ids_file)
+                    test_obj.ref_packages[pkg_name].taxa_trie = grab_graftm_taxa(tax_ids_file)
                 except IndexError:
                     logging.warning("No GraftM taxonomy file found for " + marker + ". Is this refpkg incomplete?\n")
 
@@ -552,6 +591,9 @@ def main():
                                  "--threads", str(args.num_threads),
                                  "--output_directory", output_dir,
                                  "--force"]
+                if args.tool == "diamond":
+                    classify_call += ["--assignment_method", "diamond"]
+                    classify_call += ["--search_method", "diamond"]
                 launch_write_command(classify_call, False)
 
             assignments[marker] = file_parsers.read_graftm_classifications(classification_table)
@@ -582,6 +624,7 @@ def main():
     test_obj.validate_false_positives()
     test_obj.validate_false_negatives(pkg_name_dict)
 
+    logging.debug(test_obj.summarize_type_two_taxa())
     ##
     # Report the MCC score across different taxonomic distances - should increase with greater allowed distance
     ##

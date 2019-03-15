@@ -326,6 +326,10 @@ def fetch_lineages_from_taxids(entrez_records: list):
         taxid = e_record.ncbi_tax
         if taxid and taxid not in tax_id_map:
             tax_id_map[taxid] = []
+        elif not taxid:
+            logging.warning("Empty NCBI taxonomy ID for incomplete EntrezRecord query:\n" +
+                            e_record.get_info() + "\n")
+            continue
         tax_id_map[taxid].append(e_record)
 
     logging.info("Retrieving lineage information for each taxonomy ID... ")
@@ -362,12 +366,16 @@ def entrez_records_to_accession_lineage_map(entrez_records_list):
     # TODO: Remove this necessity. Currently need to reformat and tally accessions like so but its a waste
     # Used for tallying the status of Entrez queries
     success = 0
+    rescued = 0
     bad_tax = 0
     bad_org = 0
-    rescued = 0
+    failed = 0
     accession_lineage_map = dict()
 
     for e_record in entrez_records_list:
+        if e_record.bitflag == 0:
+            failed += 1
+            continue
         accession_lineage_map[(e_record.accession, e_record.versioned)] = dict()
         accession_lineage_map[(e_record.accession, e_record.versioned)]["lineage"] = e_record.lineage
         accession_lineage_map[(e_record.accession, e_record.versioned)]["organism"] = e_record.organism
@@ -388,7 +396,8 @@ def entrez_records_to_accession_lineage_map(entrez_records_list):
     logging.debug("Queries mapped ideally = " + str(success) +
                   "\nQueries with organism unmapped = " + str(bad_org) +
                   "\nQueries with NCBI taxonomy ID unmapped = " + str(bad_tax) +
-                  "\nQueries mapped with alternative accessions = " + str(rescued) + "\n")
+                  "\nQueries mapped with alternative accessions = " + str(rescued) +
+                  "\nQueries that outright failed = " + str(failed) + "\n")
 
     return accession_lineage_map
 
@@ -412,7 +421,6 @@ def get_multiple_lineages(search_term_list: list, molecule_type: str):
     entrez_records = list()
     organism_map = dict()
     unique_organisms = set()
-    updated_accessions = dict()
 
     prep_for_entrez_query()
     entrez_db = validate_target_db(molecule_type)
@@ -434,10 +442,9 @@ def get_multiple_lineages(search_term_list: list, molecule_type: str):
         elif accession not in search_term_list and ver not in search_term_list:
             for alt_key in alt:
                 if alt_key in search_term_list:
-                    ver = alt_key
-                updated_accessions[alt_key] = (accession, ver)
-        else:
-            e_record.bitflag += 1
+                    e_record.accession = alt_key
+                    break
+        e_record.bitflag += 1
         e_record.organism = parse_gbseq_info_from_entrez_xml(record)
         # Entrez replaces special characters with whitespace in organism queries, so doing it here for compatibility
         e_record.organism = re.sub('[:]', ' ', e_record.organism)

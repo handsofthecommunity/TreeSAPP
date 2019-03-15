@@ -30,7 +30,7 @@ try:
         TreeLeafReference, TreeProtein, ReferenceSequence, prep_logging
     from fasta import format_read_fasta, get_headers, write_new_fasta, trim_multiple_alignment, read_fasta_to_dict
     from entish import create_tree_info_hash, deconvolute_assignments, read_and_understand_the_reference_tree,\
-        get_node, annotate_partition_tree, find_cluster
+        get_node, annotate_partition_tree, find_cluster, tree_leaf_distances, index_tree_edges
     from external_command_interface import launch_write_command, setup_progress_bar
     from lca_calculations import *
     from jplace_utils import *
@@ -73,9 +73,9 @@ def get_options():
                         help='the type of input sequences (prot = Protein; dna = Nucleotide [DEFAULT])')
     parser.add_argument("-s", "--stringency", choices=["relaxed", "strict"], default="relaxed", required=False,
                         help="HMM-threshold mode affects the number of query sequences that advance on to placement.")
-    parser.add_argument("-l", "--min_likelihood", default=0.2, type=float,
+    parser.add_argument("-l", "--min_likelihood", default=0.1, type=float,
                         help="The minimum likelihood weight ratio required for a RAxML placement. "
-                             "[DEFAULT = 0.2]")
+                             "[DEFAULT = 0.1]")
     parser.add_argument("-P", "--placement_parser", default="best", type=str, choices=["best", "lca"],
                         help="Algorithm used for parsing each sequence's potential RAxML placements. "
                              "[DEFAULT = 'best']")
@@ -141,6 +141,7 @@ def check_parser_arguments(args):
     # Setup the global logger and main log file
     log_file_name = args.output + os.sep + "TreeSAPP_log.txt"
     prep_logging(log_file_name, args.verbose)
+    logging.debug("Command used:\n" + ' '.join(sys.argv) + "\n")
 
     # Ensure files contain more than 0 sequences
     args.treesapp = os.path.abspath(os.path.dirname(os.path.realpath(__file__))) + os.sep
@@ -187,16 +188,19 @@ def check_parser_arguments(args):
         sys.exit()
 
     # Parameterizing the hmmsearch output parsing:
-    args.perc_aligned = 15
+    args.perc_aligned = 10
     args.min_acc = 0.7
     if args.stringency == "relaxed":
-        args.min_e = 1E-2
+        args.min_e = 1E-3
         args.min_ie = 1E-1
         args.min_score = 15
-    else:
+    elif args.stringency == "strict":
         args.min_e = 1E-7
         args.min_ie = 1E-5
         args.min_score = 30
+    else:
+        logging.error("Unknown HMM-parsing stringency argument '" + args.stringency + "'.\n")
+        sys.exit(3)
 
     return args
 
@@ -1305,28 +1309,35 @@ def check_for_removed_sequences(args, trimmed_msa_files: dict, msa_files: dict, 
     qc_ma_dict = dict()
     num_successful_alignments = 0
     discarded_seqs_string = ""
+    trimmed_away_seqs = dict()
+    untrimmed_msa_failed = []
     logging.debug("Validating trimmed multiple sequence alignment files... ")
 
     for denominator in sorted(trimmed_msa_files.keys()):
         marker = marker_build_dict[denominator].cog
+        trimmed_away_seqs[marker] = 0
         # Create a set of the reference sequence names
         ref_headers = get_headers(os.sep.join([args.treesapp, "data", "alignment_data", marker + ".fa"]))
         unique_refs = set([re.sub('_' + re.escape(marker), '', x)[1:] for x in ref_headers])
         msa_passed, msa_failed, summary_str = validate_alignment_trimming(trimmed_msa_files[denominator], unique_refs,
                                                                           True, args.min_seq_length)
-        if len(msa_failed) > 0:
-            untrimmed_msa_failed = []
-            # Get the untrimmed multiple alignment files for the failures
-            for trimmed_msa_file in msa_failed:
-                try:
-                    prefix, tool = re.search(r"([A-Z0-9]+_.*)-(BMGE|trimAl).fasta$", trimmed_msa_file).groups()
-                except TypeError:
-                    logging.error("Unexpected file name format for a trimmed MSA.\n")
-                    sys.exit(3)
-                # Use the prefix of the trimmed MSA file to find the matching untrimmed MSA file
-                for msa_file in msa_files[denominator]:
-                    if re.search(prefix, msa_file):
+
+        # Report the number of sequences that are removed by BMGE
+        for trimmed_msa_file in trimmed_msa_files[denominator]:
+            try:
+                prefix, tool = re.search(r"(" + re.escape(marker) + "_.*_group\d+)-(BMGE|trimAl).fasta$",
+                                         os.path.basename(trimmed_msa_file)).groups()
+            except TypeError:
+                logging.error("Unexpected file name format for a trimmed MSA.\n")
+                sys.exit(3)
+            for msa_file in msa_files[denominator]:
+                if re.search(re.escape(prefix) + '\.', msa_file):
+                    if trimmed_msa_file in msa_failed:
                         untrimmed_msa_failed.append(msa_file)
+                    trimmed_away_seqs[marker] += len(set(get_headers(msa_file)).difference(set(get_headers(trimmed_msa_file))))
+                    break
+
+        if len(msa_failed) > 0:
             if len(untrimmed_msa_failed) != len(msa_failed):
                 logging.error("Not all of the failed, trimmed MSA files were mapped to the original MSAs.\n")
                 sys.exit(3)
@@ -1338,7 +1349,11 @@ def check_for_removed_sequences(args, trimmed_msa_files: dict, msa_files: dict, 
         discarded_seqs_string += summary_str
 
     logging.debug("done.\n")
-    logging.debug("\tSequences <" + str(args.min_seq_length) + " characters removed:" + discarded_seqs_string + "\n")
+    logging.debug("\tSequences removed during trimming:\n\t\t" +
+                  '\n\t\t'.join([k + ": " + str(trimmed_away_seqs[k]) for k in trimmed_away_seqs.keys()]) + "\n")
+
+    logging.debug("\tSequences <" + str(args.min_seq_length) + " characters removed after trimming:" +
+                  discarded_seqs_string + "\n")
 
     if num_successful_alignments == 0:
         logging.error("No quality alignment files to analyze after trimming. Exiting now.\n")
@@ -2235,12 +2250,12 @@ def run_rpkm(args, sam_file, orf_nuc_fasta):
     return rpkm_output_file
 
 
-def summarize_placements_rpkm(args, rpkm_output_file, marker_build_dict):
+def summarize_placements_rpkm(args, abundance_dict, marker_build_dict):
     """
     Recalculates the percentages for each marker gene final output based on the RPKM values
     Recapitulates MLTreeMap standard out summary
     :param args: Command-line argument object from get_options and check_parser_arguments
-    :param rpkm_output_file: CSV file containing contig names and RPKM values
+    :param abundance_dict: A dictionary mapping predicted (not necessarily classified) seq_names to abundance values
     :type marker_build_dict: dict
     :param marker_build_dict:
     :return:
@@ -2252,10 +2267,9 @@ def summarize_placements_rpkm(args, rpkm_output_file, marker_build_dict):
     marker_rpkm_map = dict()
 
     # Pull the RPKM values for each marker predicted; seq_name format is contig|marker
-    rpkm_values = read_rpkm(rpkm_output_file)
-    for seq_name in rpkm_values:
+    for seq_name in abundance_dict:
         contig, marker = seq_name.split('|')
-        contig_rpkm_map[contig] = rpkm_values[seq_name]
+        contig_rpkm_map[contig] = abundance_dict[seq_name]
         if marker not in marker_contig_map:
             marker_contig_map[marker] = list()
         marker_contig_map[marker].append(contig)
@@ -2318,6 +2332,24 @@ def summarize_placements_rpkm(args, rpkm_output_file, marker_build_dict):
 
             cat_output.close()
             
+    return
+
+
+def abundify_tree_saps(tree_saps, abundance_dict):
+    abundance_mapped_acc = 0
+    for refpkg_code in tree_saps:
+        for placed_seq in tree_saps[refpkg_code]:  # type: TreeProtein
+            seq_name = placed_seq.contig_name + '|' + placed_seq.name
+            # Filter out RPKMs for contigs not associated with the target marker
+            if seq_name in abundance_dict:
+                placed_seq.abundance = abundance_dict[seq_name]
+                abundance_mapped_acc += 1
+            else:
+                placed_seq.abundance = 0.0
+
+    if abundance_mapped_acc == 0:
+        logging.warning("No placed sequences with abundances identified.\n")
+
     return
 
 
@@ -2491,35 +2523,19 @@ def create_itol_labels(args, marker):
     return
 
 
-def generate_simplebar(target_marker, tree_protein_list, itol_bar_file, all_rpkm_values=None):
+def generate_simplebar(target_marker, tree_protein_list, itol_bar_file):
     """
     From the basic RPKM output csv file, generate an iTOL-compatible simple bar-graph file for each leaf
 
-    :param all_rpkm_values: A dictionary mapping seq_names to RPKM floats
     :param target_marker:
     :param tree_protein_list: A list of TreeProtein objects, for single sequences
     :param itol_bar_file: The name of the file to write the simple-bar data for iTOL
     :return:
     """
-    rpkm_values = dict()
     leaf_rpkm_sums = dict()
 
-    if all_rpkm_values:
-        for seq_name in all_rpkm_values:
-            contig, marker = seq_name.split('|')
-            # Filter out RPKMs for contigs not associated with the target marker
-            if target_marker == marker:
-                rpkm_values[contig] = all_rpkm_values[seq_name]
-    else:
-        for tree_sap in tree_protein_list:
-            rpkm_values[tree_sap.contig_name] = 1.0
-
     for tree_sap in tree_protein_list:
-        if tree_sap.classified:
-            if tree_sap.contig_name in rpkm_values:
-                tree_sap.abundance = rpkm_values[tree_sap.contig_name]
-            else:
-                tree_sap.abundance = 0
+        if tree_sap.name == target_marker and tree_sap.classified:
             leaf_rpkm_sums = tree_sap.sum_rpkms_per_node(leaf_rpkm_sums)
 
     # Only make the file if there is something to write
@@ -2552,13 +2568,12 @@ def lowest_confident_taxonomy(lct, depth):
     :return: String representing 'confident' taxonomic assignment for the sequence
     """
     # Sequence likely isn't a FP but is highly divergent from reference set
-    if depth < 0:
-        return "Root"
+    confident_assignment = "Root"
+    if depth < 1:
+        return confident_assignment
 
     purified_lineage_list = clean_lineage_string(lct).split("; ")
     confident_assignment = "; ".join(purified_lineage_list[:depth])
-    if not confident_assignment:
-        confident_assignment = "Root"
 
     # For debugging
     # rank_depth = {1: "Kingdom", 2: "Phylum", 3: "Class", 4: "Order", 5: "Family", 6: "Genus", 7: "Species", 8: "Strain"}
@@ -2585,7 +2600,7 @@ def enumerate_taxonomic_lineages(lineage_list):
     return taxonomic_counts
 
 
-def filter_placements(args, tree_saps, marker_build_dict, unclassified_counts):
+def filter_placements(args, tree_saps, marker_build_dict):
     """
     Determines the total distance of each placement from its branch point on the tree
     and removes the placement if the distance is deemed too great
@@ -2593,84 +2608,83 @@ def filter_placements(args, tree_saps, marker_build_dict, unclassified_counts):
     :param args: Command-line argument object from get_options and check_parser_arguments
     :param tree_saps: A dictionary containing TreeProtein objects
     :param marker_build_dict: A dictionary of MarkerBuild objects (used here for lowest_confident_rank)
-    :param unclassified_counts: A dictionary tracking the number of putative markers that were not classified
     :return:
     """
 
     logging.info("Filtering low-quality placements... ")
-    distant_seqs = dict()
+    unclassified_seqs = dict()  # A dictionary tracking the seqs unclassified for each marker
 
     for denominator in tree_saps:
         marker = marker_build_dict[denominator].cog
-        distant_seqs[marker] = list()
+        unclassified_seqs[marker] = dict()
+        unclassified_seqs[marker]["low_lwr"] = list()
+        unclassified_seqs[marker]["np"] = list()
+        unclassified_seqs[marker]["beyond"] = list()
+        unclassified_seqs[marker]["far_beyond"] = list()
+
         tree = Tree(os.sep.join([args.treesapp, "data", "tree_data", marker + "_tree.txt"]))
+        max_dist, leaf_ds = tree_leaf_distances(tree)
+        # Find the maximum distance and standard deviation of distances from the root to all leaves
+        max_dist_threshold = max_dist  # + np.std(leaf_ds)
+        mean_dist_threshold = utilities.mean(leaf_ds)
+        logging.debug(denominator + " maximum pendant length distance threshold: " + str(max_dist_threshold) + "\n")
+
         for tree_sap in tree_saps[denominator]:
-            # max_dist_threshold equals the maximum path length from root to tip in its clade
-            max_dist_threshold = tree.get_farthest_leaf()[1]  # Too permissive of a threshold, but good for first pass
-            if tree_sap.name not in unclassified_counts.keys():
-                unclassified_counts[tree_sap.name] = 0
+            tree_sap.filter_min_weight_threshold(args.min_likelihood)
+            if not tree_sap.classified:
+                unclassified_seqs[marker]["low_lwr"].append(tree_sap)
+                continue
             if not tree_sap.placements:
-                unclassified_counts[tree_sap.name] += 1
+                unclassified_seqs[tree_sap.name]["np"].append(tree_sap)
+                continue
             elif len(tree_sap.placements) > 1:
                 logging.warning("More than one placement for a single contig:\n" +
                                 tree_sap.summarize())
                 tree_sap.classified = False
                 continue
             elif tree_sap.placements[0] == '{}':
-                unclassified_counts[tree_sap.name] += 1
+                unclassified_seqs[marker]["np"].append(tree_sap)
                 tree_sap.classified = False
                 continue
 
-            distal_length = float(tree_sap.get_jplace_element("distal_length"))
             pendant_length = float(tree_sap.get_jplace_element("pendant_length"))
+            # Discard this placement as a false positive if the pendant_length exceeds max_dist_threshold
+            if pendant_length > max_dist_threshold:
+                unclassified_seqs[tree_sap.name]["far_beyond"].append(tree_sap)
+                tree_sap.classified = False
+                continue
+            tree_sap.lwr = float(tree_sap.get_jplace_element("like_weight_ratio"))
+            if pendant_length > mean_dist_threshold and tree_sap.lwr < 0.66:
+                unclassified_seqs[marker]["beyond"].append(tree_sap)
+                tree_sap.classified = False
+                continue
+
             # Find the length of the edge this sequence was placed onto
             leaf_children = tree_sap.node_map[int(tree_sap.inode)]
+            distal_length = float(tree_sap.get_jplace_element("distal_length"))
             # Find the distance away from this edge's bifurcation (if internal) or tip (if leaf)
+
             if len(leaf_children) > 1:
                 # We need to find the LCA in the Tree instance to find the distances to tips for ete3
                 parent = tree.get_common_ancestor(leaf_children)
                 tip_distances = parent_to_tip_distances(parent, leaf_children)
             else:
-                tree_leaf = tree.get_leaves_by_name(leaf_children[0])[0]
-                sister = tree_leaf.get_sisters()[0]
-                parent = tree_leaf.get_common_ancestor(sister)
                 tip_distances = [0.0]
 
             tree_sap.avg_evo_dist = round(distal_length + pendant_length + (sum(tip_distances) / len(tip_distances)), 4)
             tree_sap.distances = str(distal_length) + ',' +\
                                  str(pendant_length) + ',' +\
                                  str(sum(tip_distances) / len(tip_distances))
-            # Discard this placement as a false positive if the avg_evo_dist exceeds max_dist_threshold
-            if pendant_length > max_dist_threshold:
-                # print("Global", tree_sap.summarize())
-                unclassified_counts[tree_sap.name] += 1
-                distant_seqs[marker].append(tree_sap.contig_name)
-                tree_sap.classified = False
-                continue
 
-            # Estimate the branch lengths of the clade to factor heterogeneous substitution rates
-            ancestor, clade_tip_distances = find_cluster(parent)
-            if not clade_tip_distances:
-                # Either the parent or ancestor is the root, so there are many children. This doesn't scale well.
-                # TODO: Decrease the number of leaves sampled for this distance
-                leaf, dist = parent.get_farthest_leaf()
-                clade_tip_distances.append(dist)
-            # If the longest root-to-tip distance from the ancestral node (one-up from LCA) is exceeded, discard
-            if pendant_length > max(clade_tip_distances) * 1.2 and \
-                    rank_recommender(pendant_length, marker_build_dict[denominator].pfit) < 0:
-                unclassified_counts[tree_sap.name] += 1
-                distant_seqs[marker].append(tree_sap.contig_name)
-                tree_sap.classified = False
-                # print("Local", tree_sap.summarize())
     logging.info("done.\n")
 
-    for marker in distant_seqs:
+    declass_summary = ""
+    for marker in unclassified_seqs:
         # unclassified_counts[marker] will always be >= distant_seqs[marker]
-        if unclassified_counts[marker] > 0:
-            logging.debug("\t" + str(unclassified_counts[marker]) + " " + marker +
-                          " sequence(s) detected but not classified.\n" +
-                          marker + " queries with extremely long placement distances:\n\t" +
-                          "\n\t".join(distant_seqs[marker]) + "\n")
+        for declass in unclassified_seqs[marker]:
+            declass_summary += marker + '\t' + declass + '\t' + str(len(unclassified_seqs[marker][declass])) + "\n"
+
+    logging.debug(declass_summary)
 
     return tree_saps
 
@@ -2700,13 +2714,10 @@ def write_tabular_output(args, tree_saps, tree_numbers_translation, marker_build
     for denominator in tree_saps:
         # All the leaves for that tree [number, translation, lineage]
         leaves = tree_numbers_translation[denominator]
-        lineage_complete = False
         lineage_list = list()
         # Test if the reference set have lineage information
         for leaf in leaves:
             lineage_list.append(clean_lineage_string(leaf.lineage).split('; '))
-            if leaf.complete:
-                lineage_complete = True
             leaf_taxa_map[leaf.number] = leaf.lineage
         taxonomic_counts = enumerate_taxonomic_lineages(lineage_list)
 
@@ -2724,22 +2735,18 @@ def write_tabular_output(args, tree_saps, tree_numbers_translation, marker_build
                 logging.error("Unable to find lineage information for marker " +
                               denominator + ", contig " + tree_sap.contig_name + "!\n")
                 sys.exit(3)
-            if len(tree_sap.lineage_list) == 1:
+            elif len(tree_sap.lineage_list) == 1:
                 tree_sap.lct = tree_sap.lineage_list[0]
                 tree_sap.wtd = 0.0
-            if len(tree_sap.lineage_list) > 1:
-                if lineage_complete:
-                    lca = tree_sap.megan_lca()
-                    # algorithm options are "MEGAN", "LCAp", and "LCA*" (default)
-                    tree_sap.lct = lowest_common_taxonomy(tree_sap.lineage_list, lca, taxonomic_counts, "LCA*")
-                    tree_sap.wtd, status = weighted_taxonomic_distance(tree_sap.lineage_list, tree_sap.lct)
-                    if status > 0:
-                        tree_sap.summarize()
-                else:
-                    tree_sap.lct = "Lowest common ancestor of: "
-                    tree_sap.lct += ', '.join(tree_sap.lineage_list)
-                    tree_sap.wtd = 1
+            else:
+                lca = tree_sap.megan_lca()
+                # algorithm options are "MEGAN", "LCAp", and "LCA*" (default)
+                tree_sap.lct = lowest_common_taxonomy(tree_sap.lineage_list, lca, taxonomic_counts, "LCA*")
+                tree_sap.wtd, status = weighted_taxonomic_distance(tree_sap.lineage_list, tree_sap.lct)
+                if status > 0:
+                    tree_sap.summarize()
 
+            tree_sap.lct = "Root; " + tree_sap.lct
             # tree_sap.summarize()
             tab_out_string += '\t'.join([sample_name,
                                          tree_sap.contig_name,
@@ -2777,37 +2784,28 @@ def parse_raxml_output(args, marker_build_dict):
     jplace_collection = organize_jplace_files(jplace_files)
     itol_data = dict()  # contains all pqueries, indexed by marker name (e.g. McrA, nosZ, 16srRNA)
     tree_saps = dict()  # contains individual pquery information for each mapped protein (N==1), indexed by denominator
-    unclassified_counts = dict()  # A dictionary tracking the number of putative markers that were not classified
     # Use the jplace files to guide which markers iTOL outputs should be created for
     classified_seqs = 0
     for denominator in jplace_collection:
         marker = marker_build_dict[denominator].cog
         if denominator not in tree_saps:
             tree_saps[denominator] = list()
-        if marker not in unclassified_counts.keys():
-            unclassified_counts[marker] = 0
         for filename in jplace_collection[denominator]:
             # Load the JSON placement (jplace) file containing >= 1 pquery into ItolJplace object
             jplace_data = jplace_parser(filename)
+            tree_index = index_tree_edges(jplace_data.tree)
             # Demultiplex all pqueries in jplace_data into individual TreeProtein objects
             tree_placement_queries = demultiplex_pqueries(jplace_data)
             # Filter the placements, determine the likelihood associated with the harmonized placement
             for pquery in tree_placement_queries:
                 pquery.name = marker
-                pquery.filter_min_weight_threshold(args.min_likelihood)
-                if not pquery.classified:
-                    unclassified_counts[marker] += 1
-                    logging.debug("A putative " + marker +
-                                  " sequence has been unclassified due to low placement likelihood weights. " +
-                                  "More info:\n" +
-                                  pquery.summarize())
-                    continue
                 seq_info = re.match(r"(.*)\|" + re.escape(marker) + "\|(\\d+)_(\\d+)$", pquery.contig_name)
                 if seq_info:
                     pquery.contig_name = seq_info.group(1)
                     start, end = seq_info.groups()[1:]
                     pquery.seq_len = int(end) - int(start)
                 pquery.create_jplace_node_map()
+                pquery.check_jplace(tree_index)
                 if args.placement_parser == "best":
                     pquery.filter_max_weight_placement()
                 else:
@@ -2843,10 +2841,10 @@ def parse_raxml_output(args, marker_build_dict):
     logging.debug("\t" + str(len(jplace_files)) + " RAxML output files.\n" +
                   "\t" + str(classified_seqs) + " sequences classified by TreeSAPP.\n\n")
 
-    return tree_saps, itol_data, unclassified_counts
+    return tree_saps, itol_data
 
 
-def produce_itol_inputs(args, tree_saps, marker_build_dict, itol_data, rpkm_output_file=None):
+def produce_itol_inputs(args, tree_saps, marker_build_dict, itol_data):
     """
     Function to create outputs for the interactive tree of life (iTOL) webservice.
     There is a directory for each of the marker genes detected to allow the user to "drag-and-drop" all files easily
@@ -2855,7 +2853,6 @@ def produce_itol_inputs(args, tree_saps, marker_build_dict, itol_data, rpkm_outp
     :param tree_saps:
     :param marker_build_dict:
     :param itol_data:
-    :param rpkm_output_file:
     :return: None
     """
     logging.info("Generating inputs for iTOL... ")
@@ -2882,6 +2879,8 @@ def produce_itol_inputs(args, tree_saps, marker_build_dict, itol_data, rpkm_outp
         # Make a master jplace file from the set of placements in all jplace files for each marker
         master_jplace = itol_base_dir + marker + os.sep + marker + "_complete_profile.jplace"
         itol_data[marker] = filter_jplace_data(itol_data[marker], tree_saps[denominator])
+        # TODO: validate no distal lengths exceed their corresponding edge lengths
+
         write_jplace(itol_data[marker], master_jplace)
         itol_data[marker].clear_object()
         # Create a labels file from the tax_ids_marker.txt
@@ -2899,11 +2898,7 @@ def produce_itol_inputs(args, tree_saps, marker_build_dict, itol_data, rpkm_outp
         for annotation_file in annotation_style_files:
             shutil.copy(annotation_file, itol_base_dir + marker)
         itol_bar_file = os.sep.join([args.output, "iTOL_output", marker, marker + "_abundance_simplebar.txt"])
-        if args.rpkm:
-            all_rpkm_values = read_rpkm(rpkm_output_file)
-            generate_simplebar(marker, tree_saps[denominator], itol_bar_file, all_rpkm_values)
-        else:
-            generate_simplebar(marker, tree_saps[denominator], itol_bar_file)
+        generate_simplebar(marker, tree_saps[denominator], itol_bar_file)
 
     logging.info("done.\n")
     if style_missing:
@@ -2996,10 +2991,10 @@ def main(argv):
         # STAGE 5: Run RAxML to compute the ML estimations
         utilities.launch_evolutionary_placement_queries(args, phy_files, marker_build_dict)
         sub_indices_for_seq_names_jplace(args, numeric_contig_index, marker_build_dict)
-    tree_saps, itol_data, unclassified_counts = parse_raxml_output(args, marker_build_dict)
-    tree_saps = filter_placements(args, tree_saps, marker_build_dict, unclassified_counts)
+    tree_saps, itol_data = parse_raxml_output(args, marker_build_dict)
+    tree_saps = filter_placements(args, tree_saps, marker_build_dict)
 
-    abundance_file = None
+    abundance_dict = dict()
     if args.molecule == "dna":
         sample_name = '.'.join(os.path.basename(re.sub("_ORFs", '', args.fasta_input)).split('.')[:-1])
         orf_nuc_fasta = args.output_dir_final + sample_name + "_classified_seqs.fna"
@@ -3015,13 +3010,17 @@ def main(argv):
                              "Cannot create the nucleotide FASTA file of classified sequences!\n")
         if args.rpkm:
             sam_file = align_reads_to_nucs(args, orf_nuc_fasta)
-            abundance_file = run_rpkm(args, sam_file, orf_nuc_fasta)
-            summarize_placements_rpkm(args, abundance_file, marker_build_dict)
+            rpkm_output_file = run_rpkm(args, sam_file, orf_nuc_fasta)
+            abundance_dict = read_rpkm(rpkm_output_file)
+            summarize_placements_rpkm(args, abundance_dict, marker_build_dict)
     else:
-        pass
+        for refpkg_code in tree_saps:
+            for placed_seq in tree_saps[refpkg_code]:  # type: TreeProtein
+                abundance_dict[placed_seq.contig_name + '|' + placed_seq.name] = 1.0
 
+    abundify_tree_saps(tree_saps, abundance_dict)
     write_tabular_output(args, tree_saps, tree_numbers_translation, marker_build_dict)
-    produce_itol_inputs(args, tree_saps, marker_build_dict, itol_data, abundance_file)
+    produce_itol_inputs(args, tree_saps, marker_build_dict, itol_data)
     delete_files(args, 4)
 
     # STAGE 6: Optionally update the reference tree
