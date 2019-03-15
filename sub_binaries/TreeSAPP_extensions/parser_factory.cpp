@@ -1,7 +1,10 @@
-#include "parser_factory.h"
+#include "parser_factory.hpp"
 
-
-static PyObject *read_file(unordered_set<string> accession_list, const char * file) {
+PyObject *read_file(unordered_set<string> accession_list, const char * file) {
+  /*
+   * Function for reading file with accession and tax id data 
+   * to a list of accession ids, tax ids, and versions
+   */
 	try {
 		string line;
 		ifstream acc_file(file);
@@ -17,20 +20,19 @@ static PyObject *read_file(unordered_set<string> accession_list, const char * fi
 		int count = 0;
 		int check = 0;
 		int size = accession_list.size();
-
+		
 		while (getline(acc_file, line)) {
 			std::istringstream iss(line);
 			while (getline(iss, tmp, '\t')) {
 				data.push_back(tmp);
-
 				if (accession_list.find(data[0]) == accession_list.end()) {
-					check = 1;
-					break;
+				        check = 1;
+				 	break;
 				}
 			}
 
-			if (accession_list.find(data[0]) == accession_list.end() && check == 0) {
-				count++;
+			if (accession_list.find(data[0]) != accession_list.end() && check == 0) {
+			        count++;
 				accession_ids.push_back(data[0]);
 				version.push_back(data[1]);
 				taxid.push_back(data[2]);
@@ -41,6 +43,7 @@ static PyObject *read_file(unordered_set<string> accession_list, const char * fi
 			check = 0;
 			data.clear();
 		}
+
 		acc_file.close();
 
 		allLists.push_back(accession_ids);
@@ -67,7 +70,6 @@ static PyObject *read_file(unordered_set<string> accession_list, const char * fi
 	return NULL;
 }
 
-// PyObject -> unordered HashSet
 unordered_set<string> listtoSet(PyObject* incoming) {
 	unordered_set<string> accession_list;
 	int numLines = PyList_Size(incoming);
@@ -80,7 +82,6 @@ unordered_set<string> listtoSet(PyObject* incoming) {
 	return accession_list;
 }
 
-// vector -> PyObject
 PyObject* vectorToList_Str(const vector<string> &data) {
 	PyObject* listObj = PyList_New(data.size());
 	if (!listObj) throw logic_error("Unable to allocate enough memory for output...");
@@ -95,7 +96,7 @@ PyObject* vectorToList_Str(const vector<string> &data) {
 	return listObj;
 }
 
-PyObject* parse_file(PyObject *module, PyObject* args) {
+static PyObject* parse_file(PyObject *module, PyObject* args) {
 	PyObject *accList;
 	const char * fileName;
 	if (!PyArg_ParseTuple(args, "sO!", &fileName, &PyList_Type, &accList)) {

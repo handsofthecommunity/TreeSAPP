@@ -38,7 +38,12 @@ SETUP_METADATA = \
                                      Extension("_fasta_reader",
                                                sources=["sub_binaries/TreeSAPP_extensions/fasta_reader.cpp"],
                                                language="c++",
-                                               include_dirs=["./sub_binaries/TreeSAPP_extensions"])
+                                               include_dirs=["./sub_binaries/TreeSAPP_extensions"]),
+                                     Extension("parser_factory",
+                                               sources=["sub_binaries/TreeSAPP_extensions/parser_factory.cpp"],
+                                               language="c++",
+                                               include_dirs=["./sub_binaries/TreeSAPP_extensions"],
+                                               extra_compile_args=["-std=c++11"]),
                                      ],
                      "install_requires": ["pygtrie>=2.3", "ete3", "numpy", "biopython>=1.68", "scipy"]
                }
