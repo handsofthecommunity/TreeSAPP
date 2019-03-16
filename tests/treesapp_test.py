@@ -1,4 +1,4 @@
-import pytest
+simport pytest
 import unittest
 import os
 import argparse
@@ -23,7 +23,6 @@ def arguments():
     args.formatted_input_file = args.output_dir_var + 'marker_test_suite.faa'  + "_formatted.fasta"
     fasta.write_new_fasta(formatted_fasta_dict, args.formatted_input_file)
     marker_build_dict = treesapp.parse_ref_build_params(args)
-    marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
     formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
     homolog_seq_files, numeric_contig_index = treesapp.extract_hmm_matches(args, hmm_matches, formatted_fasta_dict)
     return args, marker_build_dict, formatted_fasta_dict, homolog_seq_files, numeric_contig_index
@@ -63,7 +62,6 @@ class TempTest(unittest.TestCase):
         args = create_parser(HOME_DIR, 'M0701', 'p')
         single_query_fasta_files = ['/marker_test/various_outputs/McrA_hmm_purified_group0.faa']
         marker_build_dict = treesapp.parse_ref_build_params(args)
-        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
 
         # result = dict()
         # result = treesapp.prepare_and_run_hmmalign(args, single_query_fasta_files, marker_build_dict)
@@ -87,8 +85,7 @@ class TempTest(unittest.TestCase):
         args = create_parser(HOME_DIR, 'M0701', 'p')
 
         marker_build_dict = treesapp.parse_ref_build_params(args)
-        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
-
+        
         if re.match(r'\A.*\/(.*)', args.fasta_input):
             input_multi_fasta = os.path.basename(args.fasta_input)
         else:
@@ -170,7 +167,6 @@ class TempTest(unittest.TestCase):
       args = create_parser(HOME_DIR, 'M0701', 'p')
 
       marker_build_dict = treesapp.parse_ref_build_params(args)
-      marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
 
       assert(treesapp.multiple_alignments(args, single_query_sequence_files, marker_build_dict, "hmmalign")['M0701'] == [TREESAPP_TEST_DIR + 'McrA_hmm_purified_group0.mfa'])
       
@@ -181,13 +177,11 @@ class TempTest(unittest.TestCase):
 
         args = create_parser(HOME_DIR, 'M0701', 'p')
         marker_build_dict = treesapp.parse_ref_build_params(args)
-        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
-
+        
     def test_validate_inputs(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
 
         marker_build_dict = treesapp.parse_ref_build_params(args)
-        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
 
         # Correctly formatted reference tree
         # assert(validate_inputs(args, marker_build_dict))
@@ -215,7 +209,6 @@ class TreeSAPPTest(unittest.TestCase):
     def test_hmmsearch_orfs_parse_domain_tables(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
-        marker_build_dict = file_parsers.parse_cog_list(args, marker_build_dict)
         hmm_domtbl_files = treesapp.hmmsearch_orfs(args, marker_build_dict)
         assert(hmm_domtbl_files[0] == '/home/travis/build/hallamlab/marker_test/various_outputs/McRA_to_ORFs_domtbl.txt')
 
@@ -229,7 +222,6 @@ class TreeSAPPTest(unittest.TestCase):
         args = create_parser(HOME_DIR, 'M0701', 'p')
         args.formatted_input_file = args.output_dir_var + args.fasta_input + "_formatted.fasta"
         marker_build_dict = treesapp.parse_ref_build_params(args)
-        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
         formatted_fasta_dict = fasta.format_read_fasta(args.fasta_input, "prot", args.output)
 
         fasta.write_new_fasta(formatted_fasta_dict, args.formatted_input_file)
