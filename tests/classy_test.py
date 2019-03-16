@@ -152,7 +152,7 @@ class MarkerBuildTest(unittest.TestCase):
         assert(mb.molecule == 'prot')
         assert(mb.model == 'PROTGAMMALG')
         assert(mb.kind == 'functional')
-        assert(mb.pid == '0.97')
+        assert(mb.pid == 0.97)
         assert(mb.num_reps == '211')
         assert(mb.tree_tool == "FastTree")
         assert(mb.lowest_confident_rank == 'Classes')
