@@ -11,6 +11,7 @@ from json import loads, dumps
 from fasta import get_header_format
 from utilities import reformat_string, return_sequence_info_groups, median
 from entish import get_node, create_tree_info_hash, subtrees_to_dictionary
+from numpy import var
 
 import _tree_parser
 
@@ -23,6 +24,7 @@ class ReferencePackage:
         self.tree = ""
         self.boot_tree = ""
         self.lineage_ids = ""
+        self.taxa_trie = ""
         self.sub_model = ""
         self.core_ref_files = list()
         self.num_seqs = 0
@@ -96,9 +98,9 @@ class MarkerBuild:
         self.num_reps = 0
         self.pfit = []
 
-    def load_build_params(self, build_param_line):
+    def load_build_params(self, build_param_line, n_fields):
         build_param_fields = build_param_line.split('\t')
-        if len(build_param_fields) != 11:
+        if len(build_param_fields) != n_fields:
             logging.error("Incorrect number of values (" + str(len(build_param_fields)) +
                           ") in ref_build_parameters.tsv. Line:\n" + build_param_line)
             sys.exit(17)
@@ -108,12 +110,12 @@ class MarkerBuild:
         self.molecule = build_param_fields[2]
         self.model = build_param_fields[3]
         self.kind = build_param_fields[4]
-        self.pid = build_param_fields[5]
-        self.num_reps = build_param_fields[6]
+        self.pid = float(build_param_fields[5])
+        self.num_reps = int(build_param_fields[6])
         self.tree_tool = build_param_fields[7]
         self.lowest_confident_rank = build_param_fields[9]
         self.update = build_param_fields[10]
-        self.description = build_param_fields[-1]
+        self.description = build_param_fields[-1].strip()
 
     def load_pfit_params(self, build_param_line):
         build_param_fields = build_param_line.split("\t")
@@ -207,7 +209,7 @@ class ItolJplace:
         if self.abundance:
             summary_string += "Abundance:\n\t" + str(self.abundance) + "\n"
         if self.distances:
-            summary_string += "Distances:\n\t" + self.distances + "\n"
+            summary_string += "Distal, pendant and tip distances:\n\t" + self.distances + "\n"
         summary_string += "\n"
         return summary_string
 
@@ -327,23 +329,14 @@ class ItolJplace:
         for pquery in self.placements:
             placement = loads(pquery, encoding="utf-8")
             dict_strings = list()
-            if len(placement["p"]) > 1:
+            if len(placement["p"]) >= 1:
                 for k, v in placement.items():
                     if k == 'p':
-                        # For debugging:
-                        # sys.stderr.write(str(v) + "\nRemoved:\n")
-                        acc = 0
-                        tmp_placements = copy.deepcopy(v)
-                        while acc < len(tmp_placements):
-                            candidate = tmp_placements[acc]
-                            if float(candidate[x]) < threshold:
-                                removed = tmp_placements.pop(acc)
-                                # For debugging:
-                                # sys.stderr.write("\t".join([self.name, str(removed[0]),
-                                #                             str(float(removed[x]))]) + "\n")
-                            else:
-                                acc += 1
-                            # sys.stderr.flush()
+                        tmp_placements = []
+                        for candidate in v:
+                            if float(candidate[x]) >= threshold:
+                                tmp_placements.append(candidate)
+
                         # If no placements met the likelihood filter then the sequence cannot be classified
                         # Alternatively: first two will be returned and used for LCA - can test...
                         if len(tmp_placements) > 0:
@@ -375,7 +368,11 @@ class ItolJplace:
                     for locus in v:
                         jplace_node = locus[0]
                         tree_leaves = self.node_map[jplace_node]
-                        normalized_abundance = float(self.abundance/len(tree_leaves))
+                        try:
+                            normalized_abundance = float(self.abundance/len(tree_leaves))
+                        except TypeError:
+                            logging.warning("Unable to find abundance for " + self.contig_name + "... setting to 0.\n")
+                            normalized_abundance = 0.0
                         for tree_leaf in tree_leaves:
                             if tree_leaf not in leaf_rpkm_sums.keys():
                                 leaf_rpkm_sums[tree_leaf] = 0.0
@@ -459,6 +456,35 @@ class ItolJplace:
                     x += 1
                     c = no_length_tree[x]
             x += 1
+        return
+
+    def check_jplace(self, tree_index):
+        """
+        Currently validates a pquery's JPlace distal length, ensuring it is less than or equal to the edge length
+        This is necessary to handle a case found in RAxML v8.2.12 (and possibly older versions) where the distal length
+        of a placement is greater than the corresponding branch length in some rare cases.
+
+        :return: None
+        """
+        distal_pos = self.get_field_position_from_jplace_fields("distal_length")
+        edge_pos = self.get_field_position_from_jplace_fields("edge_num")
+        for pquery in self.placements:
+            placement = loads(pquery, encoding="utf-8")
+            if placement:
+                if len(placement["p"]) > 1:
+                    for k, v in placement.items():
+                        if k == 'p':
+                            for edge_placement in v:
+                                place_len = float(edge_placement[distal_pos])
+                                edge = edge_placement[edge_pos]
+                                tree_len = tree_index[str(edge)]
+                                if place_len > tree_len:
+                                    logging.debug("Distal length adjusted to fit JPlace " +
+                                                  self.name + " tree for " + self.contig_name + ".\n")
+                                    edge_placement[distal_pos] = tree_len
+                else:
+                    pass
+
         return
 
     def harmonize_placements(self, treesapp_dir):
@@ -828,6 +854,13 @@ class MyFormatter(logging.Formatter):
 
 
 def prep_logging(log_file_name, verbosity):
+    output_dir = os.path.dirname(log_file_name)
+    try:
+        if not os.path.isdir(output_dir):
+            os.makedirs(output_dir)
+    except (IOError, OSError):
+        sys.stderr.write("ERROR: Unable to make directory '" + output_dir + "'.\n")
+        sys.exit(3)
     logging.basicConfig(level=logging.DEBUG,
                         filename=log_file_name,
                         filemode='w',
@@ -921,16 +954,20 @@ class MarkerTest:
             distance_summary = ["Rank\tType\tMean\tMedian\tVariance",
                                 "\t".join([rank, "Distal",
                                            str(round(sum(distals) / float(n_dists), 4)),
-                                           str(median(distals))]),
+                                           str(round(median(distals), 4)),
+                                           str(round(float(var(distals)), 4))]),
                                 "\t".join([rank, "Pendant",
                                            str(round(sum(pendants) / float(n_dists), 4)),
-                                           str(median(pendants))]),
+                                           str(round(median(pendants), 4)),
+                                           str(round(float(var(pendants)), 4))]),
                                 "\t".join([rank, "Tip",
                                            str(round(sum(tips) / float(n_dists), 4)),
-                                           str(median(tips))]),
+                                           str(round(median(tips), 4)),
+                                           str(round(float(var(tips)), 4))]),
                                 "\t".join([rank, "Total",
                                            str(round(sum(totals) / float(n_dists), 4)),
-                                           str(median(totals))], )]
+                                           str(round(median(totals), 4)),
+                                           str(round(float(var(totals)), 4))])]
             sys.stdout.write("\n".join(distance_summary) + "\n")
             return distals, pendants, tips
         else:
