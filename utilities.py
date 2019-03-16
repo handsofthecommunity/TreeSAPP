@@ -213,7 +213,7 @@ def executable_dependency_versions(exe_dict):
     version_param = ["trimal", "mafft"]
     no_params = ["usearch", "papara"]
     help_param = ["hmmbuild", "hmmalign", "hmmsearch", "OD-seq"]
-    version_re = re.compile(r"[Vv]\d+.\d|version \d+.\d|\d\.\d\.\d")
+    version_re = re.compile(r"[Vv]\d+.\d|version \d+.\d|\d\.\d\.\d|HMMER")
 
     for exe in exe_dict:
         ##
@@ -388,9 +388,15 @@ def generate_blast_database(args, fasta, molecule, prefix, multiple=True):
     return stdout, blastdb_out
 
 
-def clean_lineage_string(lineage):
+def clean_lineage_string(lineage: str):
+    """
+    Removes superfluous taxonomic ranks and characters that make lineage comparisons difficult
+
+    :param lineage: A taxonomic lineage string where each rank is separated by a semi-colon
+    :return: String with the purified taxonomic lineage adhering to the NCBI hierarchy
+    """
     non_standard_names_re = re.compile(" group| cluster| complex", re.IGNORECASE)
-    bad_strings = ["cellular organisms; ", "delta/epsilon subdivisions; ", "\(miscellaneous\)", "Root; ", "[a-p]__"]
+    bad_strings = ["cellular organisms; ", "delta/epsilon subdivisions; ", "\(miscellaneous\)", "[a-p]__"]
     for bs in bad_strings:
         lineage = re.sub(bs, '', lineage)
     # filter 'group' and 'cluster'

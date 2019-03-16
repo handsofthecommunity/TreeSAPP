@@ -98,9 +98,9 @@ class MarkerBuild:
         self.num_reps = 0
         self.pfit = []
 
-    def load_build_params(self, build_param_line):
+    def load_build_params(self, build_param_line, n_fields):
         build_param_fields = build_param_line.split('\t')
-        if len(build_param_fields) != 11:
+        if len(build_param_fields) != n_fields:
             logging.error("Incorrect number of values (" + str(len(build_param_fields)) +
                           ") in ref_build_parameters.tsv. Line:\n" + build_param_line)
             sys.exit(17)
@@ -115,7 +115,7 @@ class MarkerBuild:
         self.tree_tool = build_param_fields[7]
         self.lowest_confident_rank = build_param_fields[9]
         self.update = build_param_fields[10]
-        self.description = build_param_fields[-1]
+        self.description = build_param_fields[-1].strip()
 
     def load_pfit_params(self, build_param_line):
         build_param_fields = build_param_line.split("\t")
@@ -209,7 +209,7 @@ class ItolJplace:
         if self.abundance:
             summary_string += "Abundance:\n\t" + str(self.abundance) + "\n"
         if self.distances:
-            summary_string += "Distances:\n\t" + self.distances + "\n"
+            summary_string += "Distal, pendant and tip distances:\n\t" + self.distances + "\n"
         summary_string += "\n"
         return summary_string
 
@@ -329,23 +329,14 @@ class ItolJplace:
         for pquery in self.placements:
             placement = loads(pquery, encoding="utf-8")
             dict_strings = list()
-            if len(placement["p"]) > 1:
+            if len(placement["p"]) >= 1:
                 for k, v in placement.items():
                     if k == 'p':
-                        # For debugging:
-                        # sys.stderr.write(str(v) + "\nRemoved:\n")
-                        acc = 0
-                        tmp_placements = copy.deepcopy(v)
-                        while acc < len(tmp_placements):
-                            candidate = tmp_placements[acc]
-                            if float(candidate[x]) < threshold:
-                                removed = tmp_placements.pop(acc)
-                                # For debugging:
-                                # sys.stderr.write("\t".join([self.name, str(removed[0]),
-                                #                             str(float(removed[x]))]) + "\n")
-                            else:
-                                acc += 1
-                            # sys.stderr.flush()
+                        tmp_placements = []
+                        for candidate in v:
+                            if float(candidate[x]) >= threshold:
+                                tmp_placements.append(candidate)
+
                         # If no placements met the likelihood filter then the sequence cannot be classified
                         # Alternatively: first two will be returned and used for LCA - can test...
                         if len(tmp_placements) > 0:
@@ -377,7 +368,11 @@ class ItolJplace:
                     for locus in v:
                         jplace_node = locus[0]
                         tree_leaves = self.node_map[jplace_node]
-                        normalized_abundance = float(self.abundance/len(tree_leaves))
+                        try:
+                            normalized_abundance = float(self.abundance/len(tree_leaves))
+                        except TypeError:
+                            logging.warning("Unable to find abundance for " + self.contig_name + "... setting to 0.\n")
+                            normalized_abundance = 0.0
                         for tree_leaf in tree_leaves:
                             if tree_leaf not in leaf_rpkm_sums.keys():
                                 leaf_rpkm_sums[tree_leaf] = 0.0
@@ -461,6 +456,35 @@ class ItolJplace:
                     x += 1
                     c = no_length_tree[x]
             x += 1
+        return
+
+    def check_jplace(self, tree_index):
+        """
+        Currently validates a pquery's JPlace distal length, ensuring it is less than or equal to the edge length
+        This is necessary to handle a case found in RAxML v8.2.12 (and possibly older versions) where the distal length
+        of a placement is greater than the corresponding branch length in some rare cases.
+
+        :return: None
+        """
+        distal_pos = self.get_field_position_from_jplace_fields("distal_length")
+        edge_pos = self.get_field_position_from_jplace_fields("edge_num")
+        for pquery in self.placements:
+            placement = loads(pquery, encoding="utf-8")
+            if placement:
+                if len(placement["p"]) > 1:
+                    for k, v in placement.items():
+                        if k == 'p':
+                            for edge_placement in v:
+                                place_len = float(edge_placement[distal_pos])
+                                edge = edge_placement[edge_pos]
+                                tree_len = tree_index[str(edge)]
+                                if place_len > tree_len:
+                                    logging.debug("Distal length adjusted to fit JPlace " +
+                                                  self.name + " tree for " + self.contig_name + ".\n")
+                                    edge_placement[distal_pos] = tree_len
+                else:
+                    pass
+
         return
 
     def harmonize_placements(self, treesapp_dir):

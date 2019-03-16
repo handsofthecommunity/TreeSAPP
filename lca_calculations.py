@@ -26,7 +26,8 @@ def all_possible_assignments(tax_ids_file):
             sys.exit(21)
         if len(fields) == 3:
             number, translation, lineage = fields
-            lineage = clean_lineage_string(lineage)
+            if lineage:
+                lineage = "Root; " + clean_lineage_string(lineage)
         else:
             logging.error("Unexpected number of fields in " + tax_ids_file +
                           ".\nInvoked .split(\'\\t\') on line " + str(line))
@@ -56,7 +57,7 @@ def grab_graftm_taxa(tax_ids_file):
             except IndexError:
                 logging.error("Unexpected format of line in " + tax_ids_file + ":\n" + line)
                 sys.exit(21)
-            ranks = [k_, p_, c_, o_, f_, g_, s_]
+            ranks = ["Root", k_, p_, c_, o_, f_, g_, s_]
             lineage_list = []
             # In case there are missing ranks... which is likely
             for rank in ranks:
@@ -115,6 +116,8 @@ def identify_excluded_clade(assignment_dict, trie, marker):
     for ref_lineage in assignment_dict[marker]:
         log_stats += "Assigned reference lineage: " + ref_lineage + "\n"
         for query_lineage in assignment_dict[marker][ref_lineage]:
+            if not re.search(r"^Root; ", query_lineage):
+                query_lineage = "Root; " + query_lineage
             # if query_lineage == ref_lineage:
             #     logging.debug("\tQuery lineage: " + query_lineage + ", " +
             #                   "Optimal lineage: " + ref_lineage + "\n")
@@ -122,7 +125,7 @@ def identify_excluded_clade(assignment_dict, trie, marker):
             # remove the taxonomic rank and traverse again. Complexity: O(ln(n))
             contained_taxonomy = optimal_taxonomic_assignment(trie, query_lineage)
             if len(contained_taxonomy.split("; ")) <= 7:
-                rank_excluded = _RANK_DEPTH_MAP[len(contained_taxonomy.split("; ")) + 1]
+                rank_excluded = _RANK_DEPTH_MAP[len(contained_taxonomy.split("; "))]
                 if contained_taxonomy != ref_lineage:
                     log_stats += "\tRank excluded: " + rank_excluded + "\n"
                     log_stats += "\t\tQuery lineage:   " + query_lineage + "\n"
@@ -329,7 +332,7 @@ def compute_taxonomic_distance(ref_lineage: str, query_lineage: str):
     l2 = query_lineage.split("; ")
     # Compare the last elements of each list to see if the lineage is equal
     try:
-        while l1[-1] != l2[-1]:
+        while l1 != l2:
             if len(l1) > len(l2):
                 l1 = l1[:-1]
             elif len(l2) > len(l1):

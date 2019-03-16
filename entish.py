@@ -250,3 +250,50 @@ def annotate_partition_tree(code_name, fasta_replace_dict, bipart_tree):
 
     return
 
+
+def tree_leaf_distances(tree: Tree):
+    # max_dist_threshold equals the maximum path length from root to tip in its clade
+    leaf_distances = []
+    d = 0.0
+    max_dist = None
+    topology_only = False
+    for post, n in tree.iter_prepostorder(is_leaf_fn=None):
+        if n is tree:
+            continue
+        if post:
+            d -= n.dist
+        else:
+            if n.is_leaf():
+                total_d = d + n.dist if not topology_only else d
+                leaf_distances.append(total_d)
+                if max_dist is None or total_d > max_dist:
+                    max_dist = total_d
+            else:
+                d += n.dist if not topology_only else 1.0
+    return max_dist, leaf_distances
+
+
+def index_tree_edges(tree: str):
+    edge_index = dict()
+    dist = ""
+    edge = ""
+    i = 0
+    n = len(tree)
+    while i < n:
+        if tree[i] in [':', '{']:
+            i += 1
+            if dist:
+                while re.match(r"[0-9]", tree[i]):
+                    edge += tree[i]
+                    i += 1
+                edge_index[edge] = float(dist)
+                dist = ""
+                edge = ""
+            else:
+                while re.match(r"[0-9.]", tree[i]):
+                    dist += tree[i]
+                    i += 1
+        else:
+            i += 1
+
+    return edge_index
