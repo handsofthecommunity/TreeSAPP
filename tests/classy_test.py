@@ -60,7 +60,7 @@ class HmmMatchTest(unittest.TestCase):
         assert(hm.of == 0)
         assert(hm.full_score == 0)
         assert(hm.acc == 0.0)
-        assert(hm.ceval == 0.0)
+        assert(hm.ieval == 0.0)
 
     def test_get_info(self):
         hm = HmmMatch()
@@ -146,7 +146,7 @@ class MarkerBuildTest(unittest.TestCase):
     def test_load_build_params(self):
         line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tClasses\t04_Dec_2018'
         mb = classy.MarkerBuild()
-        mb.load_build_params(line)
+        mb.load_build_params(line, 11)
         assert(mb.cog == 'McrA')
         assert(mb.denominator == 'M0701')
         assert(mb.molecule == 'prot')
@@ -161,25 +161,25 @@ class MarkerBuildTest(unittest.TestCase):
 
         incomplete_line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802'
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            mb.load_build_params(incomplete_line)
+            mb.load_build_params(incomplete_line, 15)
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 17
 
     def test_load_pfit_params(self):
         line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tClasses\t04_Dec_2018'
         mb = classy.MarkerBuild()
-        mb.load_build_params(line)
+        mb.load_build_params(line, 11)
         mb.load_pfit_params(line)
         assert(-4.08046639871 in mb.pfit and 6.03601100802 in mb.pfit and len(mb.pfit) == 2)
         
     def test_check_rank(self):
         line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tClasses\t04_Dec_2018'
         mb = classy.MarkerBuild()
-        assert(mb.load_build_params(line) == None)
+        assert(mb.load_build_params(line, 11) == None)
 
         
         line_bad = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tBurgers\t04_Dec_2018'
-        mb.load_build_params(line_bad)
+        mb.load_build_params(line_bad, 11)
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             mb.check_rank()
             assert pytest_wrapped_e.type == SystemExit
@@ -386,7 +386,7 @@ class MarkerBuildTest(unittest.TestCase):
     def test_load_build_params(self):
         line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tClasses\t04_Dec_2018'
         mb = MarkerBuild()
-        mb.load_build_params(line)
+        mb.load_build_params(line, 11)
         assert(mb.cog == 'McrA')
         assert(mb.denominator == 'M0701')
         assert(mb.molecule == 'prot')
@@ -401,25 +401,25 @@ class MarkerBuildTest(unittest.TestCase):
 
         incomplete_line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802'
         with pytest.raises(SystemExit) as pytest_wrapped_e:
-            mb.load_build_params(incomplete_line)
+            mb.load_build_params(incomplete_line, 11)
             assert pytest_wrapped_e.type == SystemExit
             assert pytest_wrapped_e.value.code == 17
 
     def test_load_pfit_params(self):
         line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tClasses\t04_Dec_2018'
         mb = MarkerBuild()
-        mb.load_build_params(line)
+        mb.load_build_params(line, 11)
         mb.load_pfit_params(line)
         assert(-4.08046639871 in mb.pfit and 6.03601100802 in mb.pfit and len(mb.pfit) == 2)
         
     def test_check_rank(self):
         line = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tClasses\t04_Dec_2018'
         mb = MarkerBuild()
-        assert(mb.load_build_params(line) == None)
+        assert(mb.load_build_params(line, 11) == None)
 
         
         line_bad = 'McrA\tM0701\tprot\tPROTGAMMALG\tfunctional\t0.97\t211\tFastTree\t-4.08046639871,6.03601100802\tBurgers\t04_Dec_2018'
-        mb.load_build_params(line_bad)
+        mb.load_build_params(line_bad, 11)
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             mb.check_rank()
             assert pytest_wrapped_e.type == SystemExit
