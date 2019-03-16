@@ -43,7 +43,7 @@ class ParserTest(unittest.TestCase):
                         assert(expected_vals[i][10][j] in marker_build_dict[targets[i]].pfit)
 
     def test_parse_ref_build_params(self):
-        expected_out = [['McrA', 'M0701', 'prot', 'PROTGAMMALG', 0.97, 'Classes', '05_Dec_2018','functional', 'FastTree', '211', [-4.08046639871, 6.03601100802], '04_Dec_2018'], ['p_amoA', 'N0102', 'prot', 'PROTGAMMALG', 0.97, 'Families', '04_Dec_2018', 'functional', 'FastTree', '80', [-2.83232814805, 5.67790899421], '05_Dec_2018'], ['narG', 'D0101', 'prot', 'PROTGAMMALG', '0.80', 'Phyla', '04_Dec_2018', 'functional', 'FastTree', '307', [-4.5658136261, 6.43765586015], '05_Dec_2018']]
+        expected_out = [['McrA', 'M0701', 'prot', 'PROTGAMMALG', 0.97, 'Classes', '05_Dec_2018','functional', 'FastTree', '211', [-4.08046639871, 6.03601100802], '05_Dec_2018'], ['p_amoA', 'N0102', 'prot', 'PROTGAMMALG', 0.97, 'Families', '05_Dec_2018', 'functional', 'FastTree', '80', [-2.83232814805, 5.67790899421], '05_Dec_2018'], ['narG', 'D0101', 'prot', 'PROTGAMMALG', '0.80', 'Phyla', '05_Dec_2018', 'functional', 'FastTree', '307', [-4.5658136261, 6.43765586015], '05_Dec_2018']]
 
         args = create_parser(TREESAPP_PATH, 'M0701', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
@@ -65,7 +65,6 @@ class ParserTest(unittest.TestCase):
     def test_read_species_translation_files(self):
         args = create_parser(TREESAPP_PATH, 'M0701', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
-        marker_build_dict = file_parsers.parse_cog_list(args, marker_build_dict)
         tree_numbers_translation = file_parsers.read_species_translation_files(args, marker_build_dict)
 
         assert(tree_numbers_translation['M0701'][0].lineage == 'cellular organisms; Archaea')

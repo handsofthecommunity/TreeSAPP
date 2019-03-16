@@ -41,8 +41,7 @@ class JplaceUtilsTests(unittest.TestCase):
         
         args = create_parser(TREESAPP_PATH, 'M0701', 'p')
         marker_build_dict = treesapp.parse_ref_build_params(args)
-        marker_build_dict = treesapp.parse_cog_list(args, marker_build_dict)
-
+        
         jplace_path = TEST_DIR + "test_data/tmp.jplace"
         jplace_data = jplace_utils.jplace_parser(jplace_path)
 
