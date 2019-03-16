@@ -5,18 +5,24 @@ import argparse
 
 import sys, inspect
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))))
-import file_parsers
 
-def create_parser(treesapp,targets, reftree):
-        args = argparse.Namespace()
-        args.alignment_mode = 'd'
-        args.reftree = reftree
-        args.targets = [targets]
-        args.treesapp = treesapp
-        args.check_trees = False
-        args.skip = 'n'
-        args.molecule = 'prot'
-        return args
+import file_parsers
+import fasta
+import treesapp
+
+def create_parser(treesapp, targets, reftree):
+    args = argparse.Namespace()
+    args.alignment_mode = 'd'
+    args.reftree = reftree
+    args.targets = [targets]
+    args.treesapp = treesapp
+    args.check_trees = False
+    args.skip = 'n'
+    args.molecule = 'prot'
+    return args
+
+TEST_PATH = '/home/travis/build/hallamlab/TreeSAPP/tests'
+TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/'
 
 class ParserTest(unittest.TestCase):
 
@@ -28,22 +34,25 @@ class ParserTest(unittest.TestCase):
                 assert (marker_build_dict[targets[i]].model == expected_vals[i][3])
                 assert (marker_build_dict[targets[i]].pid == expected_vals[i][4])
                 assert (marker_build_dict[targets[i]].lowest_confident_rank == expected_vals[i][5])
-                assert (marker_build_dict[targets[i]].update == expected_vals[i][6])
-                assert (marker_build_dict[targets[i]].description == expected_vals[i][7])
-                assert (marker_build_dict[targets[i]].kind == expected_vals[i][8])
-
+                assert (marker_build_dict[targets[i]].update == expected_vals[i][11])
+                assert (marker_build_dict[targets[i]].description == expected_vals[i][6])
+                assert (marker_build_dict[targets[i]].kind == expected_vals[i][7])
+                assert (marker_build_dict[targets[i]].tree_tool == expected_vals[i][8]) 
+                assert (marker_build_dict[targets[i]].num_reps == expected_vals[i][9]) 
+                for j in range (0, len(expected_vals[i][10])):
+                        assert(expected_vals[i][10][j] in marker_build_dict[targets[i]].pfit)
 
     def test_parse_ref_build_params(self):
-        expected_out = [['McrA', 'M0701', 'prot', 'PROTGAMMALG', '0.97', 'Classes', '01_Aug_2018', '', ''], ['hzs', 'A0100', 'prot', 'PROTGAMMAJTTDCMUT', '0.99', 'Species', '27_Apr_2018', '', ''], ['narG', 'D0101', 'prot', 'PROTGAMMALG', '80', 'Genera', '23_Jan_2018', '', '']]
+        expected_out = [['McrA', 'M0701', 'prot', 'PROTGAMMALG', '0.97', 'Classes', '04_Dec_2018','functional', 'FastTree', '211', [-4.08046639871, 6.03601100802], '04_Dec_2018'], ['p_amoA', 'N0102', 'prot', 'PROTGAMMALG', '0.97', 'Families', '04_Dec_2018', 'functional', 'FastTree', '80', [-2.83232814805, 5.67790899421], '04_Dec_2018'], ['narG', 'D0101', 'prot', 'PROTGAMMALG', '0.80', 'Phyla', '04_Dec_2018', 'functional', 'FastTree', '307', [-4.5658136261, 6.43765586015], '04_Dec_2018']]
 
-        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
+        args = create_parser(TREESAPP_PATH, 'M0701', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
         self.check_parse_ref_build_params_out(expected_out, ['M0701'], marker_build_dict)
 
         
-        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'ALL', 'p')
+        args = create_parser(TREESAPP_PATH, 'ALL', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
-        self.check_parse_ref_build_params_out(expected_out, ['M0701', 'A0100', 'D0101'], marker_build_dict)
+        self.check_parse_ref_build_params_out(expected_out, ['M0701', 'N0102', 'D0101'], marker_build_dict)
 
 
     def test_exit(self):
@@ -55,25 +64,66 @@ class ParserTest(unittest.TestCase):
                 
 
     def test_parse_cog_list(self):
-        expected_out = [['McrA', 'M0701', 'prot', 'PROTGAMMALG', '0.97', 'Classes', '01_Aug_2018', 'Methyl coenzyme M reductase alpha subunit', 'functional_cogs'], ['hzs', 'A0100', 'prot', 'PROTGAMMAJTTDCMUT', '0.99', 'Species', '27_Apr_2018', 'Hydrazine synthase (hzs)', 'functional_cogs'], ['narG', 'D0101', 'prot', 'PROTGAMMALG', '80', 'Genera', '23_Jan_2018', 'nitrate reductase / nitrite oxidoreductase, alpha subunit', 'functional_cogs']]
+        expected_out = [['McrA', 'M0701', 'prot', 'PROTGAMMALG', '0.97', 'Classes', 'Methyl coenzyme M reductase alpha subunit','functional', 'FastTree', '211', [-4.08046639871, 6.03601100802], '04_Dec_2018'], ['p_amoA', 'N0102', 'prot', 'PROTGAMMALG', '0.97', 'Families', 'Ammonia monooxygenase (Archaea) and particulate methane monoxygenase', 'functional', 'FastTree', '80', [-2.83232814805, 5.67790899421], '04_Dec_2018'], ['narG', 'D0101', 'prot', 'PROTGAMMALG', '0.80', 'Phyla', 'nitrate reductase / nitrite oxidoreductase, alpha subunit', 'functional', 'FastTree', '307', [-4.5658136261, 6.43765586015], '04_Dec_2018']]
 
-        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
+        args = create_parser(TREESAPP_PATH, 'M0701', 'p')
         marker_build_dict = file_parsers.parse_cog_list(args, file_parsers.parse_ref_build_params(args))
         self.check_parse_ref_build_params_out(expected_out, args.targets, marker_build_dict)
 
-        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'ALL', 'p')
-        args.targets = ['M0701', 'A0100', 'D0101']
+        args = create_parser(TREESAPP_PATH, 'ALL', 'p')
+        args.targets = ['M0701', 'N0102', 'D0101']
         marker_build_dict = file_parsers.parse_cog_list(args, file_parsers.parse_ref_build_params(args))
         self.check_parse_ref_build_params_out(expected_out, args.targets, marker_build_dict)
 
 
     def test_read_species_translation_files(self):
-        args = create_parser('/home/travis/build/hallamlab/TreeSAPP/', 'M0701', 'p')
+        args = create_parser(TREESAPP_PATH, 'M0701', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
         marker_build_dict = file_parsers.parse_cog_list(args, marker_build_dict)
         tree_numbers_translation = file_parsers.read_species_translation_files(args, marker_build_dict)
+
         assert(tree_numbers_translation['M0701'][0].lineage == 'cellular organisms; Archaea')
         assert tree_numbers_translation['M0701'][0].complete
         assert(tree_numbers_translation['M0701'][0].number == '1')
-        assert(tree_numbers_translation['M0701'][0].description == "NM4 | NM423249334157")
+        assert(tree_numbers_translation['M0701'][0].description == 'ANM41 | NM412872330390')
 
+    def test_read_colours_file(self):
+        marker_subgroups = dict()
+        internal_nodes = dict()
+        annotation_file = TREESAPP_PATH + 'data/iTOL_datasets/McrA_colours_style.txt'
+        args = create_parser(TREESAPP_PATH, 'M0701', 'p')
+
+        marker_subgroups['McrA'] = dict()
+        internal_nodes['McrA'] = dict()
+        marker_subgroups['McrA'], internal_nodes['McrA'] = file_parsers.read_colours_file(args, annotation_file)
+
+        expected_keys = ['Bathyarchaeota', 'Methanosarcinales', 'Verstraetearchaeota', 'Methanomicrobiales', 'Methanococcales', 'Methanocellales', 'Methanomassiliicoccales', 'Methanococcales-MrtA', 'ANME-1', 'Syntrophoarchaeum', 'Methanopyrus', 'Methanobacteriales', 'Methanonatronarchaeia', 'Methanobacteriales-MrtA']
+
+        for key in expected_keys:
+            assert(key in marker_subgroups['McrA'].keys())
+
+        assert(marker_subgroups['McrA']['Bathyarchaeota'][0] == ('204', '203'))
+        assert(not internal_nodes['McrA'])
+
+    def test_tax_ids_file_to_leaves(self):
+        marker_tax_ids = TREESAPP_PATH + 'data/tree_data/tax_ids_McrA.txt'
+        ref_tree_leaves = file_parsers.tax_ids_file_to_leaves(marker_tax_ids)
+
+        assert(ref_tree_leaves[0].description == 'ANM41 | NM412872330390')
+        assert(ref_tree_leaves[0].lineage == 'cellular organisms; Archaea')
+
+        for i in range(len(ref_tree_leaves)):
+            assert(ref_tree_leaves[i].number == str(i + 1))
+            assert(ref_tree_leaves[i].complete)
+
+        marker_tax_ids = TEST_PATH + '/test_data/empty.fasta'
+
+        with pytest.raises(SystemExit) as pytest_wrapped_e:
+            ref_tree_leaves = file_parsers.tax_ids_file_to_leaves(marker_tax_ids)
+            assert pytest_wrapped_e.type == SystemExit
+            assert pytest_wrapped_e.value.code == 5
+
+        marker_tax_ids = TEST_PATH + '/test_data/tax_ids_McrA.txt' 
+        with pytest.raises(ValueError) as excinfo:
+            ref_tree_leaves = file_parsers.tax_ids_file_to_leaves(marker_tax_ids)
+            assert ecxinfo.value.code == 5

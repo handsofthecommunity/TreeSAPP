@@ -1,5 +1,6 @@
 sudo: true
 language: python
+      
 python:
     - "3.6"
     - "3.5"
@@ -12,22 +13,29 @@ before_install:
     - sudo add-apt-repository ppa:webupd8team/java -y
     - sudo apt-get update
     - sudo echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | sudo debconf-set-selections
+    - bash install_java.sh
+    - sudo apt-get update
     - sudo apt-get install oracle-java8-installer -y
     - sudo apt-get install oracle-java8-set-default -y
-    - wget https://mafft.cbrc.jp/alignment/software/mafft_7.407-1_amd64.deb
+    - sudo wget https://mafft.cbrc.jp/alignment/software/mafft_7.407-1_amd64.deb
     - sudo dpkg -i mafft_7.407-1_amd64.deb
-    - wget https://sco.h-its.org/exelixis/resource/download/software/papara_nt-2.5-static_x86_64.tar.gz
+    - sudo wget https://sco.h-its.org/exelixis/resource/download/software/papara_nt-2.5-static_x86_64.tar.gz
 
 install:
-    - pip install -r requirements.txt
+    - pip install -r /home/travis/build/hallamlab/TreeSAPP/requirements.txt
+    - pip install pytest-cov
 
 before_script:
     - cd /home/travis/build/hallamlab/TreeSAPP/sub_binaries; cp usearch /usr/bin; cd ../; make; make install
 
 script:
-    - py.test -vv --cov-report term --cov=./ tests/
-    - pytest -vv
-
+    - py.test -vv tests/treesapp_test.py
+    - py.test -vv tests/jplace_utils_test.py
+    - py.test -vv tests/fasta_test.py
+    - py.test -vv tests/file_parsers_test.py
+    - py.test -vv tests/classy_test.py
+    
+#whitelist
 branches:
   only:
     - travis

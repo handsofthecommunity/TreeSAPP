@@ -1,0 +1,18 @@
+#                                                                                                                                                                    --- full sequence --- -------------- this domain -------------   hmm coord   ali coord   env coord
+# target name                                                                                                accession   tlen query name           accession   qlen   E-value  score  bias   #  of  c-Evalue  i-Evalue  score  bias  from    to  from    to  from    to  acc description of target
+#                                                                                        ------------------- ---------- ----- -------------------- ---------- ----- --------- ------ ----- --- --- --------- --------- ------ ----- ----- ----- ----- ----- ----- ----- ---- ---------------------
+PKL62129.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanomicrobiales_archaeon_HGW-Methanomicrobiales-2    -            580 McrA                 -            556  1.2e-294  970.3   1.5   1   2  3.8e-185  2.3e-184  606.3   0.0     4   340     7   345     1   346 0.98 -
+PKL62129.1_methyl-coenzyme_M_reductase_subunit_alpha_Methanomicrobiales_archaeon_HGW-Methanomicrobiales-2    -            580 McrA                 -            556  1.2e-294  970.3   1.5   2   2  5.5e-112  3.4e-111  364.7   0.4   329   556   346   580   344   580 0.98 -
+ADN36741.1_methyl-coenzyme_M_reductase__alpha_subunit_Methanolacinia_petrolearia_DSM_11571                   -            568 McrA                 -            556  1.4e-293  966.7   0.1   1   1  2.9e-294  1.8e-293  966.4   0.1     4   556     7   568     2   568 0.99 -
+TEST-1         -            254 McrA                 -            556  4.5e-130  427.1   1.1   1   1  8.1e-131    5e-130  426.9   1.1   233   485     1   253     1   254 0.68 -
+TEST-2         -            254 McrA                 -            556  4.5e-130  427.1   1.1   1   1  8.1 5e-130  426.9   1.1   233   485     1   253     1   254 0.99 -
+#
+# Program:         hmmsearch
+# Version:         3.1b2 (February 2015)
+# Pipeline mode:   SEARCH
+# Query file:      /home/ace/github/TreeSAPP//data/hmm_data/McrA.hmm
+# Target file:     /home/ace/marker_test/various_outputs/marker_test_suite.faa_formatted.fasta
+# Option settings: /usr/bin/hmmsearch --domtblout /home/ace/marker_test/various_outputs/McrA_to_ORFs_domtbl.txt --noali --cpu 3 /home/ace/github/TreeSAPP//data/hmm_data/McrA.hmm /home/ace/marker_test/various_outputs/marker_test_suite.faa_formatted.fasta 
+# Current dir:     /home/ace/github/TreeSAPP
+# Date:            Tue Jan 15 21:59:29 2019
+# [ok]
