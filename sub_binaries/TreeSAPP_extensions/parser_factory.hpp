@@ -47,7 +47,11 @@ static struct PyModuleDef module_def = {
   "parser_factory",
   "File parser",
   0,
-  parsers_methods             
+  parsers_methods,
+  NULL,
+  module_traverse,
+  module_clear,
+  NULL,
 };
 
 #define INITERROR return NULL
