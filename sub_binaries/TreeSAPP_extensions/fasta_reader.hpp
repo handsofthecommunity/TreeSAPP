@@ -128,7 +128,7 @@ public:
     ofstream *parse_log;
 
     // Class functions
-    int parse_fasta(int min_length, std::size_t max_header_length);
+  int parse_fasta(int min_length, std::size_t max_header_length, int skip_check);
 //    int find_longest_contig();
 //    int writeNx(std::string output, bool verbose);
 };

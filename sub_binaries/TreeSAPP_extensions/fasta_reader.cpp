@@ -224,7 +224,7 @@ int Fasta::record_sequence() {
         return 0;
 }
 
-int Fasta::parse_fasta(int min_length, std::size_t max_header_length) {
+int Fasta::parse_fasta(int min_length, std::size_t max_header_length, int skip_check) {
     string line;
     std::string header;
     int status;
@@ -243,28 +243,34 @@ int Fasta::parse_fasta(int min_length, std::size_t max_header_length) {
             if (line.at(0) == '>') {
                 // If the sequence is meets the length threshold, evaluate it's composition
                 if ( (signed)sequence_buffer.length() >= min_length ) {
-                    status = record_sequence();
-                    if (status == 4) {
+		    if (skip_check == 1){
+		        transform(sequence_buffer.begin(), sequence_buffer.end(), sequence_buffer.begin(), ::toupper);
+                        record_header(header, max_header_length);
+                        PyList_Append(fasta_list, Py_BuildValue("s", sequence_buffer.c_str()));
+		    } else {
+		      status = record_sequence();
+		      if (status == 4) {
                         cerr << "Skipping header:\n'" << header << "'" << endl;
                         sprintf(write_buffer, "WARNING: Skipping %s due to bad character.\n", header.c_str());
                         parse_log->write(write_buffer, 53+header.length());
-                    }
-                    else if (status == 3) {
+		      }
+		      else if (status == 3) {
                         sprintf(write_buffer, "WARNING: Skipping %s due to >75%% ambiguity characters.\n", header.c_str());
                         parse_log->write(write_buffer, 53+header.length());
-                    }
-                    else if (status == 2) {
+		      }
+		      else if (status == 2) {
                         sprintf(write_buffer, " %s\n", header.c_str());
                         parse_log->write(write_buffer, 2+header.length());
                         record_header(header, max_header_length);
                         PyList_Append(fasta_list, Py_BuildValue("s", sequence_buffer.c_str()));
-                    }
-                    else if (status < 2) {
+		      }
+		      else if (status < 2) {
                         record_header(header, max_header_length);
                         PyList_Append(fasta_list, Py_BuildValue("s", sequence_buffer.c_str()));
-                    }
-                    else
+		      }
+		      else
                         return 5;
+		    }
                 }
                 header = line;
                 sequence_buffer.clear();
@@ -316,9 +322,10 @@ static PyObject *read_format_fasta(PyObject *self, PyObject *args) {
     char * fasta_file;
     char * output_dir;
     int min_length;
+    int skip_check = 0;
     std::size_t max_header_length;
     char * molecule;
-    if (!PyArg_ParseTuple(args, "sissn", &fasta_file, &min_length, &output_dir, &molecule, &max_header_length)) {
+    if (!PyArg_ParseTuple(args, "sissn|i", &fasta_file, &min_length, &output_dir, &molecule, &max_header_length, &skip_check)) {
         return NULL;
     }
     /*
@@ -327,7 +334,7 @@ static PyObject *read_format_fasta(PyObject *self, PyObject *args) {
     * Check for duplicate headers by looking through a sorted list. If duplicate found, append _N and insert
     */
     Fasta fasta_object(fasta_file, output_dir, molecule);
-    int return_status = fasta_object.parse_fasta(min_length, max_header_length);
+    int return_status = fasta_object.parse_fasta(min_length, max_header_length, skip_check);
     if (return_status > 0)
         fasta_object.fasta_list = PyList_New(0);
     if (return_status == 1)
