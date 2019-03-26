@@ -28,7 +28,8 @@ try:
     from file_parsers import parse_domain_tables, read_phylip_to_dict, read_uc, validate_alignment_trimming,\
         multiple_alignment_dimensions
     from placement_trainer import regress_rank_distance
-
+    import parser_factory
+    
 except ImportError:
     sys.stderr.write("Could not load some user defined module functions:\n")
     sys.stderr.write(str(traceback.print_exc(10)))
@@ -1249,6 +1250,62 @@ def guarantee_ref_seqs(cluster_dict, important_seqs):
         expanded_cluster_id += 1
     return nonredundant_guarantee_cluster_dict
 
+def cmap_accession2taxid(query_accession_list, accession2taxid_list):
+	er_acc_dict = dict()
+        unmapped_queries = list()
+        logging.info(query_accession_list)
+        logging.info(accession2taxid_list)
+
+        result_list = list()
+	# Create a dictionary for O(1) look-ups, load all the query accessions into unmapped queries
+        for acc in query_accession_list:  # type: str                                                
+            if acc.find('.') >= 0:
+	        ver = acc
+                # Strip off any version numbers from the accessions so we only need to check for one\
+ item                                                                                                
+                acc = '.'.join(acc.split('.')[0:-1])
+            else:
+                ver = ""
+            er_acc_dict[acc] = EntrezRecord(acc,ver)
+            unmapped_queries.append(acc)
+	logging.info("Mapping query accessions to NCBI taxonomy IDs... ")
+        for accession2taxid in accession2taxid_list.split(','):
+            init_qlen = len(unmapped_queries)
+            final_qlen = len(unmapped_queries)
+            start = time.time()
+
+            ## Call C extension                                                                      
+            result_list = parser_factory.parse_file(accession2taxid, unmapped_queries)
+
+            for i in range(len(result_list[0])):
+                try:
+                    # Update the EntrezRecord elements                                               
+                    accession = result_list[0][i]
+                    record = er_acc_dict[accession]
+                    record.versioned = result_list[1][i]
+                    record.ncbi_tax = result_list[2][i]
+                    record.bitflag = 3  # Necessary for downstream filters - indicates taxid has been found
+                    # Remove accession from unmapped queries
+                    i = 0
+                    while i < final_qlen:
+                        if unmapped_queries[i] == accession:
+                            unmapped_queries.pop(i)
+                            final_qlen -= 1
+                            break
+                        i += 1
+                    if final_qlen == 0:
+                        break
+                except KeyError:
+                    logging.error("Bad key returned by generator.\n")
+                    sys.exit(13)
+
+            end = time.time()
+            print("\nTime required to parse '" + accession2taxid + "': " + str(end - start) + "s.\n"
+)
+            # Report the number percentage of query accessions mapped                               
+            print(str(round(((init_qlen - final_qlen) * 100 / len(query_accession_list)), 2)) + "% o\f query accessions mapped by " + accession2taxid + ".\n")
+        logging.info("done.\n")
+        return er_acc_dict
 
 def main():
     # TODO: Record each external software command and version in log
@@ -1391,7 +1448,7 @@ def main():
     else:
         if args.accession2taxid:
             # Determine find the query accessions that are located in the provided accession2taxid file
-            entrez_record_dict = map_accession2taxid(query_accession_list, args.accession2taxid)
+            entrez_record_dict = cmap_accession2taxid(query_accession_list, args.accession2taxid)
             # Map lineages to taxids for successfully-mapped query sequences
             fetch_lineages_from_taxids(entrez_record_dict.values())
             # Use the normal querying functions to obtain lineage information for the unmapped queries
