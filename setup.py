@@ -39,7 +39,7 @@ SETUP_METADATA = \
                                                sources=["sub_binaries/TreeSAPP_extensions/fasta_reader.cpp"],
                                                language="c++",
                                                include_dirs=["./sub_binaries/TreeSAPP_extensions"]),
-                                     Extension("parser_factory",
+                                     Extension("_parser_factory",
                                                sources=["sub_binaries/TreeSAPP_extensions/parser_factory.cpp"],
                                                language="c++",
                                                include_dirs=["./sub_binaries/TreeSAPP_extensions"],
