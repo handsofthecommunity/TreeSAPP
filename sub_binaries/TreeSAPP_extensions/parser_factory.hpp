@@ -14,7 +14,7 @@
 
 #include <Python.h>
 #include <sstream>
-#include <unordered_set>          
+#include <unordered_map>          
 
 #include <time.h>
 
@@ -59,8 +59,8 @@ uint64 getTimeMs64()
 
 
 static PyObject *parse_file(PyObject *module, PyObject *args);
-PyObject *read_file(unordered_set<string> accession_list, const char * file);
-unordered_set<string> listtoSet(PyObject* incoming);
+PyObject *read_file(unordered_map<string, bool> accession_list, const char * file);
+unordered_map<string, bool> listtoSet(PyObject* incoming);
 PyObject* vectorToList_Str(const vector<string> &data);
 
 static PyMethodDef module_methods[] = {

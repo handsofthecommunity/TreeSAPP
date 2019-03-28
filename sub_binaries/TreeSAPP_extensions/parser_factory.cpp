@@ -1,7 +1,7 @@
 #include "parser_factory.hpp"
 
 
-PyObject *read_file(unordered_set<string> accession_list, const char * file) {
+PyObject *read_file(unordered_map<string, bool> accession_list, const char * file) {
   /*                                                                                                         
    * Function for reading file with accession and tax id data                                                
    * to a list of accession ids, tax ids, and versions                                                       
@@ -30,21 +30,21 @@ PyObject *read_file(unordered_set<string> accession_list, const char * file) {
       std::istringstream iss(line);
       while (getline(iss, tmp, '\t')) {
       	data.push_back(tmp);
-      	if (accession_list.find(data[0]) == accession_list.end()) {
+      	if (accession_list.find(data[0]) == accession_list.end() || accession_list[data[0]]) {
       	  check = 1;
-	  break;
+      	  break;
       	}
-	 
       }
-
+      
       if (accession_list.find(data[0]) != accession_list.end() && check == 0) {
       	count++;
+      	accession_list[data[0]] = true;
       	accession_ids.push_back(data[0]);
       	version.push_back(data[1]);
       	taxid.push_back(data[2]);
       }
       
-      if (count == size) {
+      if (count >= size) {
       	break;
       }
       check = 0;
@@ -77,14 +77,14 @@ PyObject *read_file(unordered_set<string> accession_list, const char * file) {
   return NULL;
 }
 
-unordered_set<string> listtoSet(PyObject* incoming) {
-  unordered_set<string> accession_list;
+unordered_map<string, bool> listtoSet(PyObject* incoming) {
+  unordered_map<string, bool> accession_list;
   int numLines = PyList_Size(incoming);
   for (Py_ssize_t i = 0; i < numLines; i++) {
     PyObject *strObj = PyList_GetItem(incoming, i);
     PyObject *str = PyUnicode_AsEncodedString(strObj, "utf-8", "~E~");
     string accession_id = PyBytes_AsString(str);
-    accession_list.insert(accession_id);
+    accession_list[accession_id] = false;
   }
   return accession_list;
 }
@@ -110,7 +110,7 @@ static PyObject* parse_file(PyObject *module, PyObject* args) {
     fprintf(stderr, "ERROR: Argument types are incorrect...\n");
     return NULL;
   }
-  unordered_set<string> accession_list = listtoSet(accList);
+  unordered_map<string, bool> accession_list = listtoSet(accList);
 
   PyObject *retLists = read_file(accession_list, fileName);
 

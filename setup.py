@@ -43,8 +43,8 @@ SETUP_METADATA = \
                                                sources=["sub_binaries/TreeSAPP_extensions/parser_factory.cpp"],
                                                language="c++",
                                                include_dirs=["./sub_binaries/TreeSAPP_extensions"],
-                                               extra_compile_args=["-std=c++11"]),
-                                     ],
+                                               extra_compile_args=["-std=c++11"])
+                     ],
                      "install_requires": ["pygtrie>=2.3", "ete3", "numpy", "biopython>=1.68", "scipy"]
                }
 
