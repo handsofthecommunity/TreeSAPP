@@ -35,7 +35,10 @@ def init_dtp():
 
 def create_dtp(domtbl_file):
     dtp = DomainTableParser(domtbl_file)
-    dtp.read_domtbl_lines()   
+    dtp.read_domtbl_lines()
+
+    ##print(len(dtp.alignments))
+    
     distinct_alignments, num_fragmented, glued, multi_alignments, raw_alignments = HMMER_domainTblParser.format_split_alignments(dtp, 0, 0, 0, 0)
     return dtp, distinct_alignments
 
@@ -87,7 +90,6 @@ class DomainTableParserTest(unittest.TestCase):
     def test_next(self):
         assert(True)
 
-    @pytest.mark.dependency()
     def test_format_split_alignments(self):
         dtp = init_dtp()
         dtp.read_domtbl_lines()
@@ -100,30 +102,56 @@ class DomainTableParserTest(unittest.TestCase):
         assert(multi_alignments == 0)
         assert(raw_alignments == 14)
 
-    @pytest.mark.dependency(depends=["test_format_split_alignments"])
+    ## RUNS FORMAT SPLIT ALIGNMENT LAST SO GETS SKIPPED
+    ##@pytest.mark.dependency(depends=["test_format_split_alignments"])
     def test_filter_poor_hits(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
         dtp, distinct_matches = create_dtp(TEST_DIR +'test_data/unfiltered_domtbl.txt')
-        
+
+        assert(dtp.alignments['query'] == 'TEST-3')
+        assert(dtp.alignments['query_len'] == 254)
+        assert(dtp.alignments['hmm_name'] == 'McrA')
+        assert(dtp.alignments['hmm_len'] == '556')
+        assert(dtp.alignments['Eval'] == 4.5e-130)
+        assert(dtp.alignments['full_score'] == 427.1)
+        assert(dtp.alignments['num'] == 1)
+        assert(dtp.alignments['of'] == 1)
+        assert(dtp.alignments['cEval'] == 8.1)
+        assert(dtp.alignments['iEval'] == 5e-130)
+        assert(dtp.alignments['pstart'] == 233)
+        assert(dtp.alignments['pend'] == 253)
+        assert(dtp.alignments['qstart'] == 1)
+        assert(dtp.alignments['qend'] == 254)
+        assert(dtp.alignments['acc'] == 0.99)
+        assert(dtp.alignments['desc'] == '-')
+
+        assert(len(dtp.lines) == 6)
+
         assert('TEST-2 -_1_1' in distinct_matches.keys())
         assert('TEST-1 -_1_1' in distinct_matches.keys())
-        assert(len(distinct_matches.keys()) == 4)
-
+        assert('TEST-3 -_1_1' in distinct_matches.keys())
+        assert(len(distinct_matches.keys()) == 5)
+        
         purified_matches, dropped = HMMER_domainTblParser.filter_poor_hits(args, distinct_matches, 0)
         assert(dropped == 2)
-        test1 = ('TEST-2', '-')
-        test2 = ('TEST-1', '-')
-        assert(len(purified_matches[test1]) == 0)
-        assert(len(purified_matches[test2]) == 0)
         
-    @pytest.mark.dependency(depends=["test_filter_poor_hits"])        
+    ##@pytest.mark.dependency(depends=["test_filter_poor_hits"])        
     def test_filter_incomplete_hits(self):
         args = create_parser(HOME_DIR, 'M0701', 'p')
         dropped = 0
-        dtp, distinct_matches = create_dtp(TEST_DIR + 'test_data/domtbl.txt')
+        dtp, distinct_matches = create_dtp(TEST_DIR + 'test_data/unfiltered_domtbl.txt')
+
+        assert(len(distinct_matches.keys()) == 5)
+        
         purified_matches, dropped = HMMER_domainTblParser.filter_poor_hits(args, distinct_matches, dropped)
         complete_gene_hits, dropped = HMMER_domainTblParser.filter_incomplete_hits(args, purified_matches, dropped)
+
+        assert(distinct_matches['TEST-3 -_1_1'].pend == 253)
+        assert(distinct_matches['TEST-3 -_1_1'].pstart == 233)
+        assert(args.perc_aligned == 15)
+        assert(distinct_matches['TEST-3 -_1_1'].hmm_len == '556')
         
+        assert(dropped == 3)
 
 class MarkerBuildTest(unittest.TestCase):
 
@@ -392,8 +420,8 @@ class MarkerBuildTest(unittest.TestCase):
         assert(mb.molecule == 'prot')
         assert(mb.model == 'PROTGAMMALG')
         assert(mb.kind == 'functional')
-        assert(mb.pid == '0.97')
-        assert(mb.num_reps == '211')
+        assert(mb.pid == 0.97)
+        assert(mb.num_reps == 211)
         assert(mb.tree_tool == "FastTree")
         assert(mb.lowest_confident_rank == 'Classes')
         assert(mb.update == '04_Dec_2018')

@@ -32,26 +32,25 @@ class ParserTest(unittest.TestCase):
                 assert (marker_build_dict[targets[i]].denominator == expected_vals[i][1])
                 assert (marker_build_dict[targets[i]].molecule == expected_vals[i][2])
                 assert (marker_build_dict[targets[i]].model == expected_vals[i][3])
-                assert (marker_build_dict[targets[i]].pid == expected_vals[i][4])
-                assert (marker_build_dict[targets[i]].lowest_confident_rank == expected_vals[i][5])
-                assert (marker_build_dict[targets[i]].update == expected_vals[i][11])
-                assert (marker_build_dict[targets[i]].description == expected_vals[i][6])
-                assert (marker_build_dict[targets[i]].kind == expected_vals[i][7])
-                assert (marker_build_dict[targets[i]].tree_tool == expected_vals[i][8]) 
-                assert (marker_build_dict[targets[i]].num_reps == expected_vals[i][9]) 
-                for j in range (0, len(expected_vals[i][10])):
-                        assert(expected_vals[i][10][j] in marker_build_dict[targets[i]].pfit)
+                assert (marker_build_dict[targets[i]].lowest_confident_rank == expected_vals[i][4])
+                assert (marker_build_dict[targets[i]].update == expected_vals[i][5])
+                assert (marker_build_dict[targets[i]].kind == expected_vals[i][6])
+                assert (marker_build_dict[targets[i]].tree_tool == expected_vals[i][7]) 
+                assert (marker_build_dict[targets[i]].description == expected_vals[i][8])
+                assert (marker_build_dict[targets[i]].pid == expected_vals[i][9])
+                assert (marker_build_dict[targets[i]].num_reps == expected_vals[i][10]) 
+                for j in range (0, len(expected_vals[i][11])):
+                        assert(expected_vals[i][11][j] in marker_build_dict[targets[i]].pfit)
 
     def test_parse_ref_build_params(self):
-        expected_out = [['McrA', 'M0701', 'prot', 'PROTGAMMALG', 0.97, 'Classes', '05_Dec_2018','functional', 'FastTree', '211', [-4.08046639871, 6.03601100802], '04_Dec_2018'], ['p_amoA', 'N0102', 'prot', 'PROTGAMMALG', 0.97, 'Families', '05_Dec_2018', 'functional', 'FastTree', '80', [-2.83232814805, 5.67790899421], '04_Dec_2018'], ['narG', 'D0101', 'prot', 'PROTGAMMALG', '0.80', 'Phyla', '04_Dec_2018', 'functional', 'FastTree', '307', [-4.5658136261, 6.43765586015], '05_Dec_2018']]
+        expected_out = [['McrA', 'M0701', 'prot', 'PROTGAMMALG', 'Classes', '05_Dec_2018','functional', 'RAxML',"Methyl coenzyme M reductase alpha subunit", 0.97, 211, [-5.7593, 7.0]], ['p_amoA', 'N0102', 'prot', 'PROTGAMMALG', 'Families', '04_Dec_2018', 'functional', 'RAxML', 'Ammonia monooxygenase (Archaea) and particulate methane monoxygenase', 0.97, 80, [-3.896, 7.0]], ['narG', 'D0101', 'prot', 'PROTGAMMALG', 'Phyla', '06_Dec_2018', 'functional', 'RAxML', "nitrate reductase / nitrite oxidoreductase, alpha subunit", 0.8, 306, [-4.0698, 7.0]]]
 
         args = create_parser(TREESAPP_PATH, 'M0701', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
-        self.check_parse_ref_build_params_out(expected_out, ['M0701'], marker_build_dict)
 
-        
         args = create_parser(TREESAPP_PATH, 'ALL', 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args)
+          
         self.check_parse_ref_build_params_out(expected_out, ['M0701', 'N0102', 'D0101'], marker_build_dict)
 
 
