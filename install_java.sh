@@ -1,12 +1,13 @@
 #!/bin/bash
 
 
-if sudo apt-get install oracle-java8-installer -y ; then
-    echo "Java8 installed."
-else 
+# if sudo apt-get install oracle-java8-installer -y ; then
+#     echo "Java8 installed."
+# else 
     url='http://javadl-esd-secure.oracle.com/update/baseline.version'
     version=$(curl -L $url | grep 1.8)
-
+		echo $version
+		
     j_dir="jdk$version"
     v_num=$(echo $version | cut -d "_" -f 2)
     download_link=$(curl -i https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html | grep jdk-8u$v_num-linux-x64.tar.gz | cut -d '"' -f12 | cut -d '/' -f1-8)
@@ -29,4 +30,4 @@ else
 
     sed_string='s|J_DIR=jdk.*|J_DIR='$j_dir'|'
     sudo sed -i $sed_string oracle-java8-installer.* 
-fi
+#fi
