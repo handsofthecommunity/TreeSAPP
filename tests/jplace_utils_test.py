@@ -35,7 +35,6 @@ class JplaceUtilsTests(unittest.TestCase):
         assert(len(itol.fields) == len(itol_check.fields))
         assert(itol.tree == itol_check.tree)
 
-
     @pytest.mark.dependency(name="test_jplace_parser")
     def test_jplace_parser(self):
         jplace_test_file = TEST_DIR + 'test_data/tmp.jplace'
