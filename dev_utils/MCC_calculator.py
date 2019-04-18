@@ -5,6 +5,7 @@ __author__ = 'Connor Morgan-Lang'
 import argparse
 import sys
 import os
+from os.path import basename
 import inspect
 import shutil
 from glob import glob
@@ -31,6 +32,7 @@ class ClassifiedSequence:
         self.ncbi_tax = ""
         self.assigned_lineage = ""
         self.true_lineage = ""
+        self.optimal_lineage = ""
         self.tax_dist = 0
 
 
@@ -45,6 +47,9 @@ class ConfusionTest:
         self.tax_lineage_map = dict()
         self.dist_wise_tp = dict()
         self.num_total_queries = 0
+        self.rank_depth_map = {"Kingdom": 1, "Phylum": 2, "Class": 3, "Order": 4, "Family": 5, "Genus": 6, "Species": 7}
+        self.classification_table = ""
+        self.data_dir = ""
 
     def get_info(self, verbose=False):
         info_string = "\nReference packages being tested:\n"
@@ -70,6 +75,19 @@ class ConfusionTest:
                 info_string += self.marker_classification_summary(refpkg)
 
         return info_string
+
+    def map_data(self, output_dir, tool):
+        if tool == "treesapp":
+            self.data_dir = output_dir + os.sep + "TreeSAPP_output" + os.sep
+            self.classification_table = self.data_dir + "final_outputs" + os.sep + "marker_contig_map.tsv"
+        elif tool == "graftm":
+            self.data_dir = output_dir + os.sep + "GraftM_output" + os.sep
+        elif tool == "diamond":
+            self.data_dir = output_dir + os.sep + "DIAMOND_output" + os.sep
+        else:
+            logging.error("Unrecognized tool: " + tool + "\n")
+            sys.exit(1)
+        return
 
     def marker_classification_summary(self, refpkg_name):
         """
@@ -130,6 +148,47 @@ class ConfusionTest:
                 self.tax_lineage_map[e_record.ncbi_tax] += clean_lineage_string(e_record.lineage)
         return
 
+    def map_lineages(self):
+        for marker in self.tp:
+            for tp_inst in self.tp[marker]:  # type: ClassifiedSequence
+                try:
+                    tp_inst.true_lineage = self.tax_lineage_map[tp_inst.ncbi_tax]
+                except KeyError:
+                    continue
+        return
+
+    def summarise_reference_taxa(self, taxa_file, classification_file, rank="Phylum"):
+        lineage_list = []
+        info_string = "RefPkg\tName\tTaxDist\tClassified\tTrueLineage\tAssignedLineage\tOptimalLineage\n"
+        for marker in self.tp:
+            for tp_inst in self.tp[marker]:  # type: ClassifiedSequence
+                lineage_list.append(tp_inst.true_lineage)
+                info_string += "\t".join([marker, tp_inst.name, str(tp_inst.tax_dist), "True",
+                                          tp_inst.true_lineage, tp_inst.assigned_lineage,
+                                          tp_inst.optimal_lineage]) + "\n"
+        for marker in self.fn:
+            for seq_name in self.fn[marker]:
+                ref_g, tax_id = self.header_regex.match(seq_name).groups()
+                try:
+                    true_lineage = self.tax_lineage_map[tax_id]
+                except KeyError:
+                    continue
+                lineage_list.append(true_lineage)
+                info_string += "\t".join([marker, seq_name, "NA", "False", true_lineage, "NA", "NA"]) + "\n"
+
+        with open(classification_file, 'w') as info_handler:
+            info_handler.write(info_string)
+        logging.debug("Taxonomic lineage distribution of " + str(len(lineage_list)) + " 'true' reference sequences.\n")
+        input_taxa_dist = summarize_taxonomy(taxa_list=lineage_list,
+                                             rank=rank,
+                                             rank_depth_map=self.rank_depth_map)
+        write_dict_to_table(input_taxa_dist, taxa_file, "\t")
+        summary_string = ""
+        for summary_lineage in sorted(input_taxa_dist, key=lambda x: input_taxa_dist[x]):
+            summary_string += "\t'" + summary_lineage + "'\t" + str(input_taxa_dist[summary_lineage]) + "\n"
+        logging.debug(summary_string)
+        return
+
     def bin_true_positives_by_taxdist(self):
         """
         Defines the number of true positives at each taxonomic distance x where 0 <= x <= 7,
@@ -143,12 +202,12 @@ class ConfusionTest:
             self.dist_wise_tp[marker] = dict()
             for tp_inst in self.tp[marker]:  # type: ClassifiedSequence
                 # Find the optimal taxonomic assignment
-                optimal_taxon = optimal_taxonomic_assignment(self.ref_packages[marker].taxa_trie,
-                                                             self.tax_lineage_map[tp_inst.ncbi_tax])
+                optimal_taxon = optimal_taxonomic_assignment(self.ref_packages[marker].taxa_trie, tp_inst.true_lineage)
                 if not optimal_taxon:
-                    logging.debug("Optimal taxonomic assignment '" + self.tax_lineage_map[tp_inst.ncbi_tax] + "' for " +
+                    logging.debug("Optimal taxonomic assignment '" + tp_inst.true_lineage + "' for " +
                                   tp_inst.name + " not found in reference hierarchy.\n")
                     continue
+                tp_inst.optimal_lineage = optimal_taxon
                 tp_inst.tax_dist, status = compute_taxonomic_distance(tp_inst.assigned_lineage, optimal_taxon)
                 if status > 0:
                     logging.debug("Lineages didn't converge between:\n'" +
@@ -380,8 +439,8 @@ class ConfusionTest:
             self.fn[marker] = set(self.fn[marker]).difference(homologous_tps)
         return
 
-    def summarize_type_two_taxa(self, rank_depth=3):
-        lineage_count_dict = dict()
+    def summarize_type_two_taxa(self, rank="Phylum"):
+        lineage_list = []
         summary_string = ""
         for marker in self.fn:
             if len(self.fn[marker]) == 0:
@@ -390,19 +449,95 @@ class ConfusionTest:
             for seq_name in self.fn[marker]:
                 ref_g, tax_id = self.header_regex.match(seq_name).groups()
                 try:
-                    summary_lineage = "; ".join(self.tax_lineage_map[tax_id].split("; ")[:rank_depth])
+                    lineage_list.append(self.tax_lineage_map[tax_id])
                 except KeyError:
                     continue
-                try:
-                    lineage_count_dict[summary_lineage] += 1
-                except KeyError:
-                    lineage_count_dict[summary_lineage] = 1
-
+            lineage_count_dict = summarize_taxonomy(lineage_list, rank, self.rank_depth_map)
             for summary_lineage in sorted(lineage_count_dict):
+                summary_string += "\t'" + summary_lineage + "'\t" + str(lineage_count_dict[summary_lineage]) + "\n"
+            lineage_count_dict.clear()
+            lineage_list.clear()
+
+        return summary_string
+
+    def true_positive_taxonomic_summary(self, rank="Phylum", aggregate=False):
+        lineage_list = []
+        summary_string = ""
+        for marker in self.tp:
+            if len(self.tp[marker]) == 0:
+                continue
+            lineage_list += [tp_inst.true_lineage for tp_inst in self.tp[marker]]
+
+            if aggregate is False:
+                lineage_count_dict = summarize_taxonomy(lineage_list, rank, self.rank_depth_map)
+                summary_string += "Taxonomic distribution of true positives for '" + marker + "':\n"
+                for summary_lineage in sorted(lineage_count_dict, key=lambda x: lineage_count_dict[x]):
+                    summary_string += "\t'" + summary_lineage + "'\t" + str(lineage_count_dict[summary_lineage]) + "\n"
+                lineage_count_dict.clear()
+                lineage_list.clear()
+        if aggregate:
+            lineage_count_dict = summarize_taxonomy(lineage_list, rank, self.rank_depth_map)
+            summary_string += "Taxonomic distribution of true positives:\n"
+            for summary_lineage in sorted(lineage_count_dict, key=lambda x: lineage_count_dict[x]):
                 summary_string += "\t'" + summary_lineage + "'\t" + str(lineage_count_dict[summary_lineage]) + "\n"
             lineage_count_dict.clear()
 
         return summary_string
+
+
+def summarize_taxonomy(taxa_list, rank, rank_depth_map=None):
+    """
+    Given a list of taxonomic lineages and a taxonomic rank for which to summarise at
+    it will count the number of instances for each taxon at the desired rank.
+    E.g. {''}
+    :return: A dictionary mapping a taxon to the number of representatives seen
+    """
+    if not rank_depth_map:
+        rank_depth_map = {"Kingdom": 1, "Phylum": 2, "Class": 3, "Order": 4, "Family": 5, "Genus": 6, "Species": 7}
+
+    try:
+        depth = rank_depth_map[rank] + 1
+    except KeyError:
+        logging.error("Rank '" + rank + "' not present in rank-depth map:\n" + str(rank_depth_map) + "\n")
+        sys.exit(3)
+
+    taxa_census = dict()
+    empty = 0
+    acc = 0
+    for taxon in taxa_list:
+        if not taxon:
+            empty += 1
+            continue
+        taxon_path = taxon.split("; ")
+        if depth > len(taxon_path):
+            summary_lineage = taxon
+        else:
+            summary_lineage = "; ".join(taxon_path[:depth])
+        try:
+            taxa_census[summary_lineage] += 1
+        except KeyError:
+            taxa_census[summary_lineage] = 1
+        acc += 1
+    logging.debug(str(empty) + " empty lineages encountered.\n")
+
+    return taxa_census
+
+
+def write_dict_to_table(data_dict, file_name, sep="\t"):
+    """
+    Basic function for writing the key, value pairs into a file with a specified separator
+    :param data_dict: A dictionary object
+    :param file_name: Path to a file for the dictionary to be written to
+    :param sep: The separator to use. Tabs by default
+    :return: None
+    """
+    data_string = ""
+    for key in sorted(data_dict):
+        data_string += sep.join([str(key), str(data_dict[key])]) + "\n"
+    with open(file_name, 'w') as data_out:
+        data_out.write(data_string)
+
+    return
 
 
 def get_arguments():
@@ -410,7 +545,7 @@ def get_arguments():
                                      description="A wrapper script for calculating Matthews correlation coefficient for"
                                                  "TreeSAPP or GraftM. Currently only supports testing proteins.")
     required_args = parser.add_argument_group("Required arguments")
-    required_args.add_argument("--fasta_input", required=True,
+    required_args.add_argument("--input", required=True,
                                help="FASTA-formatted file used for testing the classifiers")
     required_args.add_argument("--annot_map", required=True,
                                help="Path to a tabular file mapping markers being tested to their database annotations."
@@ -459,10 +594,6 @@ def get_arguments():
 
 
 def validate_command(args):
-    if args.overwrite:
-        if os.path.exists(args.output):
-            shutil.rmtree(args.output)
-
     if args.tool in ["diamond", "graftm"]:
         if not args.gpkg_dir:
             logging.error(args.tool + " specified but not GraftM reference package directory specified.\n")
@@ -521,6 +652,10 @@ def calculate_matthews_correlation_coefficient(tp: int, fp: int, fn: int, tn: in
 def main():
     args = get_arguments()
     log_name = args.output + os.sep + "MCC_log.txt"
+    mcc_file = args.output + os.sep + "MCC_table.tsv"
+    summary_rank = "Phylum"
+    taxa_dist_output = args.output + '.'.join(basename(args.input).split('.')[:-1]) + '_' + summary_rank + "_dist.tsv"
+    classification_info_output = args.output + '.'.join(basename(args.input).split('.')[:-1]) + "_classifications.tsv"
     prep_logging(log_name, args.verbose)
     validate_command(args)
 
@@ -530,6 +665,10 @@ def main():
     pkg_name_dict = read_annotation_mapping_file(args.annot_map)
     marker_build_dict = file_parsers.parse_ref_build_params(args)
     test_obj = ConfusionTest(pkg_name_dict.keys())
+    test_obj.map_data(output_dir=args.output, tool=args.tool)
+    if args.overwrite:
+        if os.path.exists(test_obj.data_dir):
+            shutil.rmtree(test_obj.data_dir)
 
     ##
     # Load the taxonomic trie for each reference package
@@ -542,7 +681,7 @@ def main():
             test_obj.ref_packages[pkg_name].taxa_trie = all_possible_assignments(test_obj.ref_packages[pkg_name].lineage_ids)
     else:
         for gpkg in glob(args.gpkg_dir + "*gpkg"):
-            marker = str(os.path.basename(gpkg).split('.')[0])
+            marker = str(basename(gpkg).split('.')[0])
             pkg_name = fish_refpkg_from_build_params(marker, marker_build_dict).denominator
             if pkg_name in pkg_name_dict:
                 try:
@@ -555,23 +694,22 @@ def main():
     # Run the specified taxonomic analysis tool and collect the classifications
     ##
     assignments = {}
-    test_fa_prefix = '.'.join(os.path.basename(args.fasta_input).split('.')[:-1])
+    test_fa_prefix = '.'.join(basename(args.input).split('.')[:-1])
     if args.tool == "treesapp":
         ref_pkgs = ','.join(pkg_name_dict.keys())
-        classification_table = os.sep.join([args.output, "TreeSAPP_output", "final_outputs", "marker_contig_map.tsv"])
-        if not os.path.isfile(classification_table):
+        if not os.path.isfile(test_obj.classification_table):
             # TODO: Replace with a call to the treesapp main function
-            classify_call = [args.treesapp + "treesapp.py", "-i", args.fasta_input,
+            classify_call = [args.treesapp + "treesapp.py", "-i", args.input,
                              "-t", ref_pkgs, "-T", str(args.num_threads),
-                             "-m", "prot", "--output", args.output + "TreeSAPP_output" + os.sep,
+                             "-m", "prot", "--output", test_obj.data_dir,
                              "--trim_align", "--overwrite"]
             launch_write_command(classify_call, False)
-        classification_lines = file_parsers.read_marker_classification_table(classification_table)
+        classification_lines = file_parsers.read_marker_classification_table(test_obj.classification_table)
         assignments = file_parsers.parse_assignments(classification_lines)
     else:
         # Since you are only able to analyze a single reference package at a time with GraftM, this is ran iteratively
         for gpkg in glob(args.gpkg_dir + "*gpkg"):
-            marker = str(os.path.basename(gpkg).split('.')[0])
+            marker = str(basename(gpkg).split('.')[0])
             if not marker:
                 logging.error("Unable to parse marker name from gpkg '" + gpkg + "'\n")
                 sys.exit(5)
@@ -579,13 +717,13 @@ def main():
             if pkg_name not in pkg_name_dict:
                 logging.warning("'" + pkg_name + "' not in " + args.annot_map + " and will be skipped...\n")
                 continue
-            output_dir = os.sep.join([args.output, "GraftM_output", pkg_name]) + os.sep
+            output_dir = test_obj.data_dir + pkg_name + os.sep
             if not os.path.isdir(output_dir):
                 os.makedirs(output_dir)
             classification_table = output_dir + test_fa_prefix + os.sep + test_fa_prefix + "_read_tax.tsv"
             if not os.path.isfile(classification_table):
                 classify_call = ["graftM", "graft",
-                                 "--forward", args.fasta_input,
+                                 "--forward", args.input,
                                  "--graftm_package", gpkg,
                                  "--input_sequence_type", "aminoacid",
                                  "--threads", str(args.num_threads),
@@ -602,8 +740,8 @@ def main():
         logging.error("No sequences were classified by " + args.tool + ".\n")
         sys.exit(3)
 
-    logging.info("Reading headers in " + args.fasta_input + "... ")
-    test_seq_names = [seq_name[1:] if seq_name[0] == '>' else seq_name for seq_name in get_headers(args.fasta_input)]
+    logging.info("Reading headers in " + args.input + "... ")
+    test_seq_names = [seq_name[1:] if seq_name[0] == '>' else seq_name for seq_name in get_headers(args.input)]
     logging.info("done.\n")
     test_obj.num_total_queries = len(test_seq_names)
     eggnog_re = re.compile(r"^>?(COG[A-Z0-9]+|ENOG[A-Z0-9]+)_(\d+)\..*")
@@ -620,11 +758,16 @@ def main():
     ##
     _TAXID_GROUP = 2
     test_obj.retrieve_lineages(_TAXID_GROUP)
+    test_obj.map_lineages()
+
     test_obj.bin_true_positives_by_taxdist()
     test_obj.validate_false_positives()
     test_obj.validate_false_negatives(pkg_name_dict)
 
-    logging.debug(test_obj.summarize_type_two_taxa())
+    test_obj.summarise_reference_taxa(taxa_dist_output, classification_info_output, summary_rank)
+    logging.debug(test_obj.summarize_type_two_taxa(summary_rank))
+    logging.debug(test_obj.true_positive_taxonomic_summary(summary_rank, True))
+
     ##
     # Report the MCC score across different taxonomic distances - should increase with greater allowed distance
     ##
@@ -643,6 +786,8 @@ def main():
         mcc_string += "\t".join([str(x) for x in [d, mcc, num_tp, num_tn, num_fp, num_fn]]) + "\n"
         d += 1
     logging.info(mcc_string)
+    with open(mcc_file, 'w') as mcc_handler:
+        mcc_handler.write(mcc_string)
     return
 
 

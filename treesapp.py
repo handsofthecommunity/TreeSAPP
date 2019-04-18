@@ -4,7 +4,6 @@
 __author__ = "Connor Morgan-Lang and Kishori Konwar"
 __maintainer__ = "Connor Morgan-Lang"
 __license__ = "GPL-3.0"
-__version__ = "1.1.0"
 
 try:
     import profile
@@ -584,7 +583,7 @@ def extract_hmm_matches(hmm_matches: dict, fasta_dict: dict):
             for bin_num in sorted(bins):
                 bin_rep = bins[bin_num][0]
                 overlap = min(hmm_match.pend, bin_rep.pend) - max(hmm_match.pstart, bin_rep.pstart)
-                if (100*overlap)/(bin_rep.pend - bin_rep.pstart) > 80:
+                if (100*overlap)/(bin_rep.pend - bin_rep.pstart) > 80:  # 80 refers to overlap proportion with seed
                     bins[bin_num].append(hmm_match)
                     extracted_seq_dict[marker][bin_num][numeric_decrementor] = full_sequence[
                                                                                hmm_match.start - 1:hmm_match.end]
@@ -609,13 +608,21 @@ def write_grouped_fastas(extracted_seq_dict: dict, numeric_contig_index: dict, m
     hmmalign_input_fastas = list()
     bulk_marker_fasta = dict()
     bin_fasta = dict()
+
+    group_size_string = "Number of query sequences in each marker's group:\n"
+    for marker in extracted_seq_dict:
+        for group in sorted(extracted_seq_dict[marker]):
+            if extracted_seq_dict[marker][group]:
+                group_size_string += "\t".join([marker, str(group), str(len(extracted_seq_dict[marker][group]))]) + "\n"
+    logging.debug(group_size_string + "\n")
+
     logging.info("Writing the grouped sequences to FASTA files... ")
 
     for marker in extracted_seq_dict:
         # Find the reference package instance
         ref_marker = utilities.fish_refpkg_from_build_params(marker, marker_build_dict)
 
-        f_acc = 0  # For counting the number of files for a marker. Will exceed groups if queries > references
+        f_acc = 0  # For counting the number of files for a marker. Will exceed groups if len(queries) > len(references)
         for group in sorted(extracted_seq_dict[marker]):
             if extracted_seq_dict[marker][group]:
                 group_sequences = extracted_seq_dict[marker][group]
@@ -631,8 +638,9 @@ def write_grouped_fastas(extracted_seq_dict: dict, numeric_contig_index: dict, m
                         hmmalign_input_fastas.append(output_dir + marker + "_hmm_purified_group" + str(f_acc) + ".faa")
                         f_acc += 1
                         bin_fasta.clear()
-                write_new_fasta(bin_fasta, output_dir + marker + "_hmm_purified_group" + str(f_acc) + ".faa")
-                hmmalign_input_fastas.append(output_dir + marker + "_hmm_purified_group" + str(f_acc) + ".faa")
+                if len(bin_fasta) > 1:
+                    write_new_fasta(bin_fasta, output_dir + marker + "_hmm_purified_group" + str(f_acc) + ".faa")
+                    hmmalign_input_fastas.append(output_dir + marker + "_hmm_purified_group" + str(f_acc) + ".faa")
             f_acc += 1
             bin_fasta.clear()
 
@@ -1325,17 +1333,22 @@ def check_for_removed_sequences(args, trimmed_msa_files: dict, msa_files: dict, 
         # Report the number of sequences that are removed by BMGE
         for trimmed_msa_file in trimmed_msa_files[denominator]:
             try:
-                prefix, tool = re.search(r"(" + re.escape(marker) + "_.*_group\d+)-(BMGE|trimAl).fasta$",
+                prefix, tool = re.search(r"(" + re.escape(marker) + r"_.*_group\d+)-(BMGE|trimAl).fasta$",
                                          os.path.basename(trimmed_msa_file)).groups()
             except TypeError:
                 logging.error("Unexpected file name format for a trimmed MSA.\n")
                 sys.exit(3)
+            original_msa = ""
             for msa_file in msa_files[denominator]:
-                if re.search(re.escape(prefix) + '\.', msa_file):
+                if re.search(re.escape(prefix) + r'\.', msa_file):
+                    original_msa = msa_file
                     if trimmed_msa_file in msa_failed:
-                        untrimmed_msa_failed.append(msa_file)
-                    trimmed_away_seqs[marker] += len(set(get_headers(msa_file)).difference(set(get_headers(trimmed_msa_file))))
+                        untrimmed_msa_failed.append(original_msa)
+                    trimmed_away_seqs[marker] += len(set(get_headers(original_msa)).difference(set(get_headers(trimmed_msa_file))))
                     break
+            if not original_msa:
+                logging.error("Trimmed MSA file " + trimmed_msa_file + " was not uniquely mapped to an original MSA.\n")
+                sys.exit(3)
 
         if len(msa_failed) > 0:
             if len(untrimmed_msa_failed) != len(msa_failed):
@@ -1347,6 +1360,7 @@ def check_for_removed_sequences(args, trimmed_msa_files: dict, msa_files: dict, 
         num_successful_alignments += len(msa_passed)
         qc_ma_dict[denominator] = msa_passed
         discarded_seqs_string += summary_str
+        untrimmed_msa_failed.clear()
 
     logging.debug("done.\n")
     logging.debug("\tSequences removed during trimming:\n\t\t" +
@@ -2625,7 +2639,7 @@ def filter_placements(args, tree_saps, marker_build_dict):
         tree = Tree(os.sep.join([args.treesapp, "data", "tree_data", marker + "_tree.txt"]))
         max_dist, leaf_ds = tree_leaf_distances(tree)
         # Find the maximum distance and standard deviation of distances from the root to all leaves
-        max_dist_threshold = max_dist  # + np.std(leaf_ds)
+        max_dist_threshold = max_dist
         mean_dist_threshold = utilities.mean(leaf_ds)
         logging.debug(denominator + " maximum pendant length distance threshold: " + str(max_dist_threshold) + "\n")
 
@@ -2839,7 +2853,7 @@ def parse_raxml_output(args, marker_build_dict):
     logging.debug("\tTree parsing time required: " +
                   ':'.join([str(hours), str(minutes), str(round(seconds, 2))]) + "\n")
     logging.debug("\t" + str(len(jplace_files)) + " RAxML output files.\n" +
-                  "\t" + str(classified_seqs) + " sequences classified by TreeSAPP.\n\n")
+                  "\t" + str(classified_seqs) + " sequences placed into trees by RAxML.\n\n")
 
     return tree_saps, itol_data
 
