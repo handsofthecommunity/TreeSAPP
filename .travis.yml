@@ -7,7 +7,7 @@ python:
 
 before_install:
     - sudo apt-get install libc6-i386 -y
-    - sudo bash install_java.sh
+    - sudo bash dev_utils/install_java.sh
     - sudo apt-get update
     - sudo apt-get install python3-pip -y
     - sudo apt-get install python-qt4 -y
