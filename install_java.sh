@@ -1,11 +1,11 @@
 #!/bin/bash
 
-mkdir ~/Downloads/
+sudo mkdir ~/Downloads/
 cd ~/Downloads/
 wget http://storage.googleapis.com/travis-java/jdk-8u211-linux-i586.tar.gz
-mkdir /usr/lib/jvm
+sudo mkdir /usr/lib/jvm
 cd /usr/lib/jvm
-tar -xvzf ~/Downloads/jdk-8u211-linux-i586.tar.gz
+sudo tar -xvzf ~/Downloads/jdk-8u211-linux-i586.tar.gz
 
 echo "PATH=\"/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/jvm/jdk1.8.0_211/bin:/usr/lib/jvm/jdk1.8.0_211/db/bin:/usr/lib/jvm/jdk1.8.0_211/jre/bin\"
 J2SDKDIR=\"/usr/lib/jvm/jdk1.8.0_211\"
