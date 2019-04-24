@@ -1,47 +1,83 @@
 #include "parser_factory.hpp"
 
+vector<StringRef> split3(string const& str, bool check, char delimiter = '\t'){
+  vector<StringRef> result;
+  enum State {inSpace, inToken};
 
-PyObject *read_file(unordered_map<string, bool> accession_list, const char * file) {
+  State state = inSpace;
+  char const* pTokenBegin = 0;
+  for (auto it = str.begin(); it != str.end(); ++it){
+    State const newState = (*it == delimiter? inSpace : inToken);
+
+    if (newState != state){
+      switch (newState){
+      case inSpace:
+	result.push_back(StringRef(pTokenBegin, &*it - pTokenBegin));
+	if (check){
+	  return result;
+	} 
+	break;
+      case inToken:
+	pTokenBegin = &*it;
+      }
+    }
+    state = newState;
+    
+  }
+  if (state == inToken){
+    result.push_back(StringRef(pTokenBegin, &*str.end() - pTokenBegin));
+  }
+  return result;
+}
+
+PyObject *read_file(unordered_map<string, bool> accession_list, const char * file, int listSize) {
   /*                                                                                                         
    * Function for reading file with accession and tax id data                                                
    * to a list of accession ids, tax ids, and versions                                                       
    */
   try {
+    std::ios_base::sync_with_stdio(false);
+    cin.sync_with_stdio(false);
+    // disable async IO
     string line;
     ifstream acc_file(file);
-    string tmp;
-    vector<string> data;
-
+    vector<StringRef> data;
+    data.reserve(3);
     vector<string> accession_ids = {};
-    vector<string> version = {};
+    accession_ids.reserve(listSize);
+    vector<string> versions = {};
+    versions.reserve(listSize);
     vector<string> taxid = {};
+    taxid.reserve(listSize);
 
     vector<vector<string>> allLists = {};
-
+    allLists.reserve(3);
+    
     int count = 0;
     int check = 0;
-    int size = accession_list.size();
-    
-    clock_t start = clock();
-    clock_t middle;
-    clock_t end;
+    int size = listSize;
 
     while (getline(acc_file, line)) {
       std::istringstream iss(line);
-      while (getline(iss, tmp, '\t')) {
-      	data.push_back(tmp);
-      	if (accession_list.find(data[0]) == accession_list.end() || accession_list[data[0]]) {
-      	  check = 1;
-      	  break;
-      	}
+    
+      data = split3(line, true);
+
+      string accession_id = string(data[0].begin(), data[0].end());
+
+      if (accession_list.find(accession_id) == accession_list.end() || accession_list[accession_id]){
+	check = 1;
       }
-      
-      if (accession_list.find(data[0]) != accession_list.end() && check == 0) {
+
+      if (check == 0) {
+	data = split3(line, false);
+	string version = string(data[1].begin(), data[1].end());
+	string tax_id = string(data[2].begin(), data[2].end());
+
       	count++;
-      	accession_list[data[0]] = true;
-      	accession_ids.push_back(data[0]);
-      	version.push_back(data[1]);
-      	taxid.push_back(data[2]);
+      	accession_list[accession_id] = true;
+      	accession_ids.push_back(accession_id);
+      	versions.push_back(version);
+      	taxid.push_back(tax_id);
       }
       
       if (count >= size) {
@@ -49,12 +85,13 @@ PyObject *read_file(unordered_map<string, bool> accession_list, const char * fil
       }
       check = 0;
       data.clear();
+      
     }
 
-    cout << ((float_t) clock() - start)/CLOCKS_PER_SEC << endl;
     acc_file.close();
+
     allLists.push_back(accession_ids);
-    allLists.push_back(version);
+    allLists.push_back(versions);
     allLists.push_back(taxid);
 
     PyObject* retList = PyList_New(3);
@@ -112,7 +149,7 @@ static PyObject* parse_file(PyObject *module, PyObject* args) {
   }
   unordered_map<string, bool> accession_list = listtoSet(accList);
 
-  PyObject *retLists = read_file(accession_list, fileName);
+  PyObject *retLists = read_file(accession_list, fileName, accession_list.size());
 
   return retLists;
 }

@@ -25,8 +25,7 @@ try:
     from entish import annotate_partition_tree
     from lca_calculations import megan_lca, clean_lineage_list
     from entrez_utils import *
-    from file_parsers import parse_domain_tables, read_phylip_to_dict, read_uc, validate_alignment_trimming,\
-        multiple_alignment_dimensions
+    from file_parsers import parse_domain_tables, read_phylip_to_dict, read_uc, validate_alignment_trimming, multiple_alignment_dimensions
     from placement_trainer import regress_rank_distance
     import _parser_factory
     
@@ -1302,9 +1301,8 @@ def cmap_accession2taxid(query_accession_list, accession2taxid_list):
                     sys.exit(13)
 
     end = time.time()
-    print("\nTime required to parse '" + accession2taxid + "': " + str(end - start) + "s.\n")
     # Report the number percentage of query accessions mapped                               
-    print(str(round(((init_qlen - final_qlen) * 100 / len(query_accession_list)), 2)) + "% o\f query accessions mapped by " + accession2taxid + ".\n")
+    print(str(round(((init_qlen - final_qlen) * 100 / len(query_accession_list)), 2)) + "% of query accessions mapped by " + accession2taxid + ".\n")
     logging.info("done.\n")
     return er_acc_dict
 
@@ -1448,8 +1446,10 @@ def main():
         logging.info("done.\n")
     else:
         if args.accession2taxid:
+            start = time.time()
             # Determine find the query accessions that are located in the provided accession2taxid file
             entrez_record_dict = cmap_accession2taxid(query_accession_list, args.accession2taxid)
+            print("\nTime required to parse: " + str(time.time() - start) + "s.\n")
             # Map lineages to taxids for successfully-mapped query sequences
             fetch_lineages_from_taxids(entrez_record_dict.values())
             # Use the normal querying functions to obtain lineage information for the unmapped queries

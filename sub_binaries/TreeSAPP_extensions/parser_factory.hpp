@@ -22,6 +22,22 @@ using namespace std;
 
 typedef long long int64; typedef unsigned long long uint64;
 
+class StringRef{
+private:
+  char const*  begin_;
+  int          size_;
+
+public:
+  int size() const {return size_;}
+  char const* begin() const {return begin_;}
+  char const* end() const {return begin_ + size_;}
+
+  StringRef(char const* const begin, int const size)
+    : begin_(begin)
+    , size_(size)
+  {}
+};
+
 uint64 getTimeMs64()
 {
   #ifdef _WIN32
@@ -59,10 +75,11 @@ uint64 getTimeMs64()
 
 
 static PyObject *parse_file(PyObject *module, PyObject *args);
-PyObject *read_file(unordered_map<string, bool> accession_list, const char * file);
+PyObject *read_file(unordered_map<string, bool> accession_list, const char * file, int listSize);
 unordered_map<string, bool> listtoSet(PyObject* incoming);
 PyObject* vectorToList_Str(const vector<string> &data);
-
+vector<StringRef> split3(string const& str, char delimited);
+  
 static PyMethodDef module_methods[] = {
         {"parse_file",
         parse_file,
