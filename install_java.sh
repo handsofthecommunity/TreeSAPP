@@ -2,7 +2,8 @@
 
 sudo mkdir ~/Downloads/
 cd ~/Downloads/
-wget http://storage.googleapis.com/travis-java/jdk-8u211-linux-i586.tar.gz
+sudo wget http://storage.googleapis.com/travis-java/jdk-8u211-linux-i586.tar.gz
+if [ -d "/usr/lib/jvm" ]; then rm -rf /usr/lib/jvm; fi
 sudo mkdir /usr/lib/jvm
 cd /usr/lib/jvm
 sudo tar -xvzf ~/Downloads/jdk-8u211-linux-i586.tar.gz
