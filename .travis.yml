@@ -23,7 +23,7 @@ install:
     - pip install pytest-cov
 
 before_script:
-    - cd /home/travis/build/hallamlab/TreeSAPP/treesapp/sub_binaries; sudo cp usearch /usr/bin; cd ../; make; make install
+    - cd /home/travis/build/hallamlab/TreeSAPP/treesapp/sub_binaries; sudo cp usearch /usr/bin; cd ../../; make; make install
 
 script:
     - py.test -vv treesapp/tests/classy_test.py
