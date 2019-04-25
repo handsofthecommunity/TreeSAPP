@@ -10,10 +10,10 @@ import time
 from multiprocessing import Process, JoinableQueue
 from glob import glob
 from json import loads, dumps
-from .fasta import format_read_fasta, write_new_fasta, get_header_format
-from .utilities import median, which, is_exe, return_sequence_info_groups
-from .entish import get_node, create_tree_info_hash, subtrees_to_dictionary
-from .lca_calculations import determine_offset
+from fasta import format_read_fasta, write_new_fasta, get_header_format
+from utilities import median, which, is_exe, return_sequence_info_groups
+from entish import get_node, create_tree_info_hash, subtrees_to_dictionary
+from lca_calculations import determine_offset
 from numpy import var
 
 import _tree_parser

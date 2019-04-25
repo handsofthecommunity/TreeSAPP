@@ -8,7 +8,7 @@ import logging
 import time
 from shutil import rmtree
 from glob import glob
-from .external_command_interface import launch_write_command
+from external_command_interface import launch_write_command
 
 
 def reluctant_remove_replace(dir_path):

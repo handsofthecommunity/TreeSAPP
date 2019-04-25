@@ -6,8 +6,8 @@ import os
 import logging
 
 import _fasta_reader
-from .utilities import median, reformat_string
-from .external_command_interface import launch_write_command
+from utilities import median, reformat_string
+from external_command_interface import launch_write_command
 
 
 # No bioinformatic software would be complete without a contribution from Heng Li.
