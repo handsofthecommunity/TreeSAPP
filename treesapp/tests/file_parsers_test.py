@@ -13,7 +13,7 @@ def create_parser(treesapp, targets, reftree):
     args = argparse.Namespace()
     args.alignment_mode = 'd'
     args.reftree = reftree
-    args.targets = [targets]
+    args.targets = targets
     args.treesapp = treesapp
     args.check_trees = False
     args.skip = 'n'
@@ -42,28 +42,30 @@ class ParserTest(unittest.TestCase):
                         assert(expected_vals[i][11][j] in marker_build_dict[targets[i]].pfit)
 
     def test_parse_ref_build_params(self):
-        expected_out = [['McrA', 'M0701', 'prot', 'PROTGAMMALG', 'Classes', '05_Dec_2018','functional', 'RAxML',"Methyl coenzyme M reductase alpha subunit", 0.97, 211, [-5.7593, 7.0]], ['p_amoA', 'N0102', 'prot', 'PROTGAMMALG', 'Families', '04_Dec_2018', 'functional', 'RAxML', 'Ammonia monooxygenase (Archaea) and particulate methane monoxygenase', 0.97, 80, [-3.896, 7.0]], ['narG', 'D0101', 'prot', 'PROTGAMMALG', 'Phyla', '06_Dec_2018', 'functional', 'RAxML', "nitrate reductase / nitrite oxidoreductase, alpha subunit", 0.8, 306, [-4.0698, 7.0]]]
+        expected_out = [['McrA', 'M0701', 'prot', 'PROTGAMMALG', 'Classes', '05_Dec_2018','functional', 'RAxML',"Methyl coenzyme M reductase alpha subunit", 0.97, 211, [-6.7684, 6.6843]], ['p_amoA', 'N0102', 'prot', 'PROTGAMMALG', 'Families', '04_Dec_2018', 'functional', 'RAxML', 'Ammonia monooxygenase (Archaea) and particulate methane monoxygenase', 0.97, 80, [-3.9091, 6.0388]], ['narG', 'D0101', 'prot', 'PROTGAMMALG', 'Phyla', '06_Dec_2018', 'functional', 'RAxML', "nitrate reductase / nitrite oxidoreductase, alpha subunit", 0.8, 306, [-5.3403, 6.5158]]]
 
-        args = create_parser(TREESAPP_PATH, 'M0701', 'p')
+        args = create_parser(TREESAPP_PATH, ['M0701'], 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args.treesapp, args.targets)
+       
+        self.check_parse_ref_build_params_out(expected_out, ['M0701'], marker_build_dict)
 
-        args = create_parser(TREESAPP_PATH, 'ALL', 'p')
+        args = create_parser(TREESAPP_PATH, ['M0701', 'N0102', 'D0101'], 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args.treesapp, args.targets)
-          
+       
         self.check_parse_ref_build_params_out(expected_out, ['M0701', 'N0102', 'D0101'], marker_build_dict)
 
 
     def test_exit(self):
-        args = create_parser('~/', 'ALL', 'p')
+        args = create_parser('~/', ['ALL'], 'p')
         with pytest.raises(SystemExit) as pytest_wrapped_e:
                 file_parsers.parse_ref_build_params(args.treesapp, args.targets)
                 assert pytest_wrapped_e.type == SystemExit
                 assert pytest_wrapped_e.value.code == 5
                 
     def test_read_species_translation_files(self):
-        args = create_parser(TREESAPP_PATH, 'M0701', 'p')
+        args = create_parser(TREESAPP_PATH, ['M0701'], 'p')
         marker_build_dict = file_parsers.parse_ref_build_params(args.treesapp, args.targets)
-        tree_numbers_translation = file_parsers.read_species_translation_files(args, marker_build_dict)
+        tree_numbers_translation = file_parsers.read_species_translation_files(args.treesapp, marker_build_dict)
 
         assert(tree_numbers_translation['M0701'][0].lineage == 'cellular organisms; Archaea')
         assert tree_numbers_translation['M0701'][0].complete
@@ -74,7 +76,7 @@ class ParserTest(unittest.TestCase):
         marker_subgroups = dict()
         internal_nodes = dict()
         annotation_file = TREESAPP_PATH + 'data/iTOL_data/McrA_colours_style.txt'
-        args = create_parser(TREESAPP_PATH, 'M0701', 'p')
+        args = create_parser(TREESAPP_PATH, ['M0701'], 'p')
 
         marker_subgroups['McrA'] = dict()
         internal_nodes['McrA'] = dict()
