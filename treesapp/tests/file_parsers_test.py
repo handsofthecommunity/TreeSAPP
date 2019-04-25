@@ -20,8 +20,8 @@ def create_parser(treesapp, targets, reftree):
     args.molecule = 'prot'
     return args
 
-TEST_PATH = '/home/travis/build/hallamlab/TreeSAPP/tests'
-TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/'
+TEST_PATH = '/home/travis/build/hallamlab/TreeSAPP/treesapp/tests'
+TREESAPP_PATH = '/home/travis/build/hallamlab/TreeSAPP/treesapp/'
 
 class ParserTest(unittest.TestCase):
 
