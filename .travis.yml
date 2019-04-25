@@ -29,7 +29,10 @@ before_script:
 
 script:
     - py.test -vv treesapp/tests/classy_test.py
-    
+    - py.test -vv treesapp/tests/jplace_utils_test.py
+    - py.test -vv treesapp/tests/file_parsers_test.py
+    - py.test -vv treesapp/tests/fasta_test.py
+
 #whitelist
 branches:
   only:
