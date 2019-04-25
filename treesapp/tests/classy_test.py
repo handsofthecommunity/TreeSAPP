@@ -15,7 +15,7 @@ import HMMER_domainTblParser
 from treesapp_test import create_parser
 
 HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
-TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/'
+TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/treesapp/tests/'
 
 def create_itol():
     itol = jplace_parser(HOME_DIR + 'treesapp/tests/test_data/RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace')
@@ -35,9 +35,7 @@ def init_dtp():
 def create_dtp(domtbl_file):
     dtp = DomainTableParser(domtbl_file)
     dtp.read_domtbl_lines()
-
-    ##print(len(dtp.alignments))
-    
+   
     distinct_alignments, num_fragmented, glued, multi_alignments, raw_alignments = HMMER_domainTblParser.format_split_alignments(dtp, 0, 0, 0, 0)
     return dtp, distinct_alignments
 
