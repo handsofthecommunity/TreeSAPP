@@ -78,18 +78,3 @@ class FastaTest(unittest.TestCase):
         assert('>k127_35937_flag_381292_3_#_288_#_416_#_-1_#_ID=381292_3_partial=01_start_type=Edge_rbs_motif=None_rbs_spacer' in formatted_fasta_dict.keys())
         assert( '>Prodigal_Seq_6_6_3_#_3683_#_4678_#_-1_#_ID=6_3_partial=00_start_type=ATG_rbs_motif=None_rbs_spacer=None_nosZ' in formatted_fasta_dict.keys())
 
-
-    def test_deduplicate(self):
-        fasta_dict = fasta.read_fasta_to_dict(TEST_DATA_PATH + "/dup_fasta.fa")
-        fasta_dict = fasta.deduplicate_fasta_sequences(fasta_dict)
-
-        for i in range(0, len(results)):
-            assert(results[i][0] in fasta_dict.keys())
-            assert(results[i][1] in fasta_dict.values())
-
-        fasta_dict = fasta.read_fasta_to_dict(TEST_DATA_PATH + "/short_fasta.fa")
-        fasta_dict = fasta.deduplicate_fasta_sequences(fasta_dict)
-
-        for i in range(0, len(results)):
-            assert(results[i][0] in fasta_dict.keys())
-            assert(results[i][1] in fasta_dict.values())
