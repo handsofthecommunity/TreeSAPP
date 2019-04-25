@@ -13,13 +13,9 @@ import file_parsers
 from HMMER_domainTblParser import HmmMatch, DomainTableParser
 import HMMER_domainTblParser
 from treesapp_test import create_parser
-import treesapp
 
-# HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
-# TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/'
-
-HOME_DIR = '/home/ace/github/tidy/'
-TEST_DIR = '/home/ace/github/TreeSAPP/tests/'
+HOME_DIR = '/home/travis/build/hallamlab/TreeSAPP/'
+TEST_DIR = '/home/travis/build/hallamlab/TreeSAPP/tests/'
 
 def create_itol():
     itol = jplace_parser(HOME_DIR + 'treesapp/tests/test_data/RAxML_portableTree.M0701_hmm_purified_group0-BMGE-qcd.phy.jplace')
@@ -367,12 +363,7 @@ class TreeProteinTest(unittest.TestCase):
         assert(treeprotein.version == itol.version)
         assert(treeprotein.metadata == itol.metadata)
 
-    def test_megan_lca(self):
-        itol = init_itol()
-        treesapp = TreeProtein()
-        treesapp.transfer(itol)
-        ###########################
-        
+       
 class TreeLeafReferenceTest(unittest.TestCase):
     def test_init(self):
         tlr = TreeLeafReference(1, 'NM4 | NM423249334157')
