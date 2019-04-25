@@ -25,7 +25,7 @@ install:
 before_script:
     - cd /home/travis/build/hallamlab/TreeSAPP/treesapp/sub_binaries; cd rpkm_calculator; g++ -c fastareader.c++ helper.c++ matchoutputparser.c++ rpkm.c++ utilities.c++; cd ../; sudo cp usearch /usr/bin; cd ../../; make; make install
     - python setup.py build_ext --inplace
-		
+
 script:
     - py.test -vv treesapp/tests/classy_test.py
     
