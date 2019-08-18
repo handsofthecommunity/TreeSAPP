@@ -6,6 +6,7 @@ import logging
 from ete3 import Tree
 from .file_parsers import tax_ids_file_to_leaves
 from .utilities import clean_lineage_string, median
+from treesapp import red_assignment
 
 import numpy as np
 import scipy.optimize as so
@@ -90,7 +91,7 @@ def rank_recommender(phylo_dist: float, taxonomic_rank_pfit: list):
     # For a polynomial
     # polyreg = np.poly1d(taxonomic_rank_pfit)
     # depth = int(round(polyreg(phylo_dist)))
-
+    [model.coef_, model.intercept_]
     slope, intercept = taxonomic_rank_pfit
     depth = int(round(phylo_dist*slope + intercept))
 

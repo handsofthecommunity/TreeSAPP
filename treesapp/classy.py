@@ -17,7 +17,9 @@ from .entish import get_node, create_tree_info_hash, subtrees_to_dictionary
 from .lca_calculations import determine_offset, clean_lineage_string
 from . import entrez_utils
 from .external_command_interface import launch_write_command
+from . import red_assignment
 from numpy import var
+from ete3 import Tree
 
 import _tree_parser
 
@@ -247,6 +249,7 @@ class ItolJplace:
         self.placements = list()
         self.lwr = 0  # Likelihood weight ratio of an individual placement
         self.likelihood = 0
+        self.RED = 1  # Relative evolutionary distance
         self.avg_evo_dist = 0.0
         self.distances = ""
         self.classified = True
@@ -649,6 +652,30 @@ class ItolJplace:
         #     print("Adjusted: (" + rank_depth[depth] + ')', confident_assignment)
 
         return confident_assignment
+
+    def get_red_value(self, labelled_tree: Tree) -> None:
+        # The RED of an internal node n is linearly interpolated from the branch lengths comprising its lineage,
+        # as defined by p + (d/u) × (1 – p),
+        # where p is the RED of its parent,
+        # d is the branch length to its parent,
+        # and u is the average branch length from the parent node to all extant taxa descendant from n
+        parent = int(self.inode)
+        # p = labelled_tree
+        # Find the RED value of the parent node
+        print("Parent:", parent)
+        i_node_acc = 0
+        for node in labelled_tree.iter_descendants('postorder'):
+            if parent == i_node_acc:
+                if node.is_leaf():
+                    self.RED = 1
+                else:
+                    d = self.avg_evo_dist
+                    u = red_assignment.Dist.avg_dist_to_this_node(node)
+                    self.RED = node.red + (d/u)(1-node.red)
+                break
+        print("RED:", self.RED)
+        # sys.exit()
+        return
 
 
 class TreeProtein(ItolJplace):

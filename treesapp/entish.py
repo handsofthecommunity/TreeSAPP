@@ -36,6 +36,15 @@ def get_tip_distances(parent_node):
     return distances
 
 
+def label_internal_nodes(root: Tree) -> None:
+    i_node_acc = 0
+    root.add_features(i_node=None)
+    for node in root.iter_descendants('postorder'):
+        node.add_feature("i_node", i_node_acc)
+        i_node_acc += 1
+    return
+
+
 def find_cluster(lost_node: Tree, intra_distances: list = []):
     """
     Recursively calculates whether a node in a tree is the root of a cluster,

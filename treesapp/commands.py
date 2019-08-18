@@ -17,9 +17,10 @@ from . import lca_calculations
 from . import placement_trainer
 from . import update_refpkg
 from . import annotate_extra
+from . import red_assignment
 from .phylo_dist import trim_lineages_to_rank
 from .classy import TreeProtein, MarkerBuild, TreeSAPP, Assigner, Evaluator, Creator, PhyTrainer, Updater, Layerer,\
-    prep_logging, dedup_records
+    prep_logging, dedup_records, ReferencePackage
 from . import create_refpkg
 from .assign import abundify_tree_saps, delete_files, validate_inputs,\
     get_alignment_dims, extract_hmm_matches, write_grouped_fastas, create_ref_phy_files,\
@@ -761,6 +762,12 @@ def assign(sys_args):
     marker_build_dict = file_parsers.parse_ref_build_params(ts_assign.treesapp_dir,
                                                             ts_assign.target_refpkgs)
     ref_alignment_dimensions = get_alignment_dims(ts_assign.treesapp_dir, marker_build_dict)
+    refpkg_dict = dict()
+    for refpkg_code in marker_build_dict:
+        refpkg = ReferencePackage()
+        refpkg.prefix = marker_build_dict[refpkg_code].cog
+        refpkg.gather_package_files(ts_assign.refpkg_dir)
+        refpkg_dict[refpkg_code] = refpkg
     tree_numbers_translation = file_parsers.read_species_translation_files(ts_assign.treesapp_dir, marker_build_dict)
     if args.check_trees:
         validate_inputs(args, marker_build_dict)
@@ -845,10 +852,23 @@ def assign(sys_args):
         extracted_seq_dict = fasta.merge_fasta_dicts_by_index(extracted_seq_dict, numeric_contig_index)
         fasta.write_classified_sequences(tree_saps, extracted_seq_dict, ts_assign.classified_aa_seqs)
         abundance_dict = dict()
+        red_dict = dict()
         rpkm_output_dir = ""
         for refpkg_code in tree_saps:
+            if refpkg_code not in refpkg_dict:
+                logging.error("Unable to find refpkg code '" + str(refpkg_code) + "' in refpkg dictionary!\n")
+                sys.exit(5)
+            labelled_ref_tree = red_assignment.open_tree_file(refpkg_dict[refpkg_code].lineage_ids,
+                                                              refpkg_dict[refpkg_code].tree)
+            red_assignment.Map.class_all_nodes(labelled_ref_tree, min_lin_depth=4, remove_strings="")
+            red_assignment.RED.apply_all(labelled_ref_tree)
+            red_assignment.Map.label_nodes(labelled_ref_tree)
+            red_assignment.move_low_outliers(labelled_ref_tree, 1, 7)
+            model, score = red_assignment.fit_model(labelled_ref_tree)
+            red_dict[refpkg_code] = [labelled_ref_tree, model]
             for placed_seq in tree_saps[refpkg_code]:  # type: TreeProtein
                 abundance_dict[placed_seq.contig_name] = 1.0
+
         if args.molecule == "dna":
             if os.path.isfile(ts_assign.nuc_orfs_file):
                 nuc_orfs = fasta.FASTA(ts_assign.nuc_orfs_file)
@@ -880,7 +900,7 @@ def assign(sys_args):
 
         abundify_tree_saps(tree_saps, abundance_dict)
         assign_out = ts_assign.final_output_dir + os.sep + "marker_contig_map.tsv"
-        write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict, ts_assign.sample_prefix, assign_out)
+        write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict, ts_assign.sample_prefix, assign_out, red_dict)
         produce_itol_inputs(tree_saps, marker_build_dict, itol_data, ts_assign.output_dir, ts_assign.refpkg_dir)
         delete_files(args.delete, ts_assign.var_output_dir, 4, rpkm_output_dir)
 

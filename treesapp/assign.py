@@ -29,7 +29,7 @@ try:
         TreeLeafReference, TreeProtein, MarkerBuild
     from .fasta import format_read_fasta, get_headers, write_new_fasta, read_fasta_to_dict, FASTA
     from .entish import create_tree_info_hash, deconvolute_assignments, read_and_understand_the_reference_tree,\
-        get_node, annotate_partition_tree, find_cluster, tree_leaf_distances, index_tree_edges
+        get_node, annotate_partition_tree, find_cluster, tree_leaf_distances, index_tree_edges, label_internal_nodes
     from .external_command_interface import launch_write_command, setup_progress_bar
     from .lca_calculations import *
     from .jplace_utils import *
@@ -37,6 +37,7 @@ try:
     from .phylo_dist import *
     from . import utilities
     from . import wrapper
+    from . import red_assignment
 
     import _tree_parser
     import _fasta_reader
@@ -1825,7 +1826,7 @@ def filter_placements(tree_saps, marker_build_dict, tree_data_dir: str, min_like
     return tree_saps
 
 
-def write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict, sample_name, output_file):
+def write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict, sample_name, output_file, red_dict):
     """
     Write the final classification table
 
@@ -1847,6 +1848,8 @@ def write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict,
 
     for denominator in tree_saps:
         # All the leaves for that tree [number, translation, lineage]
+        labelled_tree, model = red_dict[denominator]
+        label_internal_nodes(labelled_tree)
         leaves = tree_numbers_translation[denominator]
         lineage_list = list()
         # Test if the reference set have lineage information
@@ -1876,9 +1879,10 @@ def write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict,
                 if status > 0:
                     tree_sap.summarize()
 
+            tree_sap.get_red_value(labelled_tree)
             # Based on the calculated distance from the leaves, what rank is most appropriate?
             recommended_rank = rank_recommender(tree_sap.avg_evo_dist,
-                                                marker_build_dict[denominator].pfit)
+                                                model)
             if tree_sap.lct.split("; ")[0] != "Root":
                 tree_sap.lct = "Root; " + tree_sap.lct
                 recommended_rank += 1
