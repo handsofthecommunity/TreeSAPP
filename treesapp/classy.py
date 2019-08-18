@@ -249,9 +249,9 @@ class ItolJplace:
         self.placements = list()
         self.lwr = 0  # Likelihood weight ratio of an individual placement
         self.likelihood = 0
-        self.RED = 1  # Relative evolutionary distance
+        self.RED = None  # Relative evolutionary distance
         self.avg_evo_dist = 0.0
-        self.distances = ""
+        self.distances = ""  #
         self.classified = True
         self.inode = ""
         self.tree = ""  # NEWICK tree
@@ -660,21 +660,20 @@ class ItolJplace:
         # d is the branch length to its parent,
         # and u is the average branch length from the parent node to all extant taxa descendant from n
         parent = int(self.inode)
-        # p = labelled_tree
+
         # Find the RED value of the parent node
-        print("Parent:", parent)
         i_node_acc = 0
         for node in labelled_tree.iter_descendants('postorder'):
             if parent == i_node_acc:
                 if node.is_leaf():
                     self.RED = 1
                 else:
-                    d = self.avg_evo_dist
+                    distal, pendant, mean_tip = [float(d) for d in self.distances.split(',')]
                     u = red_assignment.Dist.avg_dist_to_this_node(node)
-                    self.RED = node.red + (d/u)(1-node.red)
-                break
-        print("RED:", self.RED)
-        # sys.exit()
+                    self.RED = node.red + ((distal/u)*(1-node.red))
+                return
+            i_node_acc += 1
+        logging.error("Unable to find internal node '" + str(parent) + "' in reference tree for " + self.name + ".\n")
         return
 
 

@@ -1881,8 +1881,7 @@ def write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict,
 
             tree_sap.get_red_value(labelled_tree)
             # Based on the calculated distance from the leaves, what rank is most appropriate?
-            recommended_rank = rank_recommender(tree_sap.avg_evo_dist,
-                                                model)
+            recommended_rank = rank_recommender(tree_sap.RED, [model.coef_[0], model.intercept_], model)
             if tree_sap.lct.split("; ")[0] != "Root":
                 tree_sap.lct = "Root; " + tree_sap.lct
                 recommended_rank += 1

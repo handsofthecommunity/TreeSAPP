@@ -75,25 +75,27 @@ def regress_ranks(rank_distance_ranges, taxonomic_ranks):
     return opt_slope, intercept
 
 
-def rank_recommender(phylo_dist: float, taxonomic_rank_pfit: list):
+def rank_recommender(phylo_dist: float, taxonomic_rank_pfit: list, model=None):
     """
     Determines the rank depth (for example Class == 2) a taxonomic lineage should be truncated to
      based on which rank distance range (in taxonomic_rank_intervals) phylo_dist falls into
 
     :param phylo_dist: Float representing the branch distance from the nearest node
     :param taxonomic_rank_pfit: Dictionary with rank keys (e.g. Class) and distance ranges (min, max) as values
+    :param model: A scikit-learn model (e.g. LinearRegression) with the function 'predict' in its namespace
     :return: int
     """
 
     if not taxonomic_rank_pfit:
         return 7
 
-    # For a polynomial
-    # polyreg = np.poly1d(taxonomic_rank_pfit)
-    # depth = int(round(polyreg(phylo_dist)))
-    [model.coef_, model.intercept_]
-    slope, intercept = taxonomic_rank_pfit
-    depth = int(round(phylo_dist*slope + intercept))
+    if model:
+        # Need to reformat specifically for model.predict
+        p_array = np.array(phylo_dist).reshape(-1, 1)
+        depth = int(round(model.predict(p_array)[0]))
+    else:
+        slope, intercept = taxonomic_rank_pfit
+        depth = int(round(phylo_dist*slope + intercept))
 
     return depth
 
