@@ -288,6 +288,7 @@ class ItolJplace:
                     for k, v in placement.items():
                         if k == 'p':
                             summary_string += '\t' + str(v) + "\n"
+        summary_string += "Classified:\n" + "\t" + str(self.classified) + "\n"
         summary_string += "Non-redundant lineages of child nodes:\n"
         if len(self.lineage_list) > 0:
             for lineage in sorted(set(self.lineage_list)):
@@ -662,9 +663,12 @@ class ItolJplace:
         parent = int(self.inode)
 
         # Find the RED value of the parent node
-        i_node_acc = 0
         for node in labelled_tree.iter_descendants('postorder'):
-            if parent == i_node_acc:
+            if parent == node.i_node:
+                if not node.red:
+                    logging.error("Node " + self.inode + "'s RED value is set to " + str(node.red) + "\n")
+                    sys.exit(11)
+                # Test if the parent node (whose branch the sequence was placed onto) is a leaf
                 if node.is_leaf():
                     self.RED = 1
                 else:
@@ -672,7 +676,6 @@ class ItolJplace:
                     u = red_assignment.Dist.avg_dist_to_this_node(node)
                     self.RED = node.red + ((distal/u)*(1-node.red))
                 return
-            i_node_acc += 1
         logging.error("Unable to find internal node '" + str(parent) + "' in reference tree for " + self.name + ".\n")
         return
 

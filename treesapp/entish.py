@@ -40,6 +40,8 @@ def label_internal_nodes(root: Tree) -> None:
     i_node_acc = 0
     root.add_features(i_node=None)
     for node in root.iter_descendants('postorder'):
+        # Reset the _pass feature that was used in building the model - need all set to True for PQuery RED calculation
+        node._pass = True
         node.add_feature("i_node", i_node_acc)
         i_node_acc += 1
     return

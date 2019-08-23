@@ -1839,17 +1839,16 @@ def write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict,
     """
     leaf_taxa_map = dict()
     # TODO: Add the start and stop positions of the extracted sequence to the classification table
-    tab_out_string = "Sample\tQuery\tMarker\tLength\tTaxonomy\tConfident_Taxonomy\tAbundance\tiNode\tLWR\tEvoDist\tDistances\n"
-    try:
-        tab_out = open(output_file, 'w')
-    except IOError:
-        logging.error("Unable to open " + output_file + " for writing!\n")
-        sys.exit(3)
+    header_fields = ["Sample", "Query", "Marker", "Length", "Taxonomy", "Confident_Taxonomy",
+                     "Abundance", "iNode", "LWR", "EvoDist", "Distances"]
+    tab_out_string = ""
 
     for denominator in tree_saps:
         # All the leaves for that tree [number, translation, lineage]
         labelled_tree, model = red_dict[denominator]
         label_internal_nodes(labelled_tree)
+        # Re-assign RED value to all nodes, regardless of whether they were included in modelling
+        red_assignment.RED.apply_all(labelled_tree)
         leaves = tree_numbers_translation[denominator]
         lineage_list = list()
         # Test if the reference set have lineage information
@@ -1877,7 +1876,7 @@ def write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict,
                 tree_sap.lct = lowest_common_taxonomy(tree_sap.lineage_list, lca, taxonomic_counts, "LCA*")
                 tree_sap.wtd, status = weighted_taxonomic_distance(tree_sap.lineage_list, tree_sap.lct)
                 if status > 0:
-                    tree_sap.summarize()
+                    logging.debug("WTD status == " + str(status) + ", " + tree_sap.summarize())
 
             tree_sap.get_red_value(labelled_tree)
             # Based on the calculated distance from the leaves, what rank is most appropriate?
@@ -1885,7 +1884,6 @@ def write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict,
             if tree_sap.lct.split("; ")[0] != "Root":
                 tree_sap.lct = "Root; " + tree_sap.lct
                 recommended_rank += 1
-            # tree_sap.summarize()
 
             tab_out_string += '\t'.join([sample_name,
                                          re.sub(r"\|{0}\|\d+_\d+$".format(tree_sap.name), '', tree_sap.contig_name),
@@ -1898,6 +1896,16 @@ def write_tabular_output(tree_saps, tree_numbers_translation, marker_build_dict,
                                          str(tree_sap.lwr),
                                          str(tree_sap.avg_evo_dist),
                                          tree_sap.distances]) + "\n"
+
+    if not tab_out_string:
+        logging.error("Classification table strings are empty - no sequences were classified in the end.\n")
+        sys.exit(3)
+    try:
+        tab_out = open(output_file, 'w')
+    except IOError:
+        logging.error("Unable to open " + output_file + " for writing!\n")
+        sys.exit(3)
+    tab_out_string = "\t".join(header_fields) + "\n" + tab_out_string
     tab_out.write(tab_out_string)
     tab_out.close()
 

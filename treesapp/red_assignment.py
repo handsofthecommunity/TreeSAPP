@@ -101,7 +101,7 @@ class Dist(object):
             return sum(l)/len(l)
 
     @staticmethod
-    def get_list_distances_of_this_nodes_leaves_to_node(node):
+    def get_list_distances_of_this_nodes_leaves_to_node(node: Tree):
         """
         from this node, get list of distances from child leaves
         """
