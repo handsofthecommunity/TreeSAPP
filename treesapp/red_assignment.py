@@ -287,6 +287,7 @@ class Map(object):
                     node.add_features(rank=None)
             except AttributeError:
                 node.add_features(rank=None)
+        return
 
     @staticmethod
     def class_all_nodes(t, **kwargs):
@@ -305,6 +306,7 @@ class Map(object):
                 else:
                     node.add_features(lineage=new_lin)
                     Map.label_nodes(t)
+        return
 
 
 def cull_outliers(data: list, dev=3):
@@ -319,7 +321,9 @@ def cull_outliers(data: list, dev=3):
     """
     # Reject outliers from ln-transformed distribution
     ln_a = np.log10(1.0 * np.array(data))
-    noo_a = np.power(10, ln_a[abs(ln_a - np.median(ln_a)) < 2 * np.std(ln_a)])
+    noo_a = np.power(10, ln_a[abs(ln_a - np.median(ln_a)) < 2 * np.std(ln_a)])  # type: np.array
+    if noo_a.size == 0:
+        return data
 
     # Reject outliers from untransformed distribution
     d = np.abs(noo_a - np.median(noo_a))
@@ -378,22 +382,26 @@ def list_inliers_outliers(nodes: dict):
     :return: three dictionaries
     """
     reds = []
-    for RR in nodes.values():
-        reds.append(RR.red)
-    noo_a = cull_outliers(reds)
-    median = np.median(noo_a)
-
     inliers = {}
     low_outliers = {}
     high_outliers = {}
-    for node in nodes:
-        if nodes[node].red in noo_a:
-            inliers[node] = RED_RANK(node.red, node.rank)
-        else:
-            if nodes[node].red < median:
-                low_outliers[node] = RED_RANK(node.red, node.rank)
-            elif nodes[node].red > median:
-                high_outliers[node] = RED_RANK(node.red, node.rank)
+
+    for RR in nodes.values():
+        reds.append(RR.red)
+    if reds:
+        noo_a = cull_outliers(reds)
+        median = np.median(noo_a)
+
+        for node in nodes:
+            if nodes[node].red in noo_a:
+                inliers[node] = RED_RANK(node.red, node.rank)
+            else:
+                if nodes[node].red < median:
+                    low_outliers[node] = RED_RANK(node.red, node.rank)
+                elif nodes[node].red > median:
+                    high_outliers[node] = RED_RANK(node.red, node.rank)
+    else:
+        logging.debug("Unable to identify inliers and outliers for nodes: " + str(nodes) + "\n")
 
     return inliers, low_outliers, high_outliers
 
@@ -412,6 +420,8 @@ def get_full_inliers_and_outliers(t, r1, r2):
     full_inliers = {}
     for num in range(r1, r2+1):
         rank_dict = dict_of_nodes_of_rank(t, num)
+        if not rank_dict:
+            continue
         inliers, low_outliers, high_outliers = list_inliers_outliers(rank_dict)
         for node in low_outliers:
             full_outliers[node] = RED_RANK(node.red, node.rank)
@@ -443,6 +453,7 @@ def shift_down_rank(some_dict):
                 lin.remove(lin[-1])
                 node.add_features(rank=new_rank)
                 node.add_features(lineage=lin)
+    return
 
 
 def move_low_outliers(t, r1, r2):
@@ -450,6 +461,7 @@ def move_low_outliers(t, r1, r2):
         rank_dict = dict_of_nodes_of_rank(t, num)
         inliers, low_outliers, high_outliers = list_inliers_outliers(rank_dict)
         shift_down_rank(low_outliers)
+    return
 
 
 def plot_fit(fit):
