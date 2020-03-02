@@ -356,7 +356,7 @@ def main():
                                                                                    query_lineage_map=test_obj.tp_lineage_map[refpkg_code])
         depth = test_obj.rank_depth_map[rank]
         testable_refpkgs = list(refpkg_testable_lineages.keys())
-        while ceiling*0.51 > rank_representation[depth] and testable_refpkgs:
+        while ceiling*0.66 > rank_representation[depth] and testable_refpkgs:
             # Pick a random reference package
             for refpkg_code in testable_refpkgs:
                 refpkg = test_obj.ref_packages[refpkg_code]
@@ -421,8 +421,7 @@ def main():
         sys.exit(5)
     logging.info("done.\n")
 
-    print("%d false positives and %d true positives prior to clade exclusion additions" % (pre_fp, pre_tp))
-
+    logging.debug("%d false positives and %d true positives prior to clade exclusion additions" % (pre_fp, pre_tp))
     logging.info("Using %d true positives and %d false positives to train and test.\n" % (len(tp), len(fp)))
 
     # Split dataset into the two training and testing sets - 60% training and 40% testing
