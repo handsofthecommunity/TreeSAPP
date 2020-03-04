@@ -52,6 +52,8 @@ def get_arguments():
                         help="Path to a directory for writing output files")
     optopt.add_argument("-r", "--refpkg_path", required=False, default=None, dest="pkg_path",
                         help="The path to the TreeSAPP-formatted reference package(s) [ DEFAULT = None ].")
+    optopt.add_argument("-c", "--ce_rank_prop", required=False, default=0.51, type=float, dest="rank_sp",
+                        help="Proportional number of samples for all ranks compared to rank with most representation.")
     optopt.add_argument("-k", "--svm_kernel", required=False, default="lin",
                         choices=["lin", "rbf", "poly"], dest="kernel",
                         help="Specifies the kernel type to be used in the SVM algorithm."
@@ -78,6 +80,10 @@ def get_arguments():
         args.output += os.sep
     if args.treesapp_output[-1] != os.sep:
         args.treesapp_output += os.sep
+
+    if not 0.01 < args.rank_sp < 1.0:
+        logging.error("--ce_rank_prop not in the required range of 0-1.")
+        sys.exit(-1)
     return args
 
 
@@ -358,7 +364,7 @@ def main():
                                                                                    query_lineage_map=test_obj.tp_lineage_map[refpkg_code])
         depth = test_obj.rank_depth_map[rank]
         testable_refpkgs = list(refpkg_testable_lineages.keys())
-        while ceiling*0.66 > rank_representation[depth] and testable_refpkgs:
+        while ceiling*args.rank_sp > rank_representation[depth] and testable_refpkgs:
             # Pick a random reference package
             for refpkg_code in testable_refpkgs:
                 refpkg = test_obj.ref_packages[refpkg_code]
