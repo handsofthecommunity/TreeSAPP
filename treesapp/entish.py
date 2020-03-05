@@ -2,7 +2,6 @@ __author__ = 'Connor Morgan-Lang'
 
 import sys
 import re
-import _tree_parser
 import os
 import logging
 from .utilities import Autovivify, mean
@@ -268,24 +267,31 @@ def deconvolute_assignments(reference_tree_assignments):
     return tree_info, terminal_children_of_reference
 
 
-def read_and_map_internal_nodes_from_newick_tree(reference_tree_file, denominator):
-    # Using the C++ _tree_parser extension:
-    reference_tree_elements = _tree_parser._read_the_reference_tree(reference_tree_file)
-    internal_node_map = map_internal_nodes_leaves(reference_tree_elements)
-    return internal_node_map
-
-
-def read_and_understand_the_reference_tree(reference_tree_file, denominator):
-    # Using the C++ _tree_parser extension:
-    reference_tree_elements = _tree_parser._read_the_reference_tree(reference_tree_file)
-    reference_tree_assignments = _tree_parser._get_parents_and_children(reference_tree_elements)
-    if reference_tree_assignments == "$":
-        sys.stderr.write("Poison pill received from " + denominator + "\n")
-        sys.stderr.flush()
-        return denominator, None
-    else:
-        reference_tree_info, terminal_children_of_reference = deconvolute_assignments(reference_tree_assignments)
-        return denominator, terminal_children_of_reference
+# def pparse_ref_trees(denominator_ref_tree_dict, args):
+#     ref_trees_dict = dict()
+#
+#     pool = Pool(processes=int(args.num_threads))
+#
+#     def log_tree(result):
+#         marker, terminal_children_of_reference = result
+#         if terminal_children_of_reference is None:
+#             logging.warning("Letting threads finish before exiting... ")
+#         ref_trees_dict[marker] = terminal_children_of_reference
+#
+#     for denominator in denominator_ref_tree_dict:
+#         reference_tree_file = denominator_ref_tree_dict[denominator]
+#         pool.apply_async(func=read_and_understand_the_reference_tree,
+#                          args=(reference_tree_file, denominator, ),
+#                          callback=log_tree)
+#     pool.close()
+#     pool.join()
+#     for marker in ref_trees_dict:
+#         if ref_trees_dict[marker] is None:
+#             logging.info("done.\n")
+#             return None
+#         else:
+#             pass
+#     return ref_trees_dict
 
 
 def annotate_partition_tree(code_name, fasta_replace_dict, bipart_tree):

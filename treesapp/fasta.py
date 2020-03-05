@@ -6,13 +6,19 @@ import os
 import logging
 from time import sleep
 
+# from pyfastx import Fasta
 import _fasta_reader
 from .utilities import median, reformat_string, rekey_dict, return_sequence_info_groups
 
 
-# No bioinformatic software would be complete without a contribution from Heng Li.
-# Adapted from his readfq generator
-def generate_fasta(fasta_handler):  # this is a generator function
+def generate_fasta(fasta_handler):
+    """
+    A generator function that is capable of reading a FASTQ or FASTA file
+    No bioinformatic software would be complete without a contribution from Heng Li - adapted from his readfq generator
+
+    :param fasta_handler:
+    :return:
+    """
     last = None  # this is a buffer keeping the last unprocessed line
     while True:  # mimic closure; is it a bad idea?
         if not last:
@@ -593,6 +599,33 @@ def write_classified_sequences(tree_saps: dict, formatted_fasta_dict: dict, fast
         logging.warning("Problem parsing homologous subsequence lengths from headers of classified sequences.\n")
 
     return
+
+
+# def format_read_fasta(fasta_input, molecule):
+#     """
+#     Reads a FASTA file, ensuring each sequence and sequence name is valid.
+#
+#     :param fasta_input: Absolute path of the FASTA file to be read
+#     :param molecule: Molecule type of the sequences ['prot', 'dna', 'rrna']
+#     :return: A Python dictionary with headers as keys and sequences as values
+#     """
+#     formatted_fasta_dict = {}
+#     if molecule == "prot":
+#         valid_chars = set(list("ACDEFGHIKLMNPQRSTUVWYBXZ.-*"))
+#     else:
+#         valid_chars = set(list("-ACGTUNX."))
+#
+#     for seq in Fasta(fasta_input):
+#         if set(seq.composition).difference(valid_chars):
+#             for c in seq.composition:
+#                 if c not in valid_chars:
+#                     pos = str(seq.seq).find(c)
+#                     logging.warning("'%s' at position %d in '%s' is not an accepted character!\n" %
+#                                     (c, pos, seq.description))
+#             continue
+#         # Ensure the sequence is of sufficient length
+#         formatted_fasta_dict[reformat_string(seq.description)] = seq.seq
+#     return formatted_fasta_dict
 
 
 def format_read_fasta(fasta_input, molecule, output_dir, max_header_length=110, min_seq_length=10):

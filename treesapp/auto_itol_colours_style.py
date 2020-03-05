@@ -280,7 +280,7 @@ def get_arguments():
 
 def validate_command(args):
     if sys.version_info < (2, 9):
-        logging.error("Python version '" + sys.version_info + "' not supported.\n")
+        logging.error("Python version '" + str(sys.version_info) + "' not supported.\n")
         sys.exit(3)
 
     if args.rank not in rank_depth_map.values():

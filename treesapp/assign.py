@@ -27,8 +27,8 @@ try:
     from sklearn import preprocessing
 
     from .treesapp_args import TreeSAPPArgumentParser
-    from .classy import ItolJplace, NodeRetrieverWorker, TreeLeafReference, TreeProtein, MarkerBuild, ReferencePackage
-    from .fasta import format_read_fasta, get_headers, write_new_fasta, read_fasta_to_dict, FASTA
+    from .classy import ItolJplace, TreeLeafReference, TreeProtein, MarkerBuild, ReferencePackage
+    from .fasta import get_headers, write_new_fasta, read_fasta_to_dict, FASTA
     from . import entish
     from .external_command_interface import launch_write_command, setup_progress_bar, CommandLineFarmer
     from . import lca_calculations
@@ -38,8 +38,6 @@ try:
     from . import utilities
     from . import wrapper
 
-    import _tree_parser
-    import _fasta_reader
 except ImportWarning:
     sys.stderr.write("Could not load some user defined module functions")
     sys.stderr.write(traceback.print_exc(10))
@@ -57,16 +55,19 @@ def validate_inputs(args, marker_build_dict):
     """
     logging.info("Testing validity of reference trees... ")
     ref_trees = glob.glob(args.treesapp + os.sep + "data/tree_data/*_tree.txt")
-    ref_tree_dict = dict()
+    tree_failed = ""
     for tree_file in ref_trees:
         marker = os.path.basename(tree_file).strip("_tree.txt").strip("_")
         for denominator in marker_build_dict:
             if marker_build_dict[denominator].cog == marker:
-                ref_tree_dict[denominator] = tree_file
-    status = pparse_ref_trees(denominator_ref_tree_dict=ref_tree_dict, args=args)
+                try:
+                    Tree(tree_file)
+                except:
+                    tree_failed = tree_file
+                    break
     logging.info("done.\n")
-    if status is None:
-        logging.error("Reference trees do not appear to be formatted correctly!\n")
+    if tree_failed:
+        logging.error("Reference tree '%s' does not appear to be formatted correctly!\n" % tree_failed)
         sys.exit(3)
     else:
         logging.info("Reference trees appear to be formatted correctly. Continuing with TreeSAPP.\n")
@@ -908,191 +909,6 @@ def produce_phy_files(qc_ma_dict, molecule_type="prot"):
     return phy_files
 
 
-def pparse_ref_trees(denominator_ref_tree_dict, args):
-    ref_trees_dict = dict()
-
-    pool = Pool(processes=int(args.num_threads))
-
-    def log_tree(result):
-        marker, terminal_children_of_reference = result
-        if terminal_children_of_reference is None:
-            logging.warning("Letting threads finish before exiting... ")
-        ref_trees_dict[marker] = terminal_children_of_reference
-
-    for denominator in denominator_ref_tree_dict:
-        reference_tree_file = denominator_ref_tree_dict[denominator]
-        pool.apply_async(func=entish.read_and_understand_the_reference_tree,
-                         args=(reference_tree_file, denominator, ),
-                         callback=log_tree)
-    pool.close()
-    pool.join()
-    for marker in ref_trees_dict:
-        if ref_trees_dict[marker] is None:
-            logging.info("done.\n")
-            return None
-        else:
-            pass
-    return ref_trees_dict
-
-
-def pparse_raxml_out_trees(labelled_trees, args):
-    """
-    The wrapper command for parsing all trees of a gene family (denominator) in parallel
-
-    :param labelled_trees: Dictionary containing labelled tree files for each f_contig
-    :param args: args object (for num_threads)
-    :return: Dictionary containing all parsed trees for each contig
-    """
-    raxml_tree_dict = dict()
-
-    pool = Pool(processes=int(args.num_threads))
-
-    def log_tree(result):
-        f_contig, rooted_labelled_trees, insertion_point_node_hash = result
-        if rooted_labelled_trees is None:
-            pool.terminate()
-            sys.exit()
-        raxml_tree_dict[f_contig] = [rooted_labelled_trees, insertion_point_node_hash]
-
-    def no_tree_handler(error):
-        logging.error(error + "-->{}\n<--".format(error.__cause__))
-        pool.terminate()
-        sys.exit(5)
-
-    for f_contig in labelled_trees:
-        tree_file = labelled_trees[f_contig]
-        if args.py_version == 3:
-            pool.apply_async(func=read_understand_and_reroot_the_labelled_tree,
-                             args=(tree_file, f_contig, ),
-                             callback=log_tree,
-                             error_callback=no_tree_handler)
-        else:
-            pool.apply_async(func=read_understand_and_reroot_the_labelled_tree,
-                             args=(tree_file, f_contig, ),
-                             callback=log_tree)
-
-    pool.close()
-    pool.join()
-    return raxml_tree_dict
-
-
-def read_understand_and_reroot_the_labelled_tree(labelled_tree_file, f_contig):
-    labelled_tree_elements, insertion_point_node_hash = read_the_raxml_out_tree(labelled_tree_file)
-    # # Old and slow:
-    # labelled_tree_info = create_tree_info_hash()
-    # labelled_tree_info = get_node_subtrees(labelled_tree_elements, labelled_tree_info)
-    # labelled_tree_info = assign_parents_and_children(labelled_tree_info, f_contig)
-    # if labelled_tree_info is None:
-    #     return [f_contig, None, insertion_point_node_hash]
-    # labelled_tree_info = build_tree_info_quartets(labelled_tree_info)
-    # rooted_labelled_trees = build_newly_rooted_trees(labelled_tree_info)
-    # return [f_contig, rooted_labelled_trees, insertion_point_node_hash]
-
-    # Using the C++ _tree_parser extension:
-    labelled_tree_assignments = _tree_parser._get_parents_and_children(labelled_tree_elements)
-    if labelled_tree_assignments == "$":
-        sys.stderr.write("Poison pill received from " + f_contig + "\n")
-        sys.stderr.flush()
-        return [f_contig, None, insertion_point_node_hash]
-    else:
-        labelled_tree_info, terminal_children_of_labelled_tree = entish.deconvolute_assignments(labelled_tree_assignments)
-        labelled_tree_info['subtree_of_node'] = terminal_children_of_labelled_tree
-        labelled_tree_info = build_tree_info_quartets(labelled_tree_info)
-        rooted_labelled_trees = build_newly_rooted_trees(labelled_tree_info)
-        return [f_contig, rooted_labelled_trees, insertion_point_node_hash]
-
-
-def identify_the_correct_terminal_children_of_each_assignment(terminal_children_of_reference,
-                                                              rooted_labelled_trees,
-                                                              insertion_point_node_hash,
-                                                              assignments, num_threads, parse_log):
-    terminal_children_of_assignments = build_terminal_children_strings_of_assignments(rooted_labelled_trees,
-                                                                                      insertion_point_node_hash,
-                                                                                      assignments,
-                                                                                      num_threads,
-                                                                                      parse_log)
-    real_terminal_children_of_assignments = compare_terminal_children_strings(terminal_children_of_assignments,
-                                                                              terminal_children_of_reference,
-                                                                              parse_log)
-    return real_terminal_children_of_assignments
-
-
-def read_the_raxml_out_tree(labelled_tree_file):
-    """
-    Reads and reformats the labelled_tree_file for downstream interpretation
-
-    :param labelled_tree_file: RAxML output f_contig.originalRAxML_labelledTree.txt file in various_outputs directory
-    :return: An easily interpretable labelled tree and a collection of
-    """
-
-    insertion_point_node_hash = utilities.Autovivify()
-    try:
-        raxml_tree = open(labelled_tree_file, 'r')
-    except IOError:
-        logging.error("Could not open " + labelled_tree_file + " for reading!\n")
-        sys.exit(5)
-    tree_string = ''
-
-    for line in raxml_tree:
-        line = line.strip()
-        tree_string += line
-
-    raxml_tree.close()
-    tree_symbols_raw_1 = list(tree_string)
-    bracket_diff = 0
-    tree_string_neu = '('
-    comma_count = 0
-
-    for tree_symbol_raw_1 in tree_symbols_raw_1:
-        if comma_count < 2:
-            if tree_symbol_raw_1 == '(':
-                bracket_diff += 1
-            if tree_symbol_raw_1 == ')':
-                bracket_diff -= 1
-            if tree_symbol_raw_1 == ',' and bracket_diff == 1:
-                comma_count += 1
-            if comma_count == 2:
-                tree_string_neu += '):1.0[I666999666]'
-        tree_string_neu += tree_symbol_raw_1
-
-    tree_string = tree_string_neu
-    tree_string = re.sub('\(', 'L', tree_string)
-    tree_string = re.sub('\)', 'R', tree_string)
-    tree_string = re.sub('\[', 'Q', tree_string)
-
-    # Remove the branch lengths
-    try:
-        tree_string = re.sub(":[.0-9]+Q", 'Q', tree_string)
-    except AssertionError:
-        raise AssertionError("Unable to remove branch lengths!")
-
-    while re.search(r'((\D(\d+))QI(\d+)])', tree_string):
-        to_be_replaced = re.search(r'((\D(\d+))QI(\d+)])', tree_string).group(1)
-        replacement = re.search(r'((\D(\d+))QI(\d+)])', tree_string).group(2)
-        terminal_leaf = re.search(r'((\D(\d+))QI(\d+)])', tree_string).group(3)
-        insertion_point = re.search(r'((\D(\d+))QI(\d+)])', tree_string).group(4)
-        if int(terminal_leaf) <= 0:
-            sys.stderr.write("ERROR: Your tree has terminal leaves with numbers <= 0. "
-                             "Please change them to positive values!\n")
-            sys.stderr.flush()
-            sys.exit(-1)
-        insertion_point_node_hash[insertion_point] = terminal_leaf
-        tree_string = re.sub(to_be_replaced, replacement, tree_string)
-    count = -2
-    while re.search(r'QI(\d+)]', tree_string):
-        insertion_point_node_hash[re.search(r'QI(\d+)]', tree_string).group(1)] = count
-        tree_string = re.sub(r'QI(\d+)]', str(count), tree_string, 1)
-        count += -1
-
-    tree_string = re.sub('L', '(', tree_string)
-    tree_string = re.sub('R', ')', tree_string)
-    tree_string = re.sub('Q', '[', tree_string)
-    # Remove these lines when using the C++ extension:
-    # tree_elements = split_tree_string(tree_string)
-    # return tree_elements, insertion_point_node_hash
-    return tree_string, insertion_point_node_hash
-
-
 def split_tree_string(tree_string):
     tree_symbols_raw = list(str(tree_string))
     count = -1
@@ -1124,199 +940,6 @@ def build_tree_info_quartets(tree_info):
                 tree_info['quartets'][node][child] = 1
 
     return tree_info
-
-
-def build_newly_rooted_trees(tree_info):
-    """
-    Builds a new tree that is re-rooted on every node in the tree
-    :param tree_info:
-    :return:
-    """
-
-    tree_number = 0
-    list_of_already_used_attachments = utilities.Autovivify()
-    rooted_trees = utilities.Autovivify()
-
-    for node in sorted(tree_info['quartets'].keys(), key=int):
-        if node in list_of_already_used_attachments:
-            continue
-        for attachment in sorted(tree_info['quartets'][node].keys(), key=int):
-            list_of_already_used_attachments[attachment] = 1
-            tree_string = ''
-            node_infos = utilities.Autovivify()
-            node_infos['previous_node'] = ''
-            node_infos['node'] = ';'
-            node_infos['open_attachments'][node] = 1
-            node_infos['open_attachments'][attachment] = 1
-            new_tree = recursive_tree_builder(tree_info, node_infos, tree_string)
-            rooted_trees[tree_number] = new_tree
-            tree_number += 1
-    return rooted_trees
-
-
-def recursive_tree_builder(tree_info, node_infos, tree_string):
-    node = node_infos['node']
-    count = 0
-
-    for attachment in sorted(node_infos['open_attachments'].keys(), key=int):
-        count += 1
-        if count == 1:
-            tree_string += '('
-        node_infos2 = utilities.Autovivify()
-        node_infos2['previous_node'] = node
-        node_infos2['node'] = attachment
-        count2 = 0
-
-        for attachment_of_used_attachment in sorted(tree_info['quartets'][attachment].keys()):
-            if attachment_of_used_attachment in node_infos['open_attachments']:
-                continue
-            if attachment_of_used_attachment == node:
-                continue
-            count2 += 1
-            node_infos2['open_attachments'][attachment_of_used_attachment] = 1
-
-        if count2 > 0:
-            tree_string = recursive_tree_builder(tree_info, node_infos2, tree_string)
-        else:
-            tree_string += str(attachment)
-        if count == 1:
-            tree_string += ','
-        if count == 2:
-            tree_string += ')' + str(node)
-
-    return tree_string
-
-
-def parallel_subtree_node_retriever(rooted_trees, num_threads, parse_log):
-    """
-    Run `get_node_subtrees` in parallel for each of the elements in rooted_trees
-    :param rooted_trees: Dictionary of rooted trees
-    :param num_threads: Number of threads to use
-    :param parse_log: The file object to write parsing information to
-    :return: rooted_tree_nodes - a list of results from get_node_subtrees(), one for each rooted_tree
-    """
-    job_queue = JoinableQueue()
-    result_queue = Queue()
-    rooted_tree_nodes = list()
-
-    worker_group = [NodeRetrieverWorker(job_queue, result_queue) for i in range(int(num_threads))]
-    for worker in worker_group:
-        worker.start()
-
-    # tasks = [split_tree_string(rooted_trees[rooted_tree]) for rooted_tree in rooted_trees.keys()]
-    # tasks = [rooted_trees[rooted_tree] for rooted_tree in rooted_trees.keys()]
-    # for task in tasks:
-    #     print "Input: " + task
-    tasks = rooted_trees.values()
-    parse_log.write("Number of subtrees = " + str(len(tasks)) + "\n")
-    parse_log.flush()
-    for rooted_tree_elements in tasks:
-        if job_queue.full():
-            sys.exit("ERROR: multiprocessing.Queue full in parallel_subtree_node_retriever!")
-        job_queue.put(rooted_tree_elements)
-
-    for i in range(int(num_threads)):
-        job_queue.put(None)
-
-    for i in range(len(rooted_trees.keys())):
-        rooted_tree_nodes.append(result_queue.get())
-
-    job_queue.close()
-    result_queue.close()
-    result_queue.join_thread()
-    return rooted_tree_nodes
-
-
-def build_terminal_children_strings_of_assignments(rooted_trees, insertion_point_node_hash,
-                                                   assignments, num_threads, parse_log):
-    """
-    Performed for each gene (f_contig) identified
-    :param rooted_trees: All possible rooted trees for a given tree (with sequence inserted)
-    :param insertion_point_node_hash:
-    :param assignments: The node that is inserted into the RAxML tree - found in *RAxML_classification.txt for f_contig
-    :param num_threads: Number of threads to use for parsing the subtrees of each node in parallel
-    :param parse_log: Name of the RAxML_output parse log file to write to
-    :return:
-    """
-    terminal_children_strings_of_assignments = utilities.Autovivify()
-
-    for assignment in sorted(assignments.keys()):
-        internal_node_of_assignment = insertion_point_node_hash[assignment]
-        # parse_log.write("Starting to retrieve all subtrees at " + time.ctime())
-        rooted_tree_nodes = parallel_subtree_node_retriever(rooted_trees, num_threads, parse_log)
-        # parse_log.write("Finished retrieving subtrees at " + time.ctime() + "\n")
-        for rooted_tree_info in rooted_tree_nodes:
-            assignment_subtree = str(rooted_tree_info['subtree_of_node'][str(internal_node_of_assignment)])
-            terminal_children = utilities.Autovivify()
-
-            if re.search(r'\A(\d+)\Z', assignment_subtree):
-                terminal_children[re.search(r'\A(\d+)\Z', assignment_subtree).group(1)] = 1
-            else:
-                for each_hit in re.findall(r'(\D)(\d+)', assignment_subtree):
-                    if each_hit[0] == '-':
-                        continue
-                    terminal_children[each_hit[1]] = 1
-
-            terminal_children_string_of_assignment = ''
-
-            # terminal_children_string_of_assignment = ' '.join(sorted(terminal_children.keys(), key=int))
-            for terminal_child_of_assignment in sorted(terminal_children.keys(), key=int):
-                terminal_children_string_of_assignment += str(terminal_child_of_assignment) + ' '
-
-            terminal_children_strings_of_assignments[assignment][terminal_children_string_of_assignment] = 1
-
-    return terminal_children_strings_of_assignments
-
-
-def build_terminal_children_strings_of_reference_nodes(reference_tree_info):
-    terminal_children_strings_of_reference = utilities.Autovivify()
-
-    for node in sorted(reference_tree_info['subtree_of_node'].keys()):
-        reference_subtree = reference_tree_info['subtree_of_node'][node]
-        terminal_children = utilities.Autovivify()
-        if re.search(r'\A(\d+)\Z', str(reference_subtree)):
-            terminal_children[re.search(r'\A(\d+)\Z', str(reference_subtree)).group(1)] = 1
-        else:
-
-            for each_hit in re.findall(r'(.)(\d+)', str(reference_subtree)):
-                if each_hit[0] == '-':
-                    continue
-                terminal_children[each_hit[1]] = 1
-
-        terminal_children_string_of_reference = ''
-        # terminal_children_string_of_reference = ' '.join(sorted(terminal_children.keys(), key=int))
-        for terminal_child_of_reference in sorted(terminal_children.keys(), key=int):
-            terminal_children_string_of_reference += str(terminal_child_of_reference) + ' '
-
-        terminal_children_strings_of_reference[terminal_children_string_of_reference] = 1
-
-    return terminal_children_strings_of_reference
-
-
-def compare_terminal_children_strings(terminal_children_of_assignments, terminal_children_of_reference, parse_log):
-    real_terminal_children_of_assignments = utilities.Autovivify()
-    there_was_a_hit = 0
-    parse_log.write("compare_terminal_children_strings\tstart: ")
-    parse_log.write(time.ctime())
-    for assignment in sorted(terminal_children_of_assignments.keys()):
-        real_terminal_children_string = ''
-
-        for terminal_children_string_of_assignment in sorted(terminal_children_of_assignments[assignment].keys()):
-            if terminal_children_string_of_assignment in terminal_children_of_reference:
-                real_terminal_children_string = terminal_children_string_of_assignment
-                real_terminal_children_of_assignments[assignment] = real_terminal_children_string
-                there_was_a_hit = 1
-                break
-
-        if str(real_terminal_children_string) == '' and not str(assignment) == 'mp_root':
-            sys.exit('ERROR: The RAxML output tree could not be rooted correctly!!!\n')
-
-    if there_was_a_hit <= 0:
-        sys.exit('ERROR: The RAxML output tree could not be rooted correctly!!!\n')
-
-    parse_log.write("\tstop: " + time.ctime() + "\n")
-    parse_log.flush()
-    return real_terminal_children_of_assignments
 
 
 def delete_files(clean_up, output_dir_var, section, rpkm_dir=None):
@@ -1635,17 +1258,6 @@ def abundify_tree_saps(tree_saps: dict, abundance_dict: dict):
         logging.warning("No placed sequences with abundances identified.\n")
 
     return
-
-
-def get_reference_sequence_dict(args, update_tree):
-    # Determine the name of the aligned FASTA with reference sequences
-    ref_alignment_fasta = "data" + os.sep + "alignment_data" + os.sep + update_tree.COG + ".fa"
-    # Read the FASTA to get headers and sequences
-    ref_fasta_dict = format_read_fasta(ref_alignment_fasta, update_tree.marker_molecule, args.output)
-    # Strip the '-'s since these will be re-aligned again
-    unaligned_ref_seqs = {header: re.sub('-', '', ref_fasta_dict[header]) for header in ref_fasta_dict}
-
-    return unaligned_ref_seqs
 
 
 def create_itol_labels(marker, itol_base_dir, tree_data_dir):

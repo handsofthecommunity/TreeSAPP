@@ -8,7 +8,6 @@ import logging
 import time
 from shutil import rmtree, copy
 from copy import deepcopy
-from multiprocessing import Process
 from glob import glob
 from json import loads, dumps
 from collections import namedtuple
@@ -16,15 +15,13 @@ from numpy import var
 
 from ete3 import Tree
 
-from .fasta import format_read_fasta, write_new_fasta, get_header_format, FASTA, get_headers, load_fasta_header_regexes, read_fasta_to_dict
+from .fasta import write_new_fasta, get_header_format, FASTA, get_headers, load_fasta_header_regexes, read_fasta_to_dict, format_read_fasta
 from .utilities import median, which, is_exe, return_sequence_info_groups, write_dict_to_table, load_pickle, swap_tree_names
-from .entish import create_tree_info_hash, subtrees_to_dictionary, annotate_partition_tree
+from .entish import annotate_partition_tree
 from .lca_calculations import determine_offset, clean_lineage_string, optimal_taxonomic_assignment
 from .external_command_interface import launch_write_command
 from . import entrez_utils
 from .wrapper import model_parameters, CommandLineFarmer
-
-import _tree_parser
 
 
 class ModuleFunction:
@@ -904,28 +901,28 @@ class TreeLeafReference:
             self.analysis_type = ""
 
 
-class NodeRetrieverWorker(Process):
-    """
-    Doug Hellman's Consumer class for handling processes via queues
-    """
-
-    def __init__(self, task_queue, result_queue):
-        Process.__init__(self)
-        self.task_queue = task_queue
-        self.result_queue = result_queue
-
-    def run(self):
-        while True:
-            next_task = self.task_queue.get()
-            if next_task is None:
-                # Poison pill means shutdown
-                self.task_queue.task_done()
-                break
-            result = _tree_parser._build_subtrees_newick(next_task)
-            subtrees = subtrees_to_dictionary(result, create_tree_info_hash())
-            self.task_queue.task_done()
-            self.result_queue.put(subtrees)
-        return
+# class NodeRetrieverWorker(Process):
+#     """
+#     Doug Hellman's Consumer class for handling processes via queues
+#     """
+#
+#     def __init__(self, task_queue, result_queue):
+#         Process.__init__(self)
+#         self.task_queue = task_queue
+#         self.result_queue = result_queue
+#
+#     def run(self):
+#         while True:
+#             next_task = self.task_queue.get()
+#             if next_task is None:
+#                 # Poison pill means shutdown
+#                 self.task_queue.task_done()
+#                 break
+#             result = _tree_parser._build_subtrees_newick(next_task)
+#             subtrees = subtrees_to_dictionary(result, create_tree_info_hash())
+#             self.task_queue.task_done()
+#             self.result_queue.put(subtrees)
+#         return
 
 
 def get_header_info(header_registry, code_name=''):

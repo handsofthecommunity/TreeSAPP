@@ -6,8 +6,9 @@ __author__ = 'Connor Morgan-Lang'
 import sys
 import argparse
 import os
+import logging
 import re
-from .entish import read_and_map_internal_nodes_from_newick_tree
+from .entish import map_internal_nodes_leaves
 from .fasta import format_read_fasta
 from .classy import TreeLeafReference
 from .file_parsers import read_colours_file, parse_ref_build_params
@@ -67,11 +68,18 @@ def get_arguments():
     return args
 
 
-def parse_clades_from_tree(args, clusters, tree_file, marker):
+def parse_clades_from_tree(args, clusters, tree_file):
     clade_members = dict()
     leaves_in_clusters = 0
 
-    internal_node_map = read_and_map_internal_nodes_from_newick_tree(tree_file, marker)
+    try:
+        tree_handler = open(tree_file, 'r')
+    except IOError:
+        logging.error("Unable to open %s for reading.\n")
+        sys.exit(-1)
+
+    tree_string = tree_handler.readline()
+    internal_node_map = map_internal_nodes_leaves(tree_string)
 
     for cluster in clusters.keys():
         clade_members[cluster] = list()
@@ -213,7 +221,7 @@ def main():
         pass
 
     tree_file = os.sep.join([args.treesapp, "data", "tree_data", args.marker + "_tree.txt"])
-    clade_members = parse_clades_from_tree(args, clusters, tree_file, args.marker)
+    clade_members = parse_clades_from_tree(args, clusters, tree_file)
 
     fasta_dict = format_read_fasta(args.fasta, args.molecule, args.output, 1000)
     fasta_dict = strip_header_prefix(fasta_dict)
